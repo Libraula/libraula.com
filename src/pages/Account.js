@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './account.css';
+import '../styles/account.css';
+import Navbar from '../components/Navbar';
 
 // Sample user data (replace with real data or API later)
 const userData = {
@@ -29,16 +30,7 @@ const userData = {
 function Account() {
   return (
     <div className="Account">
-      <header className="Account-header">
-        <div className="logo">Libraula</div>
-        <nav className="nav-bar">
-          <Link to="/home">Browse</Link>
-          <Link to="/new-releases">New Releases</Link>
-          <Link to="/queue">My Queue</Link>
-          <Link to="/account">Account</Link>
-          <Link to="/login">Sign Out</Link>
-        </nav>
-      </header>
+      <Navbar />
 
       <section className="account-section">
         <h1>Your Account</h1>

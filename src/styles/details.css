@@ -1,0 +1,159 @@
+.Details {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f8f8f8;
+  }
+  
+  .Details-header {
+    background-color: #32CD32;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .logo {
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  
+  .nav-bar {
+    display: flex;
+    gap: 25px;
+  }
+  
+  .nav-bar a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+  }
+  
+  .nav-bar a:hover {
+    color: #e6f7e6;
+  }
+  
+  .movie-details {
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 0 30px;
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+  }
+  
+  .movie-poster {
+    flex: 0 0 300px;
+  }
+  
+  .movie-poster img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .movie-info {
+    flex: 1;
+  }
+  
+  .movie-info h1 {
+    font-size: 36px;
+    color: #32CD32;
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
+  
+  .year-rating {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 20px;
+  }
+  
+  .genre,
+  .director,
+  .cast {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 15px;
+  }
+  
+  .genre strong,
+  .director strong,
+  .cast strong {
+    color: #333;
+  }
+  
+  .synopsis {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #555;
+    margin-bottom: 20px;
+  }
+  
+  .add-button {
+    background-color: #32CD32;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .add-button:hover {
+    background-color: #28A428;
+    transform: scale(1.05);
+  }
+  
+  .Details-footer {
+    background-color: #222;
+    color: #ccc;
+    padding: 30px;
+    text-align: center;
+    font-size: 14px;
+    margin-top: auto;
+  }
+  
+  .footer-links a {
+    color: #ccc;
+    margin: 0 15px;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .footer-links a:hover {
+    color: #32CD32;
+  }
+  
+  @media (max-width: 768px) {
+    .movie-details {
+      flex-direction: column;
+      padding: 0 15px;
+      margin: 30px auto;
+    }
+    .movie-poster {
+      flex: none;
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+    .movie-info h1 {
+      font-size: 28px;
+    }
+    .synopsis {
+      font-size: 16px;
+    }
+  }

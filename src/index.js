@@ -3,14 +3,15 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './index.css';
 import App from './App';
-import Login from './login';
-import Signup from './Signup';
-import Pricing from './Pricing';
-import Home from './Home';
-import NewReleases from './NewReleases';
-import MyQueue from './MyQueue';
-import Account from './Account';
-import Admin from './Admin'; // New import
+import Login from './pages/login';
+import Signup from './pages/Signup';
+import Pricing from './pages/Pricing';
+import Home from './pages/Home';
+import NewReleases from './pages/NewReleases';
+import MyQueue from './pages/MyQueue';
+import Account from './pages/Account';
+import Admin from './pages/Admin';
+import Details from './pages/Details'; // New import
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -26,7 +27,8 @@ root.render(
         <Route path="/new-releases" element={<NewReleases />} />
         <Route path="/queue" element={<MyQueue />} />
         <Route path="/account" element={<Account />} />
-        <Route path="/admin" element={<Admin />} /> {/* Admin route */}
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/movie/:id" element={<Details />} /> {/* New route */}
       </Routes>
     </Router>
   </React.StrictMode>

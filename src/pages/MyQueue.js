@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import './myqueue.css';
+import '../styles/myqueue.css';
+import Navbar from '../components/Navbar';
 
 // Sample queue data based on Cafe DVD
 const queueData = {
@@ -31,23 +32,7 @@ function MyQueue() {
 
   return (
     <div className="MyQueue">
-      <header className="MyQueue-header">
-        <div className="logo">Libraula</div>
-        <input
-          type="text"
-          placeholder="Search Movies, TV Shows, actors..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="search-bar"
-        />
-        <nav className="nav-bar">
-          <Link to="/home">Browse</Link>
-          <Link to="/new-releases">New Releases</Link>
-          <Link to="/queue">My Queue</Link>
-          <Link to="/account">Account</Link>
-          <Link to="/login">Sign Out</Link>
-        </nav>
-      </header>
+      <Navbar />
 
       <section className="queue-section">
         <h1>My Queue</h1>

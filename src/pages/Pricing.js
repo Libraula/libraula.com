@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import './pricing.css';
+import '../styles/pricing.css';
 
 function Pricing() {
   const [selectedPlan, setSelectedPlan] = useState('basic');

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './newreleases.css';
+import '../styles/newreleases.css';
+import Navbar from '../components/Navbar';
 
 // Sample new releases data (replace with API later)
 const newReleases = [
@@ -13,16 +14,7 @@ const newReleases = [
 function NewReleases() {
   return (
     <div className="NewReleases">
-      <header className="NewReleases-header">
-        <div className="logo">Libraula</div>
-        <nav className="nav-bar">
-          <Link to="/home">Browse</Link>
-          <Link to="/new-releases">New Releases</Link>
-          <Link to="/queue">My Queue</Link>
-          <Link to="/account">Account</Link>
-          <Link to="/login">Sign Out</Link>
-        </nav>
-      </header>
+      <Navbar />
 
       <section className="new-releases-section">
         <h1>New Releases</h1>

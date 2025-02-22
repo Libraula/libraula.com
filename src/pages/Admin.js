@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import './admin.css';
+import '../styles/admin.css';
+import Navbar from '../components/Navbar';
 
 // Sample data (replace with backend API in production)
 const initialDvds = [
@@ -58,13 +59,7 @@ function Admin() {
 
   return (
     <div className="Admin">
-      <header className="Admin-header">
-        <div className="logo">Libraula Admin</div>
-        <nav className="nav-bar">
-          <Link to="/home">User View</Link>
-          <Link to="/login">Sign Out</Link>
-        </nav>
-      </header>
+      <Navbar />
 
       <section className="admin-section">
         <h1>Admin Dashboard</h1>
