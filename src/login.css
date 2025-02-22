@@ -1,0 +1,80 @@
+.Login {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .Login-header {
+    background-color: #32CD32; /* Lime green */
+    padding: 20px;
+    color: white;
+  }
+  
+  .logo {
+    font-size: 36px;
+    font-weight: bold;
+    text-align: left;
+    padding-left: 20px;
+  }
+  
+  .login-form {
+    flex: 1;
+    padding: 40px 20px;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  
+  .login-form h1 {
+    font-size: 32px;
+    margin-bottom: 20px;
+  }
+  
+  .login-form input {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .login-button {
+    background-color: #32CD32; /* Lime green */
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 4px;
+    width: 100%;
+    cursor: pointer;
+  }
+  
+  .login-button:hover {
+    background-color: #28A428; /* Darker lime green */
+  }
+  
+  .login-form p {
+    margin-top: 20px;
+    font-size: 14px;
+  }
+  
+  .login-form a {
+    color: #32CD32; /* Lime green */
+    text-decoration: none;
+  }
+  
+  .login-form a:hover {
+    text-decoration: underline;
+  }
+  
+  .Login-footer {
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    font-size: 14px;
+  }

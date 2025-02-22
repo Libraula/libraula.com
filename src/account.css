@@ -1,0 +1,188 @@
+.Account {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: #333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f8f8f8;
+  }
+  
+  .Account-header {
+    background-color: #32CD32;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .logo {
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  
+  .nav-bar {
+    display: flex;
+    gap: 25px;
+  }
+  
+  .nav-bar a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+  }
+  
+  .nav-bar a:hover {
+    color: #e6f7e6;
+  }
+  
+  .account-section {
+    padding: 50px 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  
+  .account-section h1 {
+    font-size: 32px;
+    color: #32CD32;
+    margin-bottom: 15px;
+    text-align: center;
+    font-weight: 700;
+  }
+  
+  .account-section p {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+  
+  .account-card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .account-card h2 {
+    font-size: 24px;
+    color: #32CD32;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+  
+  .subscription-details p,
+  .shipping-details p {
+    font-size: 16px;
+    margin: 10px 0;
+    color: #555;
+  }
+  
+  .subscription-details p span.active {
+    color: #32CD32;
+    font-weight: 600;
+  }
+  
+  .subscription-details p span.cancelled {
+    color: #888;
+    font-weight: 600;
+  }
+  
+  .billing-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .billing-table th,
+  .billing-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .billing-table th {
+    background-color: #f0f0f0;
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+  }
+  
+  .billing-table td {
+    font-size: 13px;
+    color: #555;
+  }
+  
+  .account-actions,
+  .settings-options {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+  }
+  
+  .action-button {
+    background-color: #32CD32;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .action-button:hover {
+    background-color: #28A428;
+    transform: scale(1.05);
+  }
+  
+  .action-button.cancel {
+    background-color: #888;
+  }
+  
+  .action-button.cancel:hover {
+    background-color: #666;
+  }
+  
+  .Account-footer {
+    background-color: #222;
+    color: #ccc;
+    padding: 30px;
+    text-align: center;
+    font-size: 14px;
+    margin-top: auto;
+  }
+  
+  .footer-links a {
+    color: #ccc;
+    margin: 0 15px;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .footer-links a:hover {
+    color: #32CD32;
+  }
+  
+  @media (max-width: 768px) {
+    .account-section {
+      padding: 30px 15px;
+    }
+    .account-actions,
+    .settings-options {
+      flex-direction: column;
+      gap: 10px;
+    }
+    .billing-table th,
+    .billing-table td {
+      font-size: 12px;
+    }
+  }
