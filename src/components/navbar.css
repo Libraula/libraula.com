@@ -12,8 +12,8 @@
 }
 
 .logo-link {
-  text-decoration: none; /* Remove underline */
-  color: inherit; /* Inherit white color from parent */
+  text-decoration: none;
+  color: inherit;
 }
 
 .logo {
@@ -52,6 +52,52 @@
 
 .nav-bar a:hover {
   color: #e6f7e6; /* Light green */
+}
+
+/* Mobile-specific styles */
+.search-toggle {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.search-icon {
+  display: block;
+}
+
+.search-overlay {
+  position: fixed;
+  top: 70px; /* Below navbar */
+  left: 0;
+  right: 0;
+  background-color: rgba(44, 62, 80, 0.95); /* Dark slate with opacity */
+  padding: 20px;
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.search-bar-mobile {
+  padding: 12px;
+  font-size: 16px;
+  width: 70%;
+  border: none;
+  border-radius: 20px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  outline: none;
+}
+
+.close-search {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
 }
 
 .menu-toggle {
@@ -118,15 +164,13 @@
 @media (max-width: 768px) {
   .Navbar {
     padding: 10px 15px;
+    flex-wrap: wrap;
   }
   .logo {
     font-size: 32px;
   }
   .search-bar {
-    width: 200px;
-  }
-  .search-bar:focus {
-    width: 250px;
+    display: none; /* Hidden on mobile unless search is open */
   }
   .nav-bar {
     display: none; /* Hide top nav on mobile */
@@ -134,8 +178,10 @@
 }
 
 @media (min-width: 769px) {
+  .search-toggle,
+  .search-overlay,
   .menu-toggle,
   .side-nav {
-    display: none; /* Hide hamburger and side nav on desktop */
+    display: none; /* Hide mobile-specific elements on desktop */
   }
 }

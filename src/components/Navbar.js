@@ -5,11 +5,16 @@ import './navbar.css';
 function Navbar() {
   const [isSideNavOpen, setIsSideNavOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isSearchOpen, setIsSearchOpen] = useState(false); // State for search input on mobile
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-      if (window.innerWidth > 768) setIsSideNavOpen(false); // Close side nav on resize to desktop
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      if (!mobile) {
+        setIsSideNavOpen(false); // Close side nav on desktop
+        setIsSearchOpen(false); // Close search on desktop
+      }
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -19,18 +24,42 @@ function Navbar() {
     setIsSideNavOpen(!isSideNavOpen);
   };
 
+  const toggleSearch = () => {
+    setIsSearchOpen(!isSearchOpen);
+  };
+
   return (
     <header className="Navbar">
       <Link to="/home" className="logo-link">
         <div className="logo">Libraula</div>
       </Link>
-      <input
-        type="text"
-        placeholder="Search DVDs by title..."
-        className="search-bar"
-      />
-      {isMobile ? (
+
+      {/* Desktop Search Bar */}
+      {!isMobile && (
+        <input
+          type="text"
+          placeholder="Search DVDs by title..."
+          className="search-bar"
+        />
+      )}
+
+      {/* Mobile Search Icon and Input */}
+      {isMobile && (
         <>
+          <button className="search-toggle" onClick={toggleSearch}>
+            <span className="search-icon">🔍</span>
+          </button>
+          {isSearchOpen && (
+            <div className="search-overlay">
+              <input
+                type="text"
+                placeholder="Search DVDs by title..."
+                className="search-bar-mobile"
+                autoFocus
+              />
+              <button className="close-search" onClick={toggleSearch}>×</button>
+            </div>
+          )}
           <button className="menu-toggle" onClick={toggleSideNav}>
             <span className="hamburger">☰</span>
           </button>
@@ -45,7 +74,10 @@ function Navbar() {
             </nav>
           </div>
         </>
-      ) : (
+      )}
+
+      {/* Desktop Nav Bar */}
+      {!isMobile && (
         <nav className="nav-bar">
           <Link to="/home">Browse</Link>
           <Link to="/new-releases">New Releases</Link>
