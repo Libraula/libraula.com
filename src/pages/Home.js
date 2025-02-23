@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, setDoc, getDoc } from 'firebase/firestore'; // Add getDoc
 import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
 import '../styles/home.css';
@@ -56,14 +56,14 @@ function Home() {
       console.log('Adding to queue for UID:', userId);
       const queueRef = doc(db, 'userQueues', userId);
 
-      // Test write to verify permissions
+      // Test simple write
       await setDoc(queueRef, { test: 'Permission test' }, { merge: true });
       console.log('Test write successful for UID:', userId);
 
-      const queueSnapshot = await getDocs(collection(db, 'userQueues'));
-      const userDoc = queueSnapshot.docs.find(doc => doc.id === userId);
-      const userQueue = userDoc ? userDoc.data().queue || [] : [];
-      console.log('Current queue:', userQueue);
+      // Fetch current queue
+      const queueDocSnapshot = await getDoc(queueRef);
+      const userQueue = queueDocSnapshot.exists() && queueDocSnapshot.data().queue ? queueDocSnapshot.data().queue : [];
+      console.log('Current queue from Firestore:', userQueue);
 
       if (!userQueue.some(item => item.id === movie.id)) {
         const updatedQueue = [...userQueue, movie];
