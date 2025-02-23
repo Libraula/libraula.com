@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore'; // To check user document
+import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
 import '../styles/login.css';
@@ -28,11 +28,17 @@ function Login() {
 
   const handleGoogleSignIn = async () => {
     try {
+      console.log('Attempting Google Sign-In');
       const result = await signInWithPopup(auth, googleProvider);
+      console.log('Google Sign-In successful, user:', result.user.uid);
       await redirectUser(result.user);
     } catch (err) {
-      setError('Failed to sign in with Google: ' + err.message);
-      console.error('Google sign-in error:', err);
+      console.error('Google Sign-In error:', err.code, err.message);
+      if (err.code === 'auth/popup-closed-by-user') {
+        setError('Google Sign-In was canceled. Please keep the popup open and select an account.');
+      } else {
+        setError('Failed to sign in with Google: ' + err.message);
+      }
     }
   };
 
@@ -41,11 +47,9 @@ function Login() {
     const userDocSnapshot = await getDoc(userDocRef);
 
     if (userDocSnapshot.exists()) {
-      // Returning user (has account details)
       console.log('Returning user, redirecting to /home');
       navigate('/home');
     } else {
-      // New user (no account details yet)
       console.log('New user, redirecting to /pricing');
       navigate('/pricing');
     }
