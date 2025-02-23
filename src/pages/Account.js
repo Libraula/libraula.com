@@ -1,52 +1,86 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import '../styles/account.css';
+import { doc, getDoc } from 'firebase/firestore'; // Use getDoc for single doc
+import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
-
-// Sample user data (replace with real data or API later)
-const userData = {
-  name: 'John Doe',
-  email: 'john.doe@example.com',
-  subscription: {
-    plan: 'Standard',
-    price: '$11.99/mo',
-    discs: '2 discs at a time',
-    startDate: 'January 15, 2025',
-    nextBilling: 'February 15, 2025',
-    status: 'Active',
-  },
-  billingHistory: [
-    { date: 'January 15, 2025', amount: '$11.99', status: 'Paid' },
-    { date: 'December 15, 2024', amount: '$11.99', status: 'Paid' },
-  ],
-  shippingAddress: {
-    line1: '123 Movie Lane',
-    city: 'Filmville',
-    state: 'CA',
-    zip: '90210',
-  },
-};
+import '../styles/account.css';
 
 function Account() {
+  const [userData, setUserData] = useState(null);
+  const [billingHistory, setBillingHistory] = useState([]);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (auth.currentUser) {
+        const userId = auth.currentUser.uid;
+        try {
+          const userDocRef = doc(db, 'users', userId);
+          const userDocSnapshot = await getDoc(userDocRef);
+          if (userDocSnapshot.exists()) {
+            setUserData(userDocSnapshot.data());
+          } else {
+            setError('No user data found.');
+          }
+
+          // Mock billing history (replace with real data later)
+          const history = [
+            { date: 'January 15, 2025', amount: '$11.99', status: 'Paid' },
+            { date: 'December 15, 2024', amount: '$11.99', status: 'Paid' },
+          ];
+          setBillingHistory(history);
+        } catch (err) {
+          setError('Failed to load account details: ' + err.message);
+          console.error('Error fetching user data:', err);
+        }
+      } else {
+        setError('You must be logged in to view this page.');
+      }
+    };
+    fetchUserData();
+  }, []);
+
+  if (error) {
+    return (
+      <div className="Account">
+        <Navbar />
+        <section className="account-section">
+          <h1>Your Account</h1>
+          <p className="error">{error}</p>
+        </section>
+      </div>
+    );
+  }
+
+  if (!userData) {
+    return (
+      <div className="Account">
+        <Navbar />
+        <section className="account-section">
+          <h1>Your Account</h1>
+          <p>Loading...</p>
+        </section>
+      </div>
+    );
+  }
+
   return (
     <div className="Account">
       <Navbar />
-
       <section className="account-section">
         <h1>Your Account</h1>
         <p>Manage your subscription, billing, and shipping details.</p>
 
-        {/* Subscription Info */}
         <div className="account-card">
           <h2>Subscription</h2>
           <div className="subscription-details">
             <p><strong>Name:</strong> {userData.name}</p>
             <p><strong>Email:</strong> {userData.email}</p>
-            <p><strong>Plan:</strong> {userData.subscription.plan} ({userData.subscription.discs})</p>
-            <p><strong>Price:</strong> {userData.subscription.price}</p>
-            <p><strong>Start Date:</strong> {userData.subscription.startDate}</p>
-            <p><strong>Next Billing Date:</strong> {userData.subscription.nextBilling}</p>
-            <p><strong>Status:</strong> <span className={userData.subscription.status.toLowerCase()}>{userData.subscription.status}</span></p>
+            <p><strong>Plan:</strong> {userData.plan}</p>
+            <p><strong>Price:</strong> {userData.plan === 'Basic' ? '$7.99/mo' : userData.plan === 'Standard' ? '$11.99/mo' : '$15.99/mo'}</p>
+            <p><strong>Start Date:</strong> {userData.startDate}</p>
+            <p><strong>Next Billing Date:</strong> {userData.nextBillingDate}</p>
+            <p><strong>Status:</strong> <span className={userData.status.toLowerCase()}>{userData.status}</span></p>
           </div>
           <div className="account-actions">
             <button className="action-button">Change Plan</button>
@@ -54,10 +88,9 @@ function Account() {
           </div>
         </div>
 
-        {/* Billing History */}
         <div className="account-card">
           <h2>Billing History</h2>
-          {userData.billingHistory.length > 0 ? (
+          {billingHistory.length > 0 ? (
             <table className="billing-table">
               <thead>
                 <tr>
@@ -67,7 +100,7 @@ function Account() {
                 </tr>
               </thead>
               <tbody>
-                {userData.billingHistory.map((entry, index) => (
+                {billingHistory.map((entry, index) => (
                   <tr key={index}>
                     <td>{entry.date}</td>
                     <td>{entry.amount}</td>
@@ -81,7 +114,6 @@ function Account() {
           )}
         </div>
 
-        {/* Shipping Address */}
         <div className="account-card">
           <h2>Shipping Address</h2>
           <div className="shipping-details">
@@ -91,7 +123,6 @@ function Account() {
           <button className="action-button">Edit Address</button>
         </div>
 
-        {/* Account Settings */}
         <div className="account-card">
           <h2>Account Settings</h2>
           <div className="settings-options">
@@ -101,7 +132,6 @@ function Account() {
           </div>
         </div>
       </section>
-
       <footer className="Account-footer">
         <div className="footer-links">
           <a href="#">Help Center</a> | <a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a> | <a href="#">Contact Us</a>

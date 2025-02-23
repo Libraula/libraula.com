@@ -1,21 +1,38 @@
-import React, { useContext } from 'react'; // Add useContext
-import { useParams, useLocation } from 'react-router-dom';
+import React from 'react';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { doc, setDoc, collection, getDocs } from 'firebase/firestore';
+import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
-import { QueueContext } from '../QueueContext'; // Import QueueContext
 import '../styles/details.css';
 
 function Details() {
   const { id } = useParams();
   const location = useLocation();
   const movie = location.state?.movie;
-  const { addToQueue } = useContext(QueueContext); // Access addToQueue
+  const navigate = useNavigate();
 
   if (!movie) {
     return <div>Movie not found!</div>;
   }
 
-  const handleAddToQueue = () => {
-    addToQueue(movie); // Use context function
+  const handleAddToQueue = async () => {
+    if (!auth.currentUser) {
+      navigate('/login');
+      return;
+    }
+    try {
+      const userEmail = auth.currentUser.email;
+      const queueRef = doc(db, 'userQueues', userEmail);
+      const queueSnapshot = await getDocs(collection(db, 'userQueues'));
+      const userQueue = queueSnapshot.docs.find(doc => doc.id === userEmail)?.data()?.queue || [];
+      if (!userQueue.some(item => item.id === movie.id)) {
+        const updatedQueue = [...userQueue, movie];
+        await setDoc(queueRef, { queue: updatedQueue }, { merge: true });
+        console.log(`Added ${movie.title} to ${userEmail}'s queue`);
+      }
+    } catch (err) {
+      console.error('Error adding to queue:', err);
+    }
   };
 
   return (

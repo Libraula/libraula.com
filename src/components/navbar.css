@@ -186,3 +186,11 @@
     display: none;
   }
 }
+
+.sign-out-link {
+  cursor: pointer;
+  color: white;
+  text-decoration: none;
+  font-size: 16px; /* 18px for mobile */
+  font-weight: 500;
+}

@@ -1,6 +1,7 @@
-import React, { useState, useContext } from 'react';
-import { Link, Navigate } from 'react-router-dom';
-import { DvdContext } from '../DvdContext';
+import React, { useState, useEffect } from 'react';
+import { Navigate } from 'react-router-dom';
+import { collection, addDoc, getDocs, updateDoc, doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
 import '../styles/admin.css';
 
@@ -14,18 +15,20 @@ const AddDvdForm = ({ onAddDvd }) => {
     genre: '',
     director: '',
     year: '',
-    cast: [],
+    cast: '',
     status: 'Available',
     format: 'DVD',
-    newRelease: false, // New field
+    newRelease: false,
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onAddDvd({
+    const dvdToAdd = {
       ...newDvd,
-      cast: newDvd.cast.length > 0 ? newDvd.cast.split(',').map(name => name.trim()) : [],
-    });
+      cast: newDvd.cast ? newDvd.cast.split(',').map(name => name.trim()) : [],
+      createdAt: new Date().toISOString(),
+    };
+    await onAddDvd(dvdToAdd);
     setNewDvd({
       title: '',
       img: 'https://placehold.co/400x600?text=New+DVD',
@@ -34,7 +37,7 @@ const AddDvdForm = ({ onAddDvd }) => {
       genre: '',
       director: '',
       year: '',
-      cast: [],
+      cast: '',
       status: 'Available',
       format: 'DVD',
       newRelease: false,
@@ -48,7 +51,7 @@ const AddDvdForm = ({ onAddDvd }) => {
         <input type="text" placeholder="Title" value={newDvd.title} onChange={(e) => setNewDvd({ ...newDvd, title: e.target.value })} required />
         <input type="text" placeholder="Image URL (400x600)" value={newDvd.img} onChange={(e) => setNewDvd({ ...newDvd, img: e.target.value })} />
         <textarea placeholder="Synopsis" value={newDvd.synopsis} onChange={(e) => setNewDvd({ ...newDvd, synopsis: e.target.value })} required />
-        <input type="text" placeholder="Rating (e.g., PG-13)" value={newDvd.rating} onChange={(e) => setNewDvd({ ...newDvd, rating: e.target.value })} required />
+        <input type="text" placeholder="Rating" value={newDvd.rating} onChange={(e) => setNewDvd({ ...newDvd, rating: e.target.value })} required />
         <input type="text" placeholder="Genre" value={newDvd.genre} onChange={(e) => setNewDvd({ ...newDvd, genre: e.target.value })} required />
         <input type="text" placeholder="Director" value={newDvd.director} onChange={(e) => setNewDvd({ ...newDvd, director: e.target.value })} required />
         <input type="text" placeholder="Year" value={newDvd.year} onChange={(e) => setNewDvd({ ...newDvd, year: e.target.value })} required />
@@ -115,9 +118,9 @@ const DvdList = ({ dvds, onUpdateStatus }) => (
 const UserQueueList = ({ userQueues, dvds, onShip }) => (
   <div className="admin-card">
     <h2>User Queues</h2>
-    {Object.entries(userQueues).map(([email, queue]) => (
-      <div key={email} className="user-info">
-        <h3>{email}</h3>
+    {Object.entries(userQueues).map(([uid, queue]) => (
+      <div key={uid} className="user-info">
+        <h3>{uid}</h3>
         <p><strong>Queue:</strong></p>
         <ul>
           {queue.map((movie) => {
@@ -126,7 +129,7 @@ const UserQueueList = ({ userQueues, dvds, onShip }) => (
               <li key={movie.id}>
                 {movie.title} ({dvd ? dvd.status : 'Unknown'})
                 {dvd && dvd.status === 'Available' && (
-                  <button className="ship-button" onClick={() => onShip(email, movie)}>Ship Now</button>
+                  <button className="ship-button" onClick={() => onShip(uid, movie)}>Ship Now</button>
                 )}
               </li>
             );
@@ -138,24 +141,103 @@ const UserQueueList = ({ userQueues, dvds, onShip }) => (
 );
 
 function Admin() {
-  const { dvds, addDvd, updateDvdStatus, userQueues, addToUserQueue } = useContext(DvdContext);
-  const isAdmin = true;
   const [activeSection, setActiveSection] = useState('add-dvd');
+  const [dvds, setDvds] = useState([]);
+  const [userQueues, setUserQueues] = useState({});
+  const [isAdmin, setIsAdmin] = useState(null);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true); // Add loading state
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (!user) {
+        setIsAdmin(false);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const userId = user.uid;
+        const adminDocRef = doc(db, 'admins', userId);
+        const adminDocSnapshot = await getDoc(adminDocRef);
+        const adminStatus = adminDocSnapshot.exists();
+        setIsAdmin(adminStatus);
+
+        if (adminStatus) {
+          // Fetch DVDs
+          const dvdSnapshot = await getDocs(collection(db, 'dvds'));
+          const dvdList = dvdSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setDvds(dvdList);
+
+          // Fetch User Queues
+          const queueSnapshot = await getDocs(collection(db, 'userQueues'));
+          const queues = {};
+          queueSnapshot.forEach(doc => {
+            queues[doc.id] = doc.data().queue || [];
+          });
+          setUserQueues(queues);
+        }
+      } catch (err) {
+        setError('Failed to load admin data: ' + err.message);
+        console.error('Error in admin setup:', err);
+        setIsAdmin(false);
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="Admin">
+        <Navbar />
+        <p>Loading admin dashboard...</p>
+      </div>
+    );
+  }
 
   if (!isAdmin) {
     return <Navigate to="/home" />;
   }
 
-  const handleAddDvd = (dvd) => {
-    addDvd(dvd);
+  if (error) {
+    return (
+      <div className="Admin">
+        <Navbar />
+        <section className="admin-section">
+          <h1>Admin Dashboard</h1>
+          <p className="error">{error}</p>
+        </section>
+      </div>
+    );
+  }
+
+  const handleAddDvd = async (dvd) => {
+    try {
+      const docRef = await addDoc(collection(db, 'dvds'), dvd);
+      setDvds(prev => [...prev, { ...dvd, id: docRef.id }]);
+    } catch (err) {
+      setError('Error adding DVD: ' + err.message);
+      console.error('Error adding DVD:', err);
+    }
   };
 
-  const handleUpdateStatus = (id, status) => {
-    updateDvdStatus(id, status);
+  const handleUpdateStatus = async (id, status) => {
+    try {
+      const dvdRef = doc(db, 'dvds', id);
+      await updateDoc(dvdRef, { status });
+      setDvds(prev => prev.map(dvd => dvd.id === id ? { ...dvd, status } : dvd));
+    } catch (err) {
+      setError('Error updating status: ' + err.message);
+      console.error('Error updating status:', err);
+    }
   };
 
-  const handleShip = (email, movie) => {
-    console.log(`Shipping ${movie.title} to ${email}`);
+  const handleShip = async (uid, movie) => {
+    console.log(`Shipping ${movie.title} to ${uid}`);
+    // Placeholder for shipping logic
   };
 
   return (

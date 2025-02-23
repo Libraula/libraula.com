@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom'; // Add Link import
+import Navbar from '../components/Navbar'; // Adjust path if needed
 import '../styles/pricing.css';
 
 function Pricing() {
@@ -8,8 +9,8 @@ function Pricing() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Plan selected:', selectedPlan);
-    navigate('/home'); // Redirect to home (catalog) screen
+    localStorage.setItem('selectedPlan', selectedPlan);
+    navigate('/user-details');
   };
 
   const plans = [
@@ -20,9 +21,7 @@ function Pricing() {
 
   return (
     <div className="Pricing">
-      <header className="Pricing-header">
-        <div className="logo">Libraula</div>
-      </header>
+      <Navbar />
       <section className="pricing-form">
         <h1>Choose Your Plan</h1>
         <p>Select a plan to start your 30-day free trial.</p>

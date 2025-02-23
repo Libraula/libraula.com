@@ -1,44 +1,41 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase';
+import Navbar from '../components/Navbar';
 import '../styles/signup.css';
 
 function Signup() {
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [district, setDistrict] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const signupData = {
-      phoneNumber,
-      password,
-      firstName,
-      lastName,
-      district
-    };
-    console.log('Signup submitted with:', signupData);
-    // Simulate account creation (replace with API call)
-    navigate('/pricing');
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      console.log('Signed up successfully');
+      navigate('/pricing'); // Redirect to pricing after signup
+    } catch (err) {
+      setError('Failed to create account');
+      console.error('Signup error:', err);
+    }
   };
 
   return (
     <div className="Signup">
-      <header className="Signup-header">
-        <div className="logo">Libraula</div>
-      </header>
+      <Navbar />
       <section className="signup-form">
         <h1>Create Your Account</h1>
         <p>Sign up for unlimited DVDs & Blu-rays. Try 30 days free!</p>
+        {error && <p className="error">{error}</p>}
         <form onSubmit={handleSubmit}>
           <input
-            type="tel"
-            placeholder="Phone Number (e.g. 0775123456)"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            pattern="[0-9]{10}"
+            type="email"
+            placeholder="Email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
           <input
@@ -48,28 +45,7 @@ function Signup() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <input
-            type="text"
-            placeholder="First Name"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            required
-          />
-          <input
-            type="text"
-            placeholder="Last Name"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            required
-          />
-          <input
-            type="text"
-            placeholder="District"
-            value={district}
-            onChange={(e) => setDistrict(e.target.value)}
-            required
-          />
-          <button type="submit" className="signup-button">Create Account</button>
+          <button type="submit" className="signup-button">Continue</button>
         </form>
         <p>
           Already a member? <Link to="/login">Sign in</Link>.

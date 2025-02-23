@@ -1,30 +1,47 @@
-import React, { useState, useContext } from 'react'; // Add useContext
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
-import { QueueContext } from '../QueueContext'; // Import QueueContext
 import '../styles/myqueue.css';
 
 function MyQueue() {
   const [activeTab, setActiveTab] = useState('queue');
   const [searchQuery, setSearchQuery] = useState('');
   const [hideLongWaits, setHideLongWaits] = useState(false);
-  const { queue } = useContext(QueueContext); // Access dynamic queue
+  const [userQueues, setUserQueues] = useState({});
+  const [error, setError] = useState('');
 
-  // Sample static data for other tabs (replace with real data later)
+  useEffect(() => {
+    const fetchUserQueues = async () => {
+      if (!auth.currentUser) {
+        setError('You must be logged in to view your queue.');
+        return;
+      }
+
+      try {
+        const userId = auth.currentUser.uid;
+        const queueDocRef = doc(db, 'userQueues', userId);
+        const queueDocSnapshot = await getDoc(queueDocRef);
+        
+        if (queueDocSnapshot.exists()) {
+          const queues = { [userId]: queueDocSnapshot.data().queue || [] };
+          setUserQueues(queues);
+        } else {
+          setUserQueues({ [userId]: [] }); // Empty queue if no document exists
+        }
+      } catch (err) {
+        setError('Failed to load queue: ' + err.message);
+        console.error('Error fetching user queues:', err);
+      }
+    };
+    fetchUserQueues();
+  }, []);
+
   const queueData = {
-    preparing: [],
-    home: [],
-    queue: queue.map(movie => ({
-      id: movie.id,
-      title: movie.title,
-      year: movie.year,
-      rating: movie.rating,
-      duration: 'N/A', // Add duration to movie data if needed
-      genres: [movie.genre],
-      format: 'DVD', // Default, extend movie data for Blu-ray
-      status: 'Available' // Default, extend for wait status
-    })),
-    history: [],
+    preparing: [], // Extend with real data if needed
+    home: [],      // Extend with real data if needed
+    queue: auth.currentUser ? userQueues[auth.currentUser.uid] || [] : [],
+    history: [],   // Extend with real data if needed
   };
 
   const filteredQueue = queueData[activeTab].filter((item) =>
@@ -37,15 +54,16 @@ function MyQueue() {
       <Navbar />
       <section className="queue-section">
         <h1>My Queue</h1>
+        {error && <p className="error">{error}</p>}
         <div className="tabs">
-        <button onClick={() => setActiveTab('queue')} className={activeTab === 'queue' ? 'active' : ''}>
-            Queue ({queueData.queue.length})
-          </button>
           <button onClick={() => setActiveTab('preparing')} className={activeTab === 'preparing' ? 'active' : ''}>
             Preparing ({queueData.preparing.length})
           </button>
           <button onClick={() => setActiveTab('home')} className={activeTab === 'home' ? 'active' : ''}>
             Home ({queueData.home.length})
+          </button>
+          <button onClick={() => setActiveTab('queue')} className={activeTab === 'queue' ? 'active' : ''}>
+            Queue ({queueData.queue.length})
           </button>
           <button onClick={() => setActiveTab('history')} className={activeTab === 'history' ? 'active' : ''}>
             History ({queueData.history.length})
@@ -84,10 +102,10 @@ function MyQueue() {
                 {filteredQueue.map((item, index) => (
                   <tr key={item.id}>
                     <td>{index + 1}</td>
-                    <td>{item.title} ({item.year} {item.rating} {item.duration})</td>
-                    <td>{item.genres.join(', ')}</td>
-                    <td>{item.format}</td>
-                    <td>{item.status || '-'}</td>
+                    <td>{item.title} ({item.year} {item.rating})</td>
+                    <td>{item.genre}</td>
+                    <td>{item.format || 'DVD'}</td>
+                    <td>{item.status || 'Available'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -95,7 +113,6 @@ function MyQueue() {
           )}
         </div>
       </section>
-
       <footer className="MyQueue-footer">
         <p>Customer Support: <a href="mailto:support@libraula.com">support@libraula.com</a> | <a href="#">Chat</a></p>
         <div className="footer-links">

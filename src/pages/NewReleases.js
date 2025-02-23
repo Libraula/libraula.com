@@ -1,15 +1,46 @@
-import React, { useContext } from 'react'; // Add useContext
-import { DvdContext } from '../DvdContext'; // Import DvdContext
-import { QueueContext } from '../QueueContext'; // For addToQueue
-import '../styles/newreleases.css';
+import React, { useEffect, useState } from 'react';
+import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
+import { useNavigate } from 'react-router-dom';
+import '../styles/newreleases.css';
 
 function NewReleases() {
-  const { newReleases } = useContext(DvdContext); // Use newReleases from context
-  const { addToQueue } = useContext(QueueContext);
+  const [newReleases, setNewReleases] = useState([]);
+  const navigate = useNavigate();
 
-  const handleAddToQueue = (movie) => {
-    addToQueue(movie);
+  useEffect(() => {
+    const fetchNewReleases = async () => {
+      try {
+        const dvdSnapshot = await getDocs(collection(db, 'dvds'));
+        const dvdList = dvdSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const filteredNewReleases = dvdList.filter(dvd => dvd.newRelease);
+        setNewReleases(filteredNewReleases);
+      } catch (err) {
+        console.error('Error fetching new releases:', err);
+      }
+    };
+    fetchNewReleases();
+  }, []);
+
+  const handleAddToQueue = async (movie) => {
+    if (!auth.currentUser) {
+      navigate('/login');
+      return;
+    }
+    try {
+      const userId = auth.currentUser.uid;
+      const queueRef = doc(db, 'userQueues', userId);
+      const queueSnapshot = await getDocs(collection(db, 'userQueues'));
+      const userQueue = queueSnapshot.docs.find(doc => doc.id === userId)?.data()?.queue || [];
+      if (!userQueue.some(item => item.id === movie.id)) {
+        const updatedQueue = [...userQueue, movie];
+        await setDoc(queueRef, { queue: updatedQueue }, { merge: true });
+        console.log(`Added ${movie.title} to ${userId}'s queue`);
+      }
+    } catch (err) {
+      console.error('Error adding to queue:', err);
+    }
   };
 
   return (
@@ -26,7 +57,9 @@ function NewReleases() {
                 <h3>{movie.title}</h3>
                 <p>{movie.synopsis}</p>
                 <p>{movie.year} • {movie.rating}</p>
-                <button className="add-button" onClick={() => handleAddToQueue(movie)}>Add to Queue</button>
+                <button className="add-button" onClick={() => handleAddToQueue(movie)}>
+                  Add to Queue
+                </button>
               </div>
             </div>
           ))}

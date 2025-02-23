@@ -1,48 +1,71 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom'; // Add useNavigate
+import { auth, db } from '../firebase'; // Adjust path if needed
+import { doc, getDoc } from 'firebase/firestore';
 import './navbar.css';
 
 function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSideNavOpen, setIsSideNavOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const menuRef = useRef(null);
-  const searchRef = useRef(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!auth.currentUser);
+  const navigate = useNavigate(); // For redirect after sign out
 
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
       if (!mobile) {
-        setIsMenuOpen(false);
+        setIsSideNavOpen(false);
         setIsSearchOpen(false);
       }
     };
-
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setIsMenuOpen(false);
-      }
-      if (searchRef.current && !searchRef.current.contains(event.target)) {
-        setIsSearchOpen(false);
-      }
-    };
-
     window.addEventListener('resize', handleResize);
-    document.addEventListener('mousedown', handleClickOutside);
-    
+
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      setIsLoggedIn(!!user);
+      if (user) {
+        const checkAdminStatus = async () => {
+          try {
+            const userId = user.uid;
+            const adminDocRef = doc(db, 'admins', userId);
+            const adminDocSnapshot = await getDoc(adminDocRef);
+            setIsAdmin(adminDocSnapshot.exists());
+          } catch (err) {
+            console.error('Error checking admin status:', err);
+            setIsAdmin(false);
+          }
+        };
+        checkAdminStatus();
+      } else {
+        setIsAdmin(false);
+      }
+    });
+
     return () => {
       window.removeEventListener('resize', handleResize);
-      document.removeEventListener('mousedown', handleClickOutside);
+      unsubscribe();
     };
   }, []);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+  const toggleSideNav = () => {
+    setIsSideNavOpen(!isSideNavOpen);
   };
 
   const toggleSearch = () => {
     setIsSearchOpen(!isSearchOpen);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await auth.signOut();
+      setIsLoggedIn(false); // Update state immediately
+      setIsAdmin(false); // Reset admin status
+      navigate('/'); // Redirect to landing page
+    } catch (err) {
+      console.error('Error signing out:', err);
+    }
   };
 
   return (
@@ -61,23 +84,44 @@ function Navbar() {
           />
         )}
 
+        {/* Desktop Nav Links */}
+        {!isMobile && (
+          <nav className="nav-menu">
+            <div className="nav-links">
+              {isLoggedIn && <Link to="/home">Browse</Link>}
+              {isLoggedIn && <Link to="/new-releases">New Releases</Link>}
+              {isLoggedIn && <Link to="/queue">My Queue</Link>}
+              {isLoggedIn && <Link to="/account">Account</Link>}
+              {isLoggedIn && isAdmin && <Link to="/admin">Admin</Link>}
+              {isLoggedIn ? (
+                <span
+                  onClick={handleSignOut}
+                  style={{ cursor: 'pointer', color: 'white', textDecoration: 'none', fontSize: '16px', fontWeight: 500 }}
+                >
+                  Sign Out
+                </span>
+              ) : (
+                <Link to="/login">Sign In</Link>
+              )}
+            </div>
+          </nav>
+        )}
+
         {/* Mobile Controls */}
         {isMobile && (
           <div className="mobile-controls">
             <button className="search-toggle" onClick={toggleSearch}>
-              <svg className="search-icon" viewBox="0 0 24 24" width="24" height="24">
-                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-              </svg>
+              <span className="search-icon">🔍</span>
             </button>
-            <button className="menu-toggle" onClick={toggleMenu}>
-              <span className="hamburger">{isMenuOpen ? '×' : '☰'}</span>
+            <button className="menu-toggle" onClick={toggleSideNav}>
+              <span className="hamburger">☰</span>
             </button>
           </div>
         )}
 
         {/* Mobile Search Overlay */}
         {isMobile && isSearchOpen && (
-          <div className="search-overlay" ref={searchRef}>
+          <div className="search-overlay">
             <input
               type="text"
               placeholder="Search DVDs by title..."
@@ -88,19 +132,32 @@ function Navbar() {
           </div>
         )}
 
-        {/* Navigation Menu - Desktop & Mobile */}
-        <nav 
-          className={`nav-menu ${isMenuOpen ? 'open' : ''} ${isMobile ? 'mobile' : ''}`}
-          ref={menuRef}
-        >
-          <div className="nav-links">
-            <Link to="/home" onClick={() => setIsMenuOpen(false)}>Browse</Link>
-            <Link to="/new-releases" onClick={() => setIsMenuOpen(false)}>New Releases</Link>
-            <Link to="/queue" onClick={() => setIsMenuOpen(false)}>My Queue</Link>
-            <Link to="/account" onClick={() => setIsMenuOpen(false)}>Account</Link>
-            <Link to="/login" onClick={() => setIsMenuOpen(false)}>Sign Out</Link>
-          </div>
-        </nav>
+        {/* Mobile Side Nav */}
+        {isMobile && (
+          <nav className={`nav-menu mobile ${isSideNavOpen ? 'open' : ''}`}>
+            <button className="close-nav" onClick={toggleSideNav}>×</button>
+            <div className="nav-links">
+              {isLoggedIn && <Link to="/home" onClick={toggleSideNav}>Browse</Link>}
+              {isLoggedIn && <Link to="/new-releases" onClick={toggleSideNav}>New Releases</Link>}
+              {isLoggedIn && <Link to="/queue" onClick={toggleSideNav}>My Queue</Link>}
+              {isLoggedIn && <Link to="/account" onClick={toggleSideNav}>Account</Link>}
+              {isLoggedIn && isAdmin && <Link to="/admin" onClick={toggleSideNav}>Admin</Link>}
+              {isLoggedIn ? (
+                <span
+                  onClick={() => {
+                    handleSignOut();
+                    toggleSideNav();
+                  }}
+                  style={{ cursor: 'pointer', color: 'white', textDecoration: 'none', fontSize: '18px', fontWeight: 500 }}
+                >
+                  Sign Out
+                </span>
+              ) : (
+                <Link to="/login" onClick={toggleSideNav}>Sign In</Link>
+              )}
+            </div>
+          </nav>
+        )}
       </div>
     </header>
   );
