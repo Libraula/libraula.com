@@ -115,28 +115,32 @@ const DvdList = ({ dvds, onUpdateStatus }) => (
 );
 
 // View Component: UserQueueList
-const UserQueueList = ({ userQueues, dvds, onShip }) => (
+const UserQueueList = ({ userQueues, dvds, userDetails, onShip }) => (
   <div className="admin-card">
     <h2>User Queues</h2>
-    {Object.entries(userQueues).map(([uid, queue]) => (
-      <div key={uid} className="user-info">
-        <h3>{uid}</h3>
-        <p><strong>Queue:</strong></p>
-        <ul>
-          {queue.map((movie) => {
-            const dvd = dvds.find((d) => d.id === movie.id);
-            return (
-              <li key={movie.id}>
-                {movie.title} ({dvd ? dvd.status : 'Unknown'})
-                {dvd && dvd.status === 'Available' && (
-                  <button className="ship-button" onClick={() => onShip(uid, movie)}>Ship Now</button>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-    ))}
+    {Object.entries(userQueues).map(([uid, queue]) => {
+      const user = userDetails[uid] || { name: 'Unknown', shippingAddress: { line1: 'N/A', city: 'N/A', state: 'N/A', zip: 'N/A' } };
+      return (
+        <div key={uid} className="user-info">
+          <h3>{user.name}</h3>
+          <p><strong>Shipping Address:</strong> {user.shippingAddress.line1}, {user.shippingAddress.city}, {user.shippingAddress.state} {user.shippingAddress.zip}</p>
+          <p><strong>Queue:</strong></p>
+          <ul>
+            {queue.map((movie) => {
+              const dvd = dvds.find((d) => d.id === movie.id);
+              return (
+                <li key={movie.id}>
+                  {movie.title} ({dvd ? dvd.status : 'Unknown'})
+                  {dvd && dvd.status === 'Available' && (
+                    <button className="ship-button" onClick={() => onShip(uid, movie)}>Ship Now</button>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      );
+    })}
   </div>
 );
 
@@ -144,42 +148,54 @@ function Admin() {
   const [activeSection, setActiveSection] = useState('add-dvd');
   const [dvds, setDvds] = useState([]);
   const [userQueues, setUserQueues] = useState({});
+  const [userDetails, setUserDetails] = useState({});
   const [isAdmin, setIsAdmin] = useState(null);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (!user) {
+        console.log('No user authenticated, redirecting to home');
         setIsAdmin(false);
         setLoading(false);
         return;
       }
 
+      console.log('Checking admin status for UID:', user.uid);
       try {
         const userId = user.uid;
         const adminDocRef = doc(db, 'admins', userId);
         const adminDocSnapshot = await getDoc(adminDocRef);
         const adminStatus = adminDocSnapshot.exists();
+        console.log('Admin document exists:', adminStatus, 'Data:', adminDocSnapshot.data());
         setIsAdmin(adminStatus);
 
         if (adminStatus) {
-          // Fetch DVDs
           const dvdSnapshot = await getDocs(collection(db, 'dvds'));
           const dvdList = dvdSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          console.log('Fetched DVDs:', dvdList.length);
           setDvds(dvdList);
 
-          // Fetch User Queues
           const queueSnapshot = await getDocs(collection(db, 'userQueues'));
           const queues = {};
           queueSnapshot.forEach(doc => {
             queues[doc.id] = doc.data().queue || [];
           });
+          console.log('Fetched user queues:', Object.keys(queues).length);
           setUserQueues(queues);
+
+          const userSnapshot = await getDocs(collection(db, 'users'));
+          const details = {};
+          userSnapshot.forEach(doc => {
+            details[doc.id] = doc.data();
+          });
+          console.log('Fetched user details:', Object.keys(details).length);
+          setUserDetails(details);
         }
       } catch (err) {
-        setError('Failed to load admin data: ' + err.message);
-        console.error('Error in admin setup:', err);
+        console.error('Error in admin setup:', err.message, err.code, err.stack);
+        setError(`Failed to load admin data: ${err.message}`);
         setIsAdmin(false);
       } finally {
         setLoading(false);
@@ -199,6 +215,7 @@ function Admin() {
   }
 
   if (!isAdmin) {
+    console.log('Not an admin, redirecting to /home');
     return <Navigate to="/home" />;
   }
 
@@ -236,7 +253,7 @@ function Admin() {
   };
 
   const handleShip = async (uid, movie) => {
-    console.log(`Shipping ${movie.title} to ${uid}`);
+    console.log(`Shipping ${movie.title} to UID: ${uid}`);
     // Placeholder for shipping logic
   };
 
@@ -262,7 +279,7 @@ function Admin() {
           {activeSection === 'add-dvd' && <AddDvdForm onAddDvd={handleAddDvd} />}
           {activeSection === 'manage-dvds' && <DvdList dvds={dvds} onUpdateStatus={handleUpdateStatus} />}
           {activeSection === 'user-queues' && (
-            <UserQueueList userQueues={userQueues} dvds={dvds} onShip={handleShip} />
+            <UserQueueList userQueues={userQueues} dvds={dvds} userDetails={userDetails} onShip={handleShip} />
           )}
         </main>
       </div>
