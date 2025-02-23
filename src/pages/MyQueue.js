@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
@@ -10,32 +11,61 @@ function MyQueue() {
   const [hideLongWaits, setHideLongWaits] = useState(false);
   const [userQueues, setUserQueues] = useState({});
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate(); // Define navigate here, before useEffect
 
   useEffect(() => {
-    const fetchUserQueues = async () => {
-      if (!auth.currentUser) {
-        setError('You must be logged in to view your queue.');
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      if (!user) {
+        navigate('/'); // Now accessible
+        setLoading(false);
         return;
       }
 
-      try {
-        const userId = auth.currentUser.uid;
-        const queueDocRef = doc(db, 'userQueues', userId);
-        const queueDocSnapshot = await getDoc(queueDocRef);
-        
-        if (queueDocSnapshot.exists()) {
-          const queues = { [userId]: queueDocSnapshot.data().queue || [] };
-          setUserQueues(queues);
-        } else {
-          setUserQueues({ [userId]: [] }); // Empty queue if no document exists
+      const fetchUserQueues = async () => {
+        try {
+          const userId = user.uid;
+          const queueDocRef = doc(db, 'userQueues', userId);
+          const queueDocSnapshot = await getDoc(queueDocRef);
+          
+          if (queueDocSnapshot.exists()) {
+            setUserQueues({ [userId]: queueDocSnapshot.data().queue || [] });
+          } else {
+            setUserQueues({ [userId]: [] }); // Empty queue if no document
+          }
+        } catch (err) {
+          setError('Failed to load queue: ' + err.message);
+          console.error('Error fetching user queues:', err);
+        } finally {
+          setLoading(false);
         }
-      } catch (err) {
-        setError('Failed to load queue: ' + err.message);
-        console.error('Error fetching user queues:', err);
-      }
-    };
-    fetchUserQueues();
-  }, []);
+      };
+      fetchUserQueues();
+    });
+
+    return () => unsubscribe();
+  }, [navigate]); // Include navigate in dependencies
+
+  if (loading) {
+    return (
+      <div className="MyQueue">
+        <Navbar />
+        <p>Loading queue...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="MyQueue">
+        <Navbar />
+        <section className="queue-section">
+          <h1>My Queue</h1>
+          <p className="error">{error}</p>
+        </section>
+      </div>
+    );
+  }
 
   const queueData = {
     preparing: [], // Extend with real data if needed
@@ -54,16 +84,15 @@ function MyQueue() {
       <Navbar />
       <section className="queue-section">
         <h1>My Queue</h1>
-        {error && <p className="error">{error}</p>}
         <div className="tabs">
+        <button onClick={() => setActiveTab('queue')} className={activeTab === 'queue' ? 'active' : ''}>
+            Queue ({queueData.queue.length})
+          </button>
           <button onClick={() => setActiveTab('preparing')} className={activeTab === 'preparing' ? 'active' : ''}>
             Preparing ({queueData.preparing.length})
           </button>
           <button onClick={() => setActiveTab('home')} className={activeTab === 'home' ? 'active' : ''}>
             Home ({queueData.home.length})
-          </button>
-          <button onClick={() => setActiveTab('queue')} className={activeTab === 'queue' ? 'active' : ''}>
-            Queue ({queueData.queue.length})
           </button>
           <button onClick={() => setActiveTab('history')} className={activeTab === 'history' ? 'active' : ''}>
             History ({queueData.history.length})

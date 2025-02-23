@@ -9,15 +9,15 @@ function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('All');
   const [dvds, setDvds] = useState([]);
-  const [loading, setLoading] = useState(true); // Track auth loading state
+  const [loading, setLoading] = useState(true);
+  const [popup, setPopup] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
       if (!user) {
-        navigate('/'); // Redirect to landing page if not logged in
+        navigate('/');
       } else {
-        // User is logged in, fetch DVDs
         const fetchDvds = async () => {
           try {
             const dvdSnapshot = await getDocs(collection(db, 'dvds'));
@@ -26,14 +26,14 @@ function Home() {
           } catch (err) {
             console.error('Error fetching DVDs:', err);
           } finally {
-            setLoading(false); // Done loading auth and data
+            setLoading(false);
           }
         };
         fetchDvds();
       }
     });
 
-    return () => unsubscribe(); // Cleanup subscription
+    return () => unsubscribe();
   }, [navigate]);
 
   const filteredMovies = dvds.filter((movie) =>
@@ -53,19 +53,34 @@ function Home() {
 
     try {
       const userId = auth.currentUser.uid;
+      console.log('Adding to queue for UID:', userId);
       const queueRef = doc(db, 'userQueues', userId);
+
+      // Test write to verify permissions
+      await setDoc(queueRef, { test: 'Permission test' }, { merge: true });
+      console.log('Test write successful for UID:', userId);
+
       const queueSnapshot = await getDocs(collection(db, 'userQueues'));
-      const userQueue = queueSnapshot.docs.find(doc => doc.id === userId)?.data()?.queue || [];
+      const userDoc = queueSnapshot.docs.find(doc => doc.id === userId);
+      const userQueue = userDoc ? userDoc.data().queue || [] : [];
+      console.log('Current queue:', userQueue);
 
       if (!userQueue.some(item => item.id === movie.id)) {
         const updatedQueue = [...userQueue, movie];
+        console.log('New queue to save:', updatedQueue);
         await setDoc(queueRef, { queue: updatedQueue }, { merge: true });
-        console.log(`Added ${movie.title} to ${userId}'s queue`);
+        console.log(`Successfully added ${movie.title} to ${userId}'s queue in Firestore`);
+        setPopup(`${movie.title} added to your queue!`);
+        setTimeout(() => setPopup(null), 2000);
       } else {
         console.log(`${movie.title} is already in the queue`);
+        setPopup(`${movie.title} is already in your queue`);
+        setTimeout(() => setPopup(null), 2000);
       }
     } catch (err) {
-      console.error('Error adding to queue:', err);
+      console.error('Detailed error adding to queue:', err.message, err.code, err.stack);
+      setPopup(`Failed to add ${movie.title} to queue: ${err.message}`);
+      setTimeout(() => setPopup(null), 3000);
     }
   };
 
@@ -81,6 +96,11 @@ function Home() {
   return (
     <div className="Home">
       <Navbar />
+      {popup && (
+        <div className="popup">
+          {popup}
+        </div>
+      )}
       {dvds.length > 0 && (
         <section className="hero-section">
           <div className="hero-content">
