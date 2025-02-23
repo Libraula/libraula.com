@@ -1,27 +1,44 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import './navbar.css';
 
 function Navbar() {
-  const [isSideNavOpen, setIsSideNavOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [isSearchOpen, setIsSearchOpen] = useState(false); // State for search input on mobile
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const menuRef = useRef(null);
+  const searchRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
       if (!mobile) {
-        setIsSideNavOpen(false); // Close side nav on desktop
-        setIsSearchOpen(false); // Close search on desktop
+        setIsMenuOpen(false);
+        setIsSearchOpen(false);
       }
     };
+
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setIsSearchOpen(false);
+      }
+    };
+
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
-  const toggleSideNav = () => {
-    setIsSideNavOpen(!isSideNavOpen);
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
   };
 
   const toggleSearch = () => {
@@ -30,62 +47,61 @@ function Navbar() {
 
   return (
     <header className="Navbar">
-      <Link to="/home" className="logo-link">
-        <div className="logo">Libraula</div>
-      </Link>
+      <div className="navbar-content">
+        <Link to="/home" className="logo-link">
+          <div className="logo">Libraula</div>
+        </Link>
 
-      {/* Desktop Search Bar */}
-      {!isMobile && (
-        <input
-          type="text"
-          placeholder="Search DVDs by title..."
-          className="search-bar"
-        />
-      )}
+        {/* Desktop Search Bar */}
+        {!isMobile && (
+          <input
+            type="text"
+            placeholder="Search DVDs by title..."
+            className="search-bar"
+          />
+        )}
 
-      {/* Mobile Search Icon and Input */}
-      {isMobile && (
-        <>
-          <button className="search-toggle" onClick={toggleSearch}>
-            <span className="search-icon">🔍</span>
-          </button>
-          {isSearchOpen && (
-            <div className="search-overlay">
-              <input
-                type="text"
-                placeholder="Search DVDs by title..."
-                className="search-bar-mobile"
-                autoFocus
-              />
-              <button className="close-search" onClick={toggleSearch}>×</button>
-            </div>
-          )}
-          <button className="menu-toggle" onClick={toggleSideNav}>
-            <span className="hamburger">☰</span>
-          </button>
-          <div className={`side-nav ${isSideNavOpen ? 'open' : ''}`}>
-            <button className="close-nav" onClick={toggleSideNav}>×</button>
-            <nav className="side-nav-links">
-              <Link to="/home" onClick={toggleSideNav}>Browse</Link>
-              <Link to="/new-releases" onClick={toggleSideNav}>New Releases</Link>
-              <Link to="/queue" onClick={toggleSideNav}>My Queue</Link>
-              <Link to="/account" onClick={toggleSideNav}>Account</Link>
-              <Link to="/login" onClick={toggleSideNav}>Sign Out</Link>
-            </nav>
+        {/* Mobile Controls */}
+        {isMobile && (
+          <div className="mobile-controls">
+            <button className="search-toggle" onClick={toggleSearch}>
+              <svg className="search-icon" viewBox="0 0 24 24" width="24" height="24">
+                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+              </svg>
+            </button>
+            <button className="menu-toggle" onClick={toggleMenu}>
+              <span className="hamburger">{isMenuOpen ? '×' : '☰'}</span>
+            </button>
           </div>
-        </>
-      )}
+        )}
 
-      {/* Desktop Nav Bar */}
-      {!isMobile && (
-        <nav className="nav-bar">
-          <Link to="/home">Browse</Link>
-          <Link to="/new-releases">New Releases</Link>
-          <Link to="/queue">My Queue</Link>
-          <Link to="/account">Account</Link>
-          <Link to="/login">Sign Out</Link>
+        {/* Mobile Search Overlay */}
+        {isMobile && isSearchOpen && (
+          <div className="search-overlay" ref={searchRef}>
+            <input
+              type="text"
+              placeholder="Search DVDs by title..."
+              className="search-bar-mobile"
+              autoFocus
+            />
+            <button className="close-search" onClick={toggleSearch}>×</button>
+          </div>
+        )}
+
+        {/* Navigation Menu - Desktop & Mobile */}
+        <nav 
+          className={`nav-menu ${isMenuOpen ? 'open' : ''} ${isMobile ? 'mobile' : ''}`}
+          ref={menuRef}
+        >
+          <div className="nav-links">
+            <Link to="/home" onClick={() => setIsMenuOpen(false)}>Browse</Link>
+            <Link to="/new-releases" onClick={() => setIsMenuOpen(false)}>New Releases</Link>
+            <Link to="/queue" onClick={() => setIsMenuOpen(false)}>My Queue</Link>
+            <Link to="/account" onClick={() => setIsMenuOpen(false)}>Account</Link>
+            <Link to="/login" onClick={() => setIsMenuOpen(false)}>Sign Out</Link>
+          </div>
         </nav>
-      )}
+      </div>
     </header>
   );
 }
