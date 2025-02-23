@@ -38,14 +38,14 @@ function MyQueue() {
       <section className="queue-section">
         <h1>My Queue</h1>
         <div className="tabs">
+        <button onClick={() => setActiveTab('queue')} className={activeTab === 'queue' ? 'active' : ''}>
+            Queue ({queueData.queue.length})
+          </button>
           <button onClick={() => setActiveTab('preparing')} className={activeTab === 'preparing' ? 'active' : ''}>
             Preparing ({queueData.preparing.length})
           </button>
           <button onClick={() => setActiveTab('home')} className={activeTab === 'home' ? 'active' : ''}>
             Home ({queueData.home.length})
-          </button>
-          <button onClick={() => setActiveTab('queue')} className={activeTab === 'queue' ? 'active' : ''}>
-            Queue ({queueData.queue.length})
           </button>
           <button onClick={() => setActiveTab('history')} className={activeTab === 'history' ? 'active' : ''}>
             History ({queueData.history.length})
