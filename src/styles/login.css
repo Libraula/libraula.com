@@ -78,3 +78,21 @@
     padding: 20px;
     font-size: 14px;
   }
+
+  .google-login-button {
+    background-color: #4285f4; /* Google blue */
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .google-login-button:hover {
+    background-color: #357abd;
+    transform: scale(1.05);
+  }
