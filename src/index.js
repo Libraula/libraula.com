@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { QueueProvider } from './QueueContext'; // Import QueueProvider
 import './index.css';
 import App from './App';
 import Login from './pages/login';
@@ -17,20 +18,22 @@ import reportWebVitals from './reportWebVitals';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <Router>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/pricing" element={<Pricing />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/new-releases" element={<NewReleases />} />
-        <Route path="/queue" element={<MyQueue />} />
-        <Route path="/account" element={<Account />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/movie/:id" element={<Details />} /> {/* New route */}
-      </Routes>
-    </Router>
+    <QueueProvider> {/* Wrap Router with QueueProvider */}
+      <Router>
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/new-releases" element={<NewReleases />} />
+          <Route path="/queue" element={<MyQueue />} />
+          <Route path="/account" element={<Account />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/movie/:id" element={<Details />} />
+        </Routes>
+      </Router>
+    </QueueProvider>
   </React.StrictMode>
 );
 

@@ -1,26 +1,26 @@
-import React from 'react';
-import { useParams, useLocation, Link } from 'react-router-dom';
-import '../styles/details.css';
+import React, { useContext } from 'react'; // Add useContext
+import { useParams, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import { QueueContext } from '../QueueContext'; // Import QueueContext
+import '../styles/details.css';
 
 function Details() {
-  const { id } = useParams(); // Get movie ID from URL
-  const location = useLocation(); // Get movie data from state
-  const movie = location.state?.movie; // Access movie object
+  const { id } = useParams();
+  const location = useLocation();
+  const movie = location.state?.movie;
+  const { addToQueue } = useContext(QueueContext); // Access addToQueue
 
   if (!movie) {
-    return <div>Movie not found!</div>; // Fallback if no movie data
+    return <div>Movie not found!</div>;
   }
 
   const handleAddToQueue = () => {
-    console.log(`Added ${movie.title} to queue`);
-    // Add real queue logic here
+    addToQueue(movie); // Use context function
   };
 
   return (
     <div className="Details">
       <Navbar />
-
       <section className="movie-details">
         <div className="movie-poster">
           <img src={movie.img} alt={movie.title} />
@@ -35,7 +35,6 @@ function Details() {
           <button className="add-button" onClick={handleAddToQueue}>Add to Queue</button>
         </div>
       </section>
-
       <footer className="Details-footer">
         <div className="footer-links">
           <a href="#">Help Center</a> | <a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a> | <a href="#">Contact Us</a>

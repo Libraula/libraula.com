@@ -1,9 +1,9 @@
-import React, { useState } from 'react'; // Removed useEffect since it's not needed
+import React, { useState, useContext } from 'react'; // Add useContext
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar'; // Adjust path based on your structure
+import Navbar from '../components/Navbar';
+import { QueueContext } from '../QueueContext'; // Import QueueContext
 import '../styles/home.css';
 
-// Sample movie data with updated placeholders
 const movies = [
   { id: 1, title: 'The Matrix', img: 'https://placehold.co/400x600?text=The+Matrix', synopsis: 'A sci-fi classic about virtual reality.', rating: 'R', genre: 'Sci-Fi', director: 'Lana and Lilly Wachowski', year: '1999', cast: ['Keanu Reeves', 'Laurence Fishburne', 'Carrie-Anne Moss'] },
   { id: 2, title: 'Inception', img: 'https://placehold.co/400x600?text=Inception', synopsis: 'A mind-bending thriller about dreams.', rating: 'PG-13', genre: 'Sci-Fi', director: 'Christopher Nolan', year: '2010', cast: ['Leonardo DiCaprio', 'Joseph Gordon-Levitt', 'Ellen Page'] },
@@ -19,8 +19,8 @@ function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('All');
   const navigate = useNavigate();
+  const { addToQueue } = useContext(QueueContext); // Access addToQueue from context
 
-  // Filter movies based on search query and genre
   const filteredMovies = movies.filter((movie) =>
     movie.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
     (selectedGenre === 'All' || movie.genre === selectedGenre)
@@ -30,14 +30,18 @@ function Home() {
     navigate(`/movie/${movie.id}`, { state: { movie } });
   };
 
+  const handleAddToQueue = (movie) => {
+    addToQueue(movie); // Use context function
+  };
+
   return (
     <div className="Home">
-      <Navbar /> {/* Navbar handles responsiveness */}
+      <Navbar />
       <section className="hero-section">
         <div className="hero-content">
           <h1>Featured: The Matrix</h1>
           <p>A groundbreaking sci-fi action film that redefined the genre.</p>
-          <button className="hero-button">Add to Queue</button>
+          <button className="hero-button" onClick={() => handleAddToQueue(movies[0])}>Add to Queue</button>
         </div>
       </section>
       <section className="catalog">
@@ -56,7 +60,10 @@ function Home() {
                 <h3>{movie.title}</h3>
                 <p>{movie.synopsis}</p>
                 <p>Rating: {movie.rating}</p>
-                <button className="add-button" onClick={(e) => e.stopPropagation()}>Add to Queue</button>
+                <button className="add-button" onClick={(e) => {
+                  e.stopPropagation(); // Prevent movie card click
+                  handleAddToQueue(movie);
+                }}>Add to Queue</button>
               </div>
             </div>
           ))}

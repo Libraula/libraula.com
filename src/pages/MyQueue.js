@@ -1,29 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react'; // Add useContext
 import { Link } from 'react-router-dom';
-import '../styles/myqueue.css';
 import Navbar from '../components/Navbar';
-
-// Sample queue data based on Cafe DVD
-const queueData = {
-  preparing: [],
-  home: [],
-  queue: [
-    { id: 1, title: 'George Washington', year: 2000, rating: 'NR', duration: '1h 30m', genres: ['Drama', 'Classics'], format: 'DVD', status: '' },
-    { id: 2, title: 'Barbie (Blu-Ray)', year: 2023, rating: 'PG-13', duration: '1h 54m', genres: ['Adventure', 'Comedy', 'Fantasy'], format: 'Blu-ray', status: 'short wait' },
-    { id: 3, title: 'Dune', year: 2021, rating: 'PG-13', duration: '2h 35m', genres: ['Sci-Fi & Fantasy', 'Action'], format: 'DVD', status: '' },
-    { id: 4, title: 'The Little Mermaid', year: 2023, rating: 'PG', duration: '2h 15m', genres: ['Family', 'Musical', 'Fantasy'], format: 'DVD', status: 'wait' },
-    { id: 5, title: 'Game Of Thrones: Season 1 (Disc 1)', year: 2011, rating: 'TV-MA', duration: '10h 0m', genres: ['Action', 'Adventure', 'Television'], format: 'DVD', status: '' },
-    { id: 6, title: 'The Shawshank Redemption', year: 1994, rating: 'R', duration: '2h 22m', genres: ['Drama'], format: 'DVD', status: '' },
-    { id: 7, title: 'Pumpkin', year: 2002, rating: 'R', duration: '1h 57m', genres: ['Comedy', 'Romantic Comedy', 'Independent'], format: 'DVD', status: '' },
-    { id: 8, title: 'Fast X', year: 2023, rating: 'PG-13', duration: '2h 21m', genres: ['Action', 'Adventure'], format: 'DVD', status: '' },
-  ],
-  history: [],
-};
+import { QueueContext } from '../QueueContext'; // Import QueueContext
+import '../styles/myqueue.css';
 
 function MyQueue() {
   const [activeTab, setActiveTab] = useState('queue');
   const [searchQuery, setSearchQuery] = useState('');
   const [hideLongWaits, setHideLongWaits] = useState(false);
+  const { queue } = useContext(QueueContext); // Access dynamic queue
+
+  // Sample static data for other tabs (replace with real data later)
+  const queueData = {
+    preparing: [],
+    home: [],
+    queue: queue.map(movie => ({
+      id: movie.id,
+      title: movie.title,
+      year: movie.year,
+      rating: movie.rating,
+      duration: 'N/A', // Add duration to movie data if needed
+      genres: [movie.genre],
+      format: 'DVD', // Default, extend movie data for Blu-ray
+      status: 'Available' // Default, extend for wait status
+    })),
+    history: [],
+  };
 
   const filteredQueue = queueData[activeTab].filter((item) =>
     item.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
@@ -33,7 +35,6 @@ function MyQueue() {
   return (
     <div className="MyQueue">
       <Navbar />
-
       <section className="queue-section">
         <h1>My Queue</h1>
         <div className="tabs">
