@@ -13,25 +13,92 @@ import NewReleases from './pages/NewReleases';
 import MyQueue from './pages/MyQueue';
 import Details from './pages/Details';
 import Admin from './pages/Admin';
-import Account from './pages/Account'; // Add this import
+import Account from './pages/Account';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<App />} />
-        <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/pricing" element={<Pricing />} />
-        <Route path="/user-details" element={<UserDetails />} />
-        <Route path="/subscription" element={<Subscription />} />
-        <Route path="/new-releases" element={<NewReleases />} />
-        <Route path="/queue" element={<MyQueue />} />
-        <Route path="/movie/:id" element={<Details />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/account" element={<Account />} /> {/* Add this route */}
+
+        {/* Protected Routes */}
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/pricing"
+          element={
+            <ProtectedRoute>
+              <Pricing />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user-details"
+          element={
+            <ProtectedRoute>
+              <UserDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/subscription"
+          element={
+            <ProtectedRoute>
+              <Subscription />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/new-releases"
+          element={
+            <ProtectedRoute>
+              <NewReleases />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/queue"
+          element={
+            <ProtectedRoute>
+              <MyQueue />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/movie/:id"
+          element={
+            <ProtectedRoute>
+              <Details />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <Admin />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/account"
+          element={
+            <ProtectedRoute>
+              <Account />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
