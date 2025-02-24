@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { collection, getDocs, doc, setDoc, getDoc } from 'firebase/firestore'; // Add getDoc
+import { useNavigate } from 'react-router-dom';
+import { collection, getDocs, doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
-import { useNavigate } from 'react-router-dom';
+import { FiPlusCircle, FiStar, FiClock } from 'react-icons/fi';
+import { MdLocalMovies } from 'react-icons/md';
 import '../styles/newreleases.css';
 
 function NewReleases() {
   const [newReleases, setNewReleases] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [popup, setPopup] = useState(null);
   const navigate = useNavigate();
 
@@ -19,6 +22,8 @@ function NewReleases() {
         setNewReleases(filteredNewReleases);
       } catch (err) {
         console.error('Error fetching new releases:', err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchNewReleases();
@@ -29,72 +34,102 @@ function NewReleases() {
       navigate('/login');
       return;
     }
-
     try {
       const userId = auth.currentUser.uid;
-      console.log('Adding to queue for UID:', userId);
       const queueRef = doc(db, 'userQueues', userId);
-
-      // Test simple write
       await setDoc(queueRef, { test: 'Permission test' }, { merge: true });
-      console.log('Test write successful for UID:', userId);
 
-      // Fetch current queue
       const queueDocSnapshot = await getDoc(queueRef);
       const userQueue = queueDocSnapshot.exists() && queueDocSnapshot.data().queue ? queueDocSnapshot.data().queue : [];
-      console.log('Current queue from Firestore:', userQueue);
 
       if (!userQueue.some(item => item.id === movie.id)) {
         const updatedQueue = [...userQueue, movie];
-        console.log('New queue to save:', updatedQueue);
         await setDoc(queueRef, { queue: updatedQueue }, { merge: true });
-        console.log(`Successfully added ${movie.title} to ${userId}'s queue in Firestore`);
         setPopup(`${movie.title} added to your queue!`);
         setTimeout(() => setPopup(null), 2000);
       } else {
-        console.log(`${movie.title} is already in the queue`);
         setPopup(`${movie.title} is already in your queue`);
         setTimeout(() => setPopup(null), 2000);
       }
     } catch (err) {
-      console.error('Detailed error adding to queue:', err.message, err.code, err.stack);
+      console.error('Error adding to queue:', err);
       setPopup(`Failed to add ${movie.title} to queue: ${err.message}`);
       setTimeout(() => setPopup(null), 3000);
     }
   };
 
+  const handleMovieClick = (movie) => {
+    navigate(`/movie/${movie.id}`, { state: { movie } });
+  };
+
+  if (loading) {
+    return (
+      <div className="modern-newreleases">
+        <Navbar />
+        <div className="loading-container">
+          <MdLocalMovies className="loading-icon" />
+          <p>Loading latest releases...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="NewReleases">
+    <div className="modern-newreleases">
       <Navbar />
       {popup && (
-        <div className="popup">
+        <div className="modern-popup">
+          <FiStar className="popup-icon" />
           {popup}
         </div>
       )}
-      <section className="new-releases-section">
-        <h1>New Releases</h1>
-        <p>Check out the latest DVDs added to our collection.</p>
-        <div className="new-releases-grid">
+
+      <section className="modern-catalog">
+        <div className="catalog-controls">
+          <h2>New Releases</h2>
+          <p>Check out the latest DVDs added to our collection.</p>
+        </div>
+
+        <div className="modern-movie-grid">
           {newReleases.map((movie) => (
-            <div key={movie.id} className="movie-card">
-              <img src={movie.img} alt={movie.title} />
-              <div className="movie-info">
+            <div key={movie.id} className="modern-movie-card" onClick={() => handleMovieClick(movie)}>
+              <div className="card-image-container">
+                <img src={movie.img} alt={movie.title} loading="lazy" />
+                <div className="card-overlay">
+                  <button
+                    className="card-action-button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddToQueue(movie);
+                    }}
+                  >
+                    <FiPlusCircle /> Add to Queue
+                  </button>
+                </div>
+              </div>
+              <div className="modern-movie-info">
                 <h3>{movie.title}</h3>
-                <p>{movie.synopsis}</p>
-                <p>{movie.year} • {movie.rating}</p>
-                <button className="add-button" onClick={() => handleAddToQueue(movie)}>
-                  Add to Queue
-                </button>
+                <div className="movie-meta">
+                  <span className="rating"><FiStar /> {movie.rating}</span>
+                  <span className="duration"><FiClock /> {movie.duration || '2h 30m'}</span>
+                </div>
+                <p className="movie-synopsis">{movie.synopsis}</p>
               </div>
             </div>
           ))}
         </div>
       </section>
-      <footer className="NewReleases-footer">
-        <div className="footer-links">
-          <a href="#">Help Center</a> | <a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a> | <a href="#">Contact Us</a>
+
+      <footer className="modern-footer">
+        <div className="footer-content">
+          <div className="footer-links">
+            <a href="/help">Help Center</a>
+            <a href="/terms">Terms of Use</a>
+            <a href="/privacy">Privacy Policy</a>
+            <a href="/contact">Contact Us</a>
+          </div>
+          <p className="copyright">© 2025 Libraula. All rights reserved.</p>
         </div>
-        <p>© 2025 Libraula. All rights reserved.</p>
       </footer>
     </div>
   );

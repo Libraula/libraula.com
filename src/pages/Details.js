@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { doc, setDoc, collection, getDocs, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
+import { FiPlusCircle, FiStar, FiClock } from 'react-icons/fi';
 import '../styles/details.css';
 
 function Details() {
@@ -14,9 +15,14 @@ function Details() {
 
   if (!movie) {
     return (
-      <div className="error-container">
-        <h2>Movie not found!</h2>
-        <button onClick={() => navigate('/home')}>Return Home</button>
+      <div className="modern-details">
+        <Navbar />
+        <div className="error-container">
+          <h2>Movie not found!</h2>
+          <button className="primary-button" onClick={() => navigate('/home')}>
+            Return Home
+          </button>
+        </div>
       </div>
     );
   }
@@ -29,46 +35,41 @@ function Details() {
 
     try {
       const userId = auth.currentUser.uid;
-      console.log('Adding to queue for UID:', userId);
       const queueRef = doc(db, 'userQueues', userId);
 
       await setDoc(queueRef, { test: 'Permission test' }, { merge: true });
-      console.log('Test write successful for UID:', userId);
 
       const queueDocSnapshot = await getDoc(queueRef);
       const userQueue = queueDocSnapshot.exists() && queueDocSnapshot.data().queue ? queueDocSnapshot.data().queue : [];
-      console.log('Current queue from Firestore:', userQueue);
 
       if (!userQueue.some(item => item.id === movie.id)) {
         const updatedQueue = [...userQueue, movie];
-        console.log('New queue to save:', updatedQueue);
         await setDoc(queueRef, { queue: updatedQueue }, { merge: true });
-        console.log(`Successfully added ${movie.title} to ${userId}'s queue in Firestore`);
         setPopup(`${movie.title} added to your queue!`);
         setTimeout(() => setPopup(null), 2000);
       } else {
-        console.log(`${movie.title} is already in the queue`);
         setPopup(`${movie.title} is already in your queue`);
         setTimeout(() => setPopup(null), 2000);
       }
     } catch (err) {
-      console.error('Detailed error adding to queue:', err.message, err.code, err.stack);
+      console.error('Error adding to queue:', err);
       setPopup(`Failed to add ${movie.title} to queue: ${err.message}`);
       setTimeout(() => setPopup(null), 3000);
     }
   };
 
   return (
-    <div className="Details">
+    <div className="modern-details">
       <Navbar />
       {popup && (
-        <div className="popup-notification">
+        <div className="modern-popup">
+          <FiStar className="popup-icon" />
           {popup}
         </div>
       )}
-      
-      <div className="content-wrapper">
-        <section className="movie-details-container">
+
+      <section className="modern-details-section">
+        <div className="details-content">
           <div className="movie-poster-container">
             <img 
               src={movie.img} 
@@ -77,11 +78,11 @@ function Details() {
               loading="lazy"
             />
             <button 
-              className="add-to-queue-button" 
+              className="primary-button"
               onClick={handleAddToQueue}
               aria-label="Add to Queue"
             >
-              Add to Queue
+              <FiPlusCircle /> Add to Queue
             </button>
           </div>
 
@@ -90,7 +91,8 @@ function Details() {
               <h1 className="movie-title">{movie.title}</h1>
               <div className="movie-meta">
                 <span className="year">{movie.year}</span>
-                <span className="rating-badge">{movie.rating}</span>
+                <span className="rating"><FiStar /> {movie.rating}</span>
+                <span className="duration"><FiClock /> {movie.duration || '2h 30m'}</span>
               </div>
             </div>
 
@@ -112,7 +114,6 @@ function Details() {
                 <h3>Director</h3>
                 <p>{movie.director}</p>
               </div>
-              
               <div className="credit-item">
                 <h3>Cast</h3>
                 <div className="cast-list">
@@ -125,8 +126,8 @@ function Details() {
               </div>
             </div>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
 
       <footer className="modern-footer">
         <div className="footer-content">

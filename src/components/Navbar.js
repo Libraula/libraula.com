@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import { FaSearch, FaBars, FaTimes, FaHome, FaFilm, FaList, FaUser, FaSignOutAlt, FaUserShield } from 'react-icons/fa'; // React Icons
+import { FaBars, FaTimes, FaHome, FaFilm, FaList, FaUser, FaSignOutAlt, FaUserShield } from 'react-icons/fa';
+import logo from './logo.png';
 import './navbar.css';
 
 function Navbar() {
   const [isSideNavOpen, setIsSideNavOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(!!auth.currentUser);
   const navigate = useNavigate();
@@ -19,7 +19,6 @@ function Navbar() {
       setIsMobile(mobile);
       if (!mobile) {
         setIsSideNavOpen(false);
-        setIsSearchOpen(false);
       }
     };
     window.addEventListener('resize', handleResize);
@@ -54,10 +53,6 @@ function Navbar() {
     setIsSideNavOpen(!isSideNavOpen);
   };
 
-  const toggleSearch = () => {
-    setIsSearchOpen(!isSearchOpen);
-  };
-
   const handleSignOut = async () => {
     try {
       await auth.signOut();
@@ -72,31 +67,36 @@ function Navbar() {
   return (
     <header className="Navbar">
       <div className="navbar-content">
-        <Link to="/home" className="logo-link">
-          <div className="logo">Libraula</div>
-        </Link>
+        <div className="logo-nav-container">
+          <Link to="/home" className="logo-link">
+            <img src={logo} alt="Libraula Logo" className="logo" />
+          </Link>
 
-        {/* Desktop Search Bar */}
-        {!isMobile && isLoggedIn && (
-          <input
-            type="text"
-            placeholder="Search DVDs by title..."
-            className="search-bar"
-          />
-        )}
+          {/* Desktop Nav Links Next to Logo */}
+          {!isMobile && (
+            <nav className="nav-menu desktop left">
+              <div className="nav-links">
+                {isLoggedIn && (
+                  <>
+                    <Link to="/home" title="Browse"><FaHome size={24} /></Link>
+                    <Link to="/new-releases" title="New Releases"><FaFilm size={24} /></Link>
+                    <Link to="/queue" title="My Queue"><FaList size={24} /></Link>
+                  </>
+                )}
+              </div>
+            </nav>
+          )}
+        </div>
 
-        {/* Desktop Nav Links */}
+        {/* Desktop Right-Side Icons */}
         {!isMobile && (
-          <nav className="nav-menu">
+          <nav className="nav-menu desktop right">
             <div className="nav-links">
               {isLoggedIn && (
                 <>
-                  <Link to="/home"><FaHome /> Browse</Link>
-                  <Link to="/new-releases"><FaFilm /> New Releases</Link>
-                  <Link to="/queue"><FaList /> My Queue</Link>
-                  <Link to="/account"><FaUser /> Account</Link>
-                  {isAdmin && <Link to="/admin"><FaUserShield /> Admin</Link>}
-                  <span onClick={handleSignOut} className="sign-out-link"><FaSignOutAlt /> Sign Out</span>
+                  <Link to="/account" title="Account"><FaUser size={24} /></Link>
+                  {isAdmin && <Link to="/admin" title="Admin"><FaUserShield size={24} /></Link>}
+                  <span onClick={handleSignOut} className="sign-out-link" title="Sign Out"><FaSignOutAlt size={24} /></span>
                 </>
               )}
               {!isLoggedIn && <Link to="/login">Sign In</Link>}
@@ -107,27 +107,9 @@ function Navbar() {
         {/* Mobile Controls */}
         {isMobile && (
           <div className="mobile-controls">
-            {isLoggedIn && (
-              <button className="search-toggle" onClick={toggleSearch}>
-                <FaSearch />
-              </button>
-            )}
             <button className="menu-toggle" onClick={toggleSideNav}>
               {isSideNavOpen ? <FaTimes /> : <FaBars />}
             </button>
-          </div>
-        )}
-
-        {/* Mobile Search Overlay */}
-        {isMobile && isLoggedIn && isSearchOpen && (
-          <div className="search-overlay">
-            <input
-              type="text"
-              placeholder="Search DVDs by title..."
-              className="search-bar-mobile"
-              autoFocus
-            />
-            <button className="close-search" onClick={toggleSearch}><FaTimes /></button>
           </div>
         )}
 

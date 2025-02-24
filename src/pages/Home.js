@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs, doc, setDoc, getDoc } from 'firebase/firestore'; // Add getDoc
+import { collection, getDocs, doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
+import { FiPlusCircle, FiFilter, FiStar, FiClock } from 'react-icons/fi';
+import { BiMoviePlay } from 'react-icons/bi';
+import { MdLocalMovies } from 'react-icons/md';
 import '../styles/home.css';
 
 function Home() {
@@ -53,32 +56,24 @@ function Home() {
 
     try {
       const userId = auth.currentUser.uid;
-      console.log('Adding to queue for UID:', userId);
       const queueRef = doc(db, 'userQueues', userId);
 
-      // Test simple write
       await setDoc(queueRef, { test: 'Permission test' }, { merge: true });
-      console.log('Test write successful for UID:', userId);
 
-      // Fetch current queue
       const queueDocSnapshot = await getDoc(queueRef);
       const userQueue = queueDocSnapshot.exists() && queueDocSnapshot.data().queue ? queueDocSnapshot.data().queue : [];
-      console.log('Current queue from Firestore:', userQueue);
 
       if (!userQueue.some(item => item.id === movie.id)) {
         const updatedQueue = [...userQueue, movie];
-        console.log('New queue to save:', updatedQueue);
         await setDoc(queueRef, { queue: updatedQueue }, { merge: true });
-        console.log(`Successfully added ${movie.title} to ${userId}'s queue in Firestore`);
         setPopup(`${movie.title} added to your queue!`);
         setTimeout(() => setPopup(null), 2000);
       } else {
-        console.log(`${movie.title} is already in the queue`);
         setPopup(`${movie.title} is already in your queue`);
         setTimeout(() => setPopup(null), 2000);
       }
     } catch (err) {
-      console.error('Detailed error adding to queue:', err.message, err.code, err.stack);
+      console.error('Error adding to queue:', err);
       setPopup(`Failed to add ${movie.title} to queue: ${err.message}`);
       setTimeout(() => setPopup(null), 3000);
     }
@@ -86,75 +81,118 @@ function Home() {
 
   if (loading) {
     return (
-      <div className="Home">
+      <div className="modern-home">
         <Navbar />
-        <p>Loading...</p>
+        <div className="loading-container">
+          <MdLocalMovies className="loading-icon" />
+          <p>Loading your movie collection...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="Home">
+    <div className="modern-home">
       <Navbar />
       {popup && (
-        <div className="popup">
+        <div className="modern-popup">
+          <FiStar className="popup-icon" />
           {popup}
         </div>
       )}
+      
       {dvds.length > 0 && (
-        <section className="hero-section">
-          <div className="hero-content">
-            <h1>Featured: {dvds[0].title}</h1>
-            <p>{dvds[0].synopsis}</p>
-            <button className="hero-button" onClick={() => handleAddToQueue(dvds[0])}>
-              Add to Queue
-            </button>
+        <section className="modern-hero-section">
+          <div className="modern-hero-content">
+            <div className="hero-badge">
+              <FiStar /> Featured Film
+            </div>
+            <h1>{dvds[0].title}</h1>
+            <p className="hero-synopsis">{dvds[0].synopsis}</p>
+            <div className="hero-actions">
+              <button className="primary-button" onClick={() => handleAddToQueue(dvds[0])}>
+                <FiPlusCircle /> Add to Queue
+              </button>
+              <button className="secondary-button" onClick={() => handleMovieClick(dvds[0])}>
+                <BiMoviePlay /> View Details
+              </button>
+            </div>
           </div>
+          <div className="hero-overlay"></div>
+          <img src={dvds[0].img} alt={dvds[0].title} className="hero-background" />
         </section>
       )}
-      <section className="catalog">
-        <h2>Browse Our Collection</h2>
-        <div className="genre-filter">
-          <button onClick={() => setSelectedGenre('All')} className={selectedGenre === 'All' ? 'active' : ''}>
-            All
-          </button>
-          <button onClick={() => setSelectedGenre('Action')} className={selectedGenre === 'Action' ? 'active' : ''}>
-            Action
-          </button>
-          <button onClick={() => setSelectedGenre('Drama')} className={selectedGenre === 'Drama' ? 'active' : ''}>
-            Drama
-          </button>
-          <button onClick={() => setSelectedGenre('Sci-Fi')} className={selectedGenre === 'Sci-Fi' ? 'active' : ''}>
-            Sci-Fi
-          </button>
+
+      <section className="modern-catalog">
+        <div className="catalog-controls">
+          <h2>Browse Our Collection</h2>
+          <div className="filter-search-container">
+            <div className="modern-genre-filter">
+              <FiFilter className="filter-icon" />
+              <div className="genre-buttons">
+                {['All', 'Action', 'Drama', 'Sci-Fi'].map(genre => (
+                  <button
+                    key={genre}
+                    onClick={() => setSelectedGenre(genre)}
+                    className={`genre-button ${selectedGenre === genre ? 'active' : ''}`}
+                  >
+                    {genre}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="search-wrapper">
+              <input
+                type="text"
+                placeholder="Search movies..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="modern-search"
+              />
+            </div>
+          </div>
         </div>
-        <div className="movie-grid">
+
+        <div className="modern-movie-grid">
           {filteredMovies.map((movie) => (
-            <div key={movie.id} className="movie-card" onClick={() => handleMovieClick(movie)}>
-              <img src={movie.img} alt={movie.title} />
-              <div className="movie-info">
+            <div key={movie.id} className="modern-movie-card" onClick={() => handleMovieClick(movie)}>
+              <div className="card-image-container">
+                <img src={movie.img} alt={movie.title} loading="lazy" />
+                <div className="card-overlay">
+                  <button
+                    className="card-action-button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddToQueue(movie);
+                    }}
+                  >
+                    <FiPlusCircle /> Add to Queue
+                  </button>
+                </div>
+              </div>
+              <div className="modern-movie-info">
                 <h3>{movie.title}</h3>
-                <p>{movie.synopsis}</p>
-                <p>Rating: {movie.rating}</p>
-                <button
-                  className="add-button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleAddToQueue(movie);
-                  }}
-                >
-                  Add to Queue
-                </button>
+                <div className="movie-meta">
+                  <span className="rating"><FiStar /> {movie.rating}</span>
+                  <span className="duration"><FiClock /> {movie.duration || '2h 30m'}</span>
+                </div>
+                <p className="movie-synopsis">{movie.synopsis}</p>
               </div>
             </div>
           ))}
         </div>
       </section>
-      <footer className="Home-footer">
-        <div className="footer-links">
-          <a href="#">Help Center</a> | <a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a> | <a href="#">Contact Us</a>
+
+      <footer className="modern-footer">
+        <div className="footer-content">
+          <div className="footer-links">
+            <a href="/help">Help Center</a>
+            <a href="/terms">Terms of Use</a>
+            <a href="/privacy">Privacy Policy</a>
+            <a href="/contact">Contact Us</a>
+          </div>
+          <p className="copyright">© 2025 Libraula. All rights reserved.</p>
         </div>
-        <p>© 2025 Libraula. All rights reserved.</p>
       </footer>
     </div>
   );
