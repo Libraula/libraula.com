@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { doc, setDoc, collection, getDocs, getDoc } from 'firebase/firestore'; // Add getDoc
+import { doc, setDoc, collection, getDocs, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
 import '../styles/details.css';
@@ -13,7 +13,12 @@ function Details() {
   const [popup, setPopup] = useState(null);
 
   if (!movie) {
-    return <div>Movie not found!</div>;
+    return (
+      <div className="error-container">
+        <h2>Movie not found!</h2>
+        <button onClick={() => navigate('/home')}>Return Home</button>
+      </div>
+    );
   }
 
   const handleAddToQueue = async () => {
@@ -27,11 +32,9 @@ function Details() {
       console.log('Adding to queue for UID:', userId);
       const queueRef = doc(db, 'userQueues', userId);
 
-      // Test simple write
       await setDoc(queueRef, { test: 'Permission test' }, { merge: true });
       console.log('Test write successful for UID:', userId);
 
-      // Fetch current queue
       const queueDocSnapshot = await getDoc(queueRef);
       const userQueue = queueDocSnapshot.exists() && queueDocSnapshot.data().queue ? queueDocSnapshot.data().queue : [];
       console.log('Current queue from Firestore:', userQueue);
@@ -59,29 +62,82 @@ function Details() {
     <div className="Details">
       <Navbar />
       {popup && (
-        <div className="popup">
+        <div className="popup-notification">
           {popup}
         </div>
       )}
-      <section className="movie-details">
-        <div className="movie-poster">
-          <img src={movie.img} alt={movie.title} />
+      
+      <div className="content-wrapper">
+        <section className="movie-details-container">
+          <div className="movie-poster-container">
+            <img 
+              src={movie.img} 
+              alt={movie.title}
+              className="movie-poster-image"
+              loading="lazy"
+            />
+            <button 
+              className="add-to-queue-button" 
+              onClick={handleAddToQueue}
+              aria-label="Add to Queue"
+            >
+              Add to Queue
+            </button>
+          </div>
+
+          <div className="movie-info-container">
+            <div className="movie-header">
+              <h1 className="movie-title">{movie.title}</h1>
+              <div className="movie-meta">
+                <span className="year">{movie.year}</span>
+                <span className="rating-badge">{movie.rating}</span>
+              </div>
+            </div>
+
+            <div className="movie-genre">
+              {movie.genre.split(',').map((genre, index) => (
+                <span key={index} className="genre-tag">
+                  {genre.trim()}
+                </span>
+              ))}
+            </div>
+
+            <div className="movie-synopsis">
+              <h2>Synopsis</h2>
+              <p>{movie.synopsis}</p>
+            </div>
+
+            <div className="movie-credits">
+              <div className="credit-item">
+                <h3>Director</h3>
+                <p>{movie.director}</p>
+              </div>
+              
+              <div className="credit-item">
+                <h3>Cast</h3>
+                <div className="cast-list">
+                  {movie.cast.map((actor, index) => (
+                    <span key={index} className="cast-member">
+                      {actor}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <footer className="modern-footer">
+        <div className="footer-content">
+          <div className="footer-links">
+            <a href="/help">Help Center</a>
+            <a href="/terms">Terms of Use</a>
+            <a href="/privacy">Privacy Policy</a>
+            <a href="/contact">Contact Us</a>
+          </div>
+          <p className="copyright">© 2025 Libraula. All rights reserved.</p>
         </div>
-        <div className="movie-info">
-          <h1>{movie.title}</h1>
-          <p className="year-rating">{movie.year} • {movie.rating}</p>
-          <p className="genre"><strong>Genre:</strong> {movie.genre}</p>
-          <p className="synopsis">{movie.synopsis}</p>
-          <p className="director"><strong>Director:</strong> {movie.director}</p>
-          <p className="cast"><strong>Cast:</strong> {movie.cast.join(', ')}</p>
-          <button className="add-button" onClick={handleAddToQueue}>Add to Queue</button>
-        </div>
-      </section>
-      <footer className="Details-footer">
-        <div className="footer-links">
-          <a href="#">Help Center</a> | <a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a> | <a href="#">Contact Us</a>
-        </div>
-        <p>© 2025 Libraula. All rights reserved.</p>
       </footer>
     </div>
   );

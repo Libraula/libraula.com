@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Add useNavigate
-import { auth, db } from '../firebase'; // Adjust path if needed
+import { Link, useNavigate } from 'react-router-dom';
+import { auth, db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
+import { FaSearch, FaBars, FaTimes, FaHome, FaFilm, FaList, FaUser, FaSignOutAlt, FaUserShield } from 'react-icons/fa'; // React Icons
 import './navbar.css';
 
 function Navbar() {
@@ -10,7 +11,7 @@ function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(!!auth.currentUser);
-  const navigate = useNavigate(); // For redirect after sign out
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleResize = () => {
@@ -60,9 +61,9 @@ function Navbar() {
   const handleSignOut = async () => {
     try {
       await auth.signOut();
-      setIsLoggedIn(false); // Update state immediately
-      setIsAdmin(false); // Reset admin status
-      navigate('/'); // Redirect to landing page
+      setIsLoggedIn(false);
+      setIsAdmin(false);
+      navigate('/');
     } catch (err) {
       console.error('Error signing out:', err);
     }
@@ -76,7 +77,7 @@ function Navbar() {
         </Link>
 
         {/* Desktop Search Bar */}
-        {!isMobile && (
+        {!isMobile && isLoggedIn && (
           <input
             type="text"
             placeholder="Search DVDs by title..."
@@ -88,21 +89,17 @@ function Navbar() {
         {!isMobile && (
           <nav className="nav-menu">
             <div className="nav-links">
-              {isLoggedIn && <Link to="/home">Browse</Link>}
-              {isLoggedIn && <Link to="/new-releases">New Releases</Link>}
-              {isLoggedIn && <Link to="/queue">My Queue</Link>}
-              {isLoggedIn && <Link to="/account">Account</Link>}
-              {isLoggedIn && isAdmin && <Link to="/admin">Admin</Link>}
-              {isLoggedIn ? (
-                <span
-                  onClick={handleSignOut}
-                  style={{ cursor: 'pointer', color: 'white', textDecoration: 'none', fontSize: '16px', fontWeight: 500 }}
-                >
-                  Sign Out
-                </span>
-              ) : (
-                <Link to="/login">Sign In</Link>
+              {isLoggedIn && (
+                <>
+                  <Link to="/home"><FaHome /> Browse</Link>
+                  <Link to="/new-releases"><FaFilm /> New Releases</Link>
+                  <Link to="/queue"><FaList /> My Queue</Link>
+                  <Link to="/account"><FaUser /> Account</Link>
+                  {isAdmin && <Link to="/admin"><FaUserShield /> Admin</Link>}
+                  <span onClick={handleSignOut} className="sign-out-link"><FaSignOutAlt /> Sign Out</span>
+                </>
               )}
+              {!isLoggedIn && <Link to="/login">Sign In</Link>}
             </div>
           </nav>
         )}
@@ -110,17 +107,19 @@ function Navbar() {
         {/* Mobile Controls */}
         {isMobile && (
           <div className="mobile-controls">
-            <button className="search-toggle" onClick={toggleSearch}>
-              <span className="search-icon">🔍</span>
-            </button>
+            {isLoggedIn && (
+              <button className="search-toggle" onClick={toggleSearch}>
+                <FaSearch />
+              </button>
+            )}
             <button className="menu-toggle" onClick={toggleSideNav}>
-              <span className="hamburger">☰</span>
+              {isSideNavOpen ? <FaTimes /> : <FaBars />}
             </button>
           </div>
         )}
 
         {/* Mobile Search Overlay */}
-        {isMobile && isSearchOpen && (
+        {isMobile && isLoggedIn && isSearchOpen && (
           <div className="search-overlay">
             <input
               type="text"
@@ -128,33 +127,26 @@ function Navbar() {
               className="search-bar-mobile"
               autoFocus
             />
-            <button className="close-search" onClick={toggleSearch}>×</button>
+            <button className="close-search" onClick={toggleSearch}><FaTimes /></button>
           </div>
         )}
 
         {/* Mobile Side Nav */}
         {isMobile && (
           <nav className={`nav-menu mobile ${isSideNavOpen ? 'open' : ''}`}>
-            <button className="close-nav" onClick={toggleSideNav}>×</button>
+            <button className="close-nav" onClick={toggleSideNav}><FaTimes /></button>
             <div className="nav-links">
-              {isLoggedIn && <Link to="/home" onClick={toggleSideNav}>Browse</Link>}
-              {isLoggedIn && <Link to="/new-releases" onClick={toggleSideNav}>New Releases</Link>}
-              {isLoggedIn && <Link to="/queue" onClick={toggleSideNav}>My Queue</Link>}
-              {isLoggedIn && <Link to="/account" onClick={toggleSideNav}>Account</Link>}
-              {isLoggedIn && isAdmin && <Link to="/admin" onClick={toggleSideNav}>Admin</Link>}
-              {isLoggedIn ? (
-                <span
-                  onClick={() => {
-                    handleSignOut();
-                    toggleSideNav();
-                  }}
-                  style={{ cursor: 'pointer', color: 'white', textDecoration: 'none', fontSize: '18px', fontWeight: 500 }}
-                >
-                  Sign Out
-                </span>
-              ) : (
-                <Link to="/login" onClick={toggleSideNav}>Sign In</Link>
+              {isLoggedIn && (
+                <>
+                  <Link to="/home" onClick={toggleSideNav}><FaHome /> Browse</Link>
+                  <Link to="/new-releases" onClick={toggleSideNav}><FaFilm /> New Releases</Link>
+                  <Link to="/queue" onClick={toggleSideNav}><FaList /> My Queue</Link>
+                  <Link to="/account" onClick={toggleSideNav}><FaUser /> Account</Link>
+                  {isAdmin && <Link to="/admin" onClick={toggleSideNav}><FaUserShield /> Admin</Link>}
+                  <span onClick={() => { handleSignOut(); toggleSideNav(); }} className="sign-out-link"><FaSignOutAlt /> Sign Out</span>
+                </>
               )}
+              {!isLoggedIn && <Link to="/login" onClick={toggleSideNav}>Sign In</Link>}
             </div>
           </nav>
         )}
