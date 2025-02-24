@@ -4,6 +4,8 @@ import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
+import { FiMail, FiLock, FiLogIn } from 'react-icons/fi';
+import { FcGoogle } from 'react-icons/fc'; // Google icon from react-icons
 import '../styles/login.css';
 
 function Login() {
@@ -56,38 +58,49 @@ function Login() {
   };
 
   return (
-    <div className="Login">
+    <div className="modern-login">
       <Navbar />
-      <section className="login-form">
+      <section className="modern-login-form">
         <h1>Sign In</h1>
-        <p>Enter your email and password to sign in.</p>
+        <p className="form-subtitle">Enter your email and password to sign in.</p>
         {error && <p className="error">{error}</p>}
         <form onSubmit={handleSubmit}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            required
-          />
-          <button type="submit" className="login-button">Sign In</button>
+          <div className="input-container">
+            <FiMail className="input-icon" />
+            <input
+              type="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              required
+            />
+          </div>
+          <div className="input-container">
+            <FiLock className="input-icon" />
+            <input
+              type="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              required
+            />
+          </div>
+          <button type="submit" className="primary-button">
+            <FiLogIn /> Sign In
+          </button>
         </form>
+        <p className="or-sign-in">OR</p>
         <button className="google-login-button" onClick={handleGoogleSignIn}>
-          Sign In with Google
+          <FcGoogle className="google-icon" /> Sign in with Google
         </button>
-        <p>
+        <p className="signup-link">
           Don't have an account? <Link to="/signup">Sign up here</Link>.
         </p>
       </section>
-      <footer className="Login-footer">
-        <p>© 2025 Libraula. All rights reserved.</p>
+      <footer className="modern-footer">
+        <div className="footer-content">
+          <p className="copyright">© 2025 Libraula. All rights reserved.</p>
+        </div>
       </footer>
     </div>
   );

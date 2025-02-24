@@ -1,80 +1,164 @@
-.Signup {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    color: #333;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+/* Modern Signup Layout */
+.modern-signup {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #141414;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #fff;
+}
+
+.modern-signup-form {
+  flex: 1;
+  max-width: 400px; /* Reduced from 500px for symmetry with login */
+  margin: 40px auto;
+  padding: 40px 24px;
+  background: #303030;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  text-align: center;
+}
+
+.modern-signup-form h1 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.form-subtitle {
+  font-size: 16px;
+  color: #ccc;
+  margin-bottom: 24px;
+}
+
+.error {
+  color: #ff4d4d;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.input-container {
+  position: relative;
+  margin-bottom: 16px; /* Reduced from 20px */
+}
+
+.input-icon {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  color: #ccc;
+  font-size: 16px; /* Reduced from 18px */
+}
+
+.modern-signup-form input {
+  width: 100%;
+  padding: 10px 16px 10px 36px; /* Reduced from 14px 20px 14px 40px */
+  font-size: 14px; /* Reduced from 16px */
+  border: 1px solid #4CAF50;
+  border-radius: 6px;
+  background: #fff;
+  color: #333;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.modern-signup-form input:focus {
+  border-color: #43A047;
+  box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.1);
+  outline: none;
+}
+
+.primary-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px; /* Reduced from 14px 32px */
+  border-radius: 6px;
+  font-weight: 600;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  margin-top: 10px;
+  font-size: 16px; /* Slightly smaller */
+}
+
+.primary-button:hover {
+  background: #43A047;
+  transform: translateY(-2px);
+}
+
+.login-link {
+  margin-top: 16px; /* Reduced from 20px */
+  font-size: 14px;
+  color: #ccc;
+}
+
+.login-link a {
+  color: #4CAF50;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+/* Modern Footer */
+.modern-footer {
+  background: #000;
+  padding: 40px 24px;
+  border-top: 8px solid #222;
+  color: #757575;
+}
+
+.footer-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.copyright {
+  font-size: 12px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .modern-signup-form {
+    max-width: 320px; /* Match login */
+    margin: 20px auto;
+    padding: 30px 16px;
   }
-  
-  .Signup-header {
-    background-color: #32CD32; /* Lime green */
-    padding: 20px;
-    color: white;
+
+  .modern-signup-form h1 {
+    font-size: 28px;
   }
-  
-  .logo {
-    font-size: 36px;
-    font-weight: bold;
-    text-align: left;
-    padding-left: 20px;
-  }
-  
-  .signup-form {
-    flex: 1;
-    padding: 40px 20px;
-    max-width: 500px; /* Wider to accommodate more fields */
-    margin: 0 auto;
-  }
-  
-  .signup-form h1 {
-    font-size: 32px;
-    margin-bottom: 10px;
-  }
-  
-  .signup-form p {
-    font-size: 16px;
-    margin-bottom: 20px;
-  }
-  
-  .signup-form input {
-    display: block;
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .signup-button {
-    background-color: #32CD32; /* Lime green */
-    color: white;
-    border: none;
-    padding: 12px;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 4px;
-    width: 100%;
-    cursor: pointer;
-  }
-  
-  .signup-button:hover {
-    background-color: #28A428; /* Darker lime green */
-  }
-  
-  .signup-form a {
-    color: #32CD32; /* Lime green */
-    text-decoration: none;
-  }
-  
-  .signup-form a:hover {
-    text-decoration: underline;
-  }
-  
-  .Signup-footer {
-    background-color: #333;
-    color: #fff;
-    padding: 20px;
+
+  .form-subtitle {
     font-size: 14px;
   }
+}
+
+@media (max-width: 480px) {
+  .modern-signup-form {
+    max-width: 280px; /* Match login */
+    margin: 10px auto;
+    padding: 20px 12px;
+  }
+
+  .modern-signup-form h1 {
+    font-size: 24px;
+  }
+
+  .modern-signup-form input {
+    padding: 8px 14px 8px 32px;
+    font-size: 13px;
+  }
+
+  .primary-button {
+    padding: 10px 24px;
+    font-size: 14px;
+  }
+}
