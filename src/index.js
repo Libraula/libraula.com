@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import './index.css';
 import App from './App';
 import Home from './pages/Home';
-import Login from './pages/Login';
+import Login from './pages/login';
 import Signup from './pages/Signup';
 import Pricing from './pages/Pricing';
 import UserDetails from './pages/UserDetails';
