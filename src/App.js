@@ -1,82 +1,168 @@
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { FiChevronDown, FiChevronUp, FiMonitor, FiDownload, FiSmartphone, FiUsers } from 'react-icons/fi';
+import logo from './logo.png'; // Import logo from same folder as App.js
 import './App.css';
 
 function App() {
+  const [faqOpen, setFaqOpen] = useState(null);
+
+  const toggleFaq = (index) => {
+    setFaqOpen(faqOpen === index ? null : index);
+  };
+
+  const trendingMovies = [
+    { title: "Young, Famous & African", rank: 1 },
+    { title: "The Night Agent", rank: 2 },
+    { title: "Squid Game", rank: 3 },
+    { title: "Back in Action", rank: 4 },
+    { title: "Zero Day", rank: 5 },
+    { title: "Prison Break", rank: 6 },
+    { title: "The 31st Annual Screen Actors Guild Awards", rank: 7 },
+    { title: "Kinda Pregnant", rank: 8 },
+    { title: "The Recruit", rank: 9 },
+    { title: "Sex/Life", rank: 10 },
+  ];
+
+  const faqItems = [
+    {
+      question: "What is Libraula?",
+      answer: "Libraula is a DVD and Blu-ray rental service that offers a wide variety of movies and TV shows delivered to your door. Enjoy unlimited rentals with no late fees and free shipping both ways."
+    },
+    {
+      question: "How much does Libraula cost?",
+      answer: "Plans start at UGX 7,900 per month. Choose your disc limit and enjoy flexible, affordable access to thousands of titles."
+    },
+    {
+      question: "Where can I watch?",
+      answer: "Watch your rented DVDs on any compatible DVD or Blu-ray player at home."
+    },
+    {
+      question: "How do I cancel?",
+      answer: "Cancel anytime through your account settings—no hidden fees or penalties."
+    },
+    {
+      question: "What can I watch on Libraula?",
+      answer: "Explore over 100,000 titles, including movies, TV shows, and rare finds not available on streaming platforms."
+    },
+    {
+      question: "Is Libraula good for kids?",
+      answer: "Yes! Create profiles for kids to enjoy family-friendly content included with your membership."
+    }
+  ];
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <div className="logo">Libraula</div>
+    <div className="modern-app">
+      <header className="modern-header">
         <div className="header-content">
-          <h1>Unlimited DVDs & Blu-rays, Delivered</h1>
-          <p>Over 100,000 titles. No late fees. Free shipping both ways. Try it free for 30 days.</p>
-          <input type="email" placeholder="Email address" className="email-input" />
-          <Link to="/signup">
-            <button className="App-button">Get Started</button>
+          <Link to="/" className="logo-link">
+            <img src={logo} alt="Libraula Logo" className="logo" />
           </Link>
+          <Link to="/login" className="signin-button">Sign In</Link>
+        </div>
+        <div className="hero-overlay"></div>
+        <div className="modern-hero-content">
+          <h1>Unlimited movies, TV shows, and more</h1>
+          <p className="hero-subtitle">Starts at UGX 7,900. Cancel anytime.</p>
+          <p className="hero-text">Ready to watch? Enter your email to create or restart your membership.</p>
+          <div className="hero-actions">
+            <input type="email" placeholder="Email address" className="email-input" />
+            <Link to="/signup">
+              <button className="primary-button">Get Started</button>
+            </Link>
+          </div>
         </div>
       </header>
-      <section className="promo-banner">
-        <h2>Watch What You Want, When You Want</h2>
-        <p>Plans starting at $7.99/month. Cancel anytime.</p>
+
+      <section className="trending-section">
+        <h2>Trending Now</h2>
+        <div className="modern-movie-grid">
+          {trendingMovies.map((movie, index) => (
+            <div key={index} className="modern-movie-card">
+              <div className="card-rank">{movie.rank}</div>
+              <div className="modern-movie-info">
+                <h3>{movie.title}</h3>
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
-      <section className="how-it-works">
-        <h2>How Libraula Works</h2>
-        <div className="steps">
-          <div className="step">
-            <h3>1. Create Account</h3>
-            <p>Sign up with your details.</p>
+
+      <section className="features-section">
+        <h2>More Reasons to Join</h2>
+        <div className="features-grid">
+          <div className="feature-item">
+            <FiMonitor className="feature-icon" />
+            <h3>Enjoy on your TV</h3>
+            <p>Watch on Smart TVs, Playstation, Xbox, Chromecast, Apple TV, Blu-ray players, and more.</p>
           </div>
-          <div className="step">
-            <h3>2. Choose Plan</h3>
-            <p>Select your disc limit.</p>
+          <div className="feature-item">
+            <FiDownload className="feature-icon" />
+            <h3>Rent your DVDs to watch offline</h3>
+            <p>Order your favorites easily and always have something to watch.</p>
           </div>
-          <div className="step">
-            <h3>3. Get Delivered</h3>
-            <p>Receive DVDs by mail.</p>
+          <div className="feature-item">
+            <FiSmartphone className="feature-icon" />
+            <h3>Watch everywhere</h3>
+            <p>Enjoy unlimited DVDs on any compatible player at home.</p>
+          </div>
+          <div className="feature-item">
+            <FiUsers className="feature-icon" />
+            <h3>Create profiles for kids</h3>
+            <p>Send kids on adventures with their favorite characters—free with your membership.</p>
           </div>
         </div>
       </section>
-      <section className="App-features">
-        <div className="feature">
-          <h2>Huge Selection</h2>
-          <p>Thousands of titles, including rare finds not on streaming.</p>
-        </div>
-        <div className="feature">
-          <h2>No Late Fees</h2>
-          <p>Keep discs as long as you like—no rush, no penalties.</p>
-        </div>
-        <div className="feature">
-          <h2>Free Shipping</h2>
-          <p>Delivered and returned with prepaid envelopes.</p>
-        </div>
-        <div className="feature">
-          <h2>Blu-ray Included</h2>
-          <p>High-def rentals at no extra cost.</p>
-        </div>
-      </section>
-      <section className="testimonials">
-        <h2>What Members Say</h2>
-        <div className="quotes">
-          <p>"Perfect for movie buffs like me—tons of classics!" - Jane D.</p>
-          <p>"No late fees is a game-changer. Love it." - Mark S.</p>
-        </div>
-      </section>
-      <section className="faq">
+
+      <section className="faq-section">
         <h2>Frequently Asked Questions</h2>
-        <div className="faq-item">
-          <h3>How long can I keep a disc?</h3>
-          <p>As long as you want—no due dates!</p>
+        <div className="faq-container">
+          {faqItems.map((item, index) => (
+            <div key={index} className="faq-item">
+              <div className="faq-question" onClick={() => toggleFaq(index)}>
+                <h3>{item.question}</h3>
+                {faqOpen === index ? <FiChevronUp /> : <FiChevronDown />}
+              </div>
+              {faqOpen === index && (
+                <div className="faq-answer">
+                  <p>{item.answer}</p>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
-        <div className="faq-item">
-          <h3>Is shipping really free?</h3>
-          <p>Yes, both ways, with prepaid envelopes.</p>
+        <div className="cta-container">
+          <p>Ready to watch? Enter your email to create or restart your membership.</p>
+          <div className="hero-actions">
+            <input type="email" placeholder="Email address" className="email-input" />
+            <Link to="/signup">
+              <button className="primary-button">Get Started</button>
+            </Link>
+          </div>
         </div>
       </section>
-      <footer className="App-footer">
-        <div className="footer-links">
-          <a href="#">FAQ</a> | <a href="#">Help Center</a> | <a href="#">Terms of Use</a> | <a href="#">Privacy</a>
+
+      <footer className="modern-footer">
+        <div className="footer-content">
+          <div className="footer-links">
+            <a href="#">FAQ</a>
+            <a href="#">Help Center</a>
+            <a href="#">Account</a>
+            <a href="#">Media Center</a>
+            <a href="#">Investor Relations</a>
+            <a href="#">Jobs</a>
+            <a href="#">Ways to Watch</a>
+            <a href="#">Terms of Use</a>
+            <a href="#">Privacy</a>
+            <a href="#">Cookie Preferences</a>
+            <a href="#">Corporate Information</a>
+            <a href="#">Contact Us</a>
+            <a href="#">Speed Test</a>
+            <a href="#">Legal Notices</a>
+            <a href="#">Only on Libraula</a>
+          </div>
+          <p className="copyright">Libraula Uganda • © 2025 Libraula. All rights reserved.</p>
         </div>
-        <p>© 2025 Libraula. All rights reserved.</p>
       </footer>
     </div>
   );
