@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import './index.css';
 import App from './App';
 import Home from './pages/Home';
-import Login from './pages/login';
+import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Pricing from './pages/Pricing';
 import UserDetails from './pages/UserDetails';
@@ -47,7 +47,8 @@ const AuthRedirect = ({ children }) => {
     }
   }, [user, loading, navigate]);
 
-  return children;
+  // Return children only if not loading; otherwise, show loading state
+  return loading ? <div>Loading...</div> : children;
 };
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -134,6 +135,8 @@ root.render(
               </ProtectedRoute>
             }
           />
+          {/* Catch-all route for unmatched paths */}
+          <Route path="*" element={null} />
         </Routes>
       </AuthRedirect>
     </BrowserRouter>
