@@ -1,88 +1,243 @@
+/* User Details Layout */
 .UserDetails {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    color: #333;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background-color: #f4f6f9;
-  }
-  
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f4f6f9; /* Original light background */
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  color: #333; /* Original text color */
+}
+
+/* Form Section */
+.user-details-form {
+  max-width: 600px;
+  margin: 60px auto;
+  padding: 40px;
+  background: #fff; /* White card for contrast */
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+}
+
+/* Header Text */
+.user-details-form h1 {
+  font-size: 32px;
+  color: #32CD32; /* Original green */
+  margin-bottom: 12px;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.5px; /* Slight spacing for polish */
+}
+
+.user-details-form p {
+  font-size: 16px;
+  color: #666; /* Original grey */
+  margin-bottom: 32px;
+  text-align: center;
+  font-weight: 400;
+  line-height: 1.5; /* Improved readability */
+}
+
+/* Form Layout */
+.user-details-form form {
+  display: grid;
+  gap: 24px; /* Organized spacing */
+}
+
+/* Labels */
+.user-details-form label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333; /* Consistent with body text */
+  margin-bottom: 6px; /* Space before input */
+  display: block; /* Ensures alignment */
+  text-align: left; /* Left-aligned for clarity */
+}
+
+/* Input Fields */
+.user-details-form input {
+  padding: 14px;
+  font-size: 14px;
+  border: 1px solid #ddd; /* Original border */
+  border-radius: 6px;
+  background-color: #f9f9f9; /* Original input background */
+  color: #333;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  width: 100%; /* Full width for consistency */
+  box-sizing: border-box; /* Prevents overflow */
+}
+
+.user-details-form input:focus {
+  border-color: #32CD32; /* Original green focus */
+  box-shadow: 0 0 5px rgba(50, 205, 50, 0.3);
+  outline: none;
+}
+
+/* General Select Elements (Region/City) */
+.sel {
+  width: 100%;
+  padding: 14px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  color: #333;
+  font-size: 14px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sel:focus {
+  border-color: #32CD32;
+  box-shadow: 0 0 5px rgba(50, 205, 50, 0.3);
+  outline: none;
+}
+
+/* Phone Prefix Select (+256) */
+.phone-prefix-select {
+  width: 80px; /* Fixed width for prefix */
+  padding: 14px 10px;
+  border-radius: 6px 0 0 6px; /* Rounded left corners */
+  border: 1px solid #ddd;
+  border-right: none; /* Seamless with input */
+  background-color: #f4f6f9; /* Slightly darker for distinction */
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  appearance: none; /* Remove default dropdown arrow */
+  cursor: pointer;
+}
+
+.phone-prefix-select:focus {
+  border-color: #32CD32;
+  box-shadow: 0 0 5px rgba(50, 205, 50, 0.3);
+  outline: none;
+}
+
+/* Phone Number Container (Prefix + Input) */
+.phone-container {
+  display: flex;
+  align-items: center;
+}
+
+.phone-container input {
+  border-radius: 0 6px 6px 0; /* Rounded right corners */
+  border-left: none; /* Seamless with prefix */
+  flex: 1; /* Takes remaining space */
+}
+
+/* Submit Button */
+.submit-button {
+  background-color: #32CD32; /* Original green */
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.submit-button:hover {
+  background-color: #28A428; /* Original darker green */
+  transform: scale(1.05);
+}
+
+.submit-button:active {
+  transform: scale(0.95); /* Press effect */
+}
+
+/* Error Message */
+.error {
+  color: #d32f2f; /* Original red */
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Footer */
+.UserDetails-footer {
+  background-color: #222; /* Original footer color */
+  color: #ccc; /* Original footer text */
+  padding: 40px 20px;
+  text-align: center;
+  font-size: 14px;
+  margin-top: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
   .user-details-form {
-    max-width: 600px;
-    margin: 50px auto;
-    padding: 0 20px;
-  }
-  
-  .user-details-form h1 {
-    font-size: 32px;
-    color: #32CD32;
-    margin-bottom: 10px;
-    text-align: center;
-    font-weight: 700;
-  }
-  
-  .user-details-form p {
-    font-size: 18px;
-    color: #666;
-    margin-bottom: 30px;
-    text-align: center;
-  }
-  
-  .user-details-form form {
-    display: grid;
-    gap: 20px;
-  }
-  
-  .user-details-form input {
-    padding: 12px;
-    font-size: 14px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    background-color: #f9f9f9;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .user-details-form input:focus {
-    border-color: #32CD32;
-    box-shadow: 0 0 5px rgba(50, 205, 50, 0.3);
-    outline: none;
-  }
-  
-  .submit-button {
-    background-color: #32CD32;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    font-size: 16px;
-    font-weight: 600;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-  }
-  
-  .submit-button:hover {
-    background-color: #28A428;
-    transform: scale(1.05);
-  }
-  
-  .error {
-    color: #d32f2f;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .UserDetails-footer {
-    background-color: #222;
-    color: #ccc;
-    padding: 20px;
-    text-align: center;
-    font-size: 14px;
-    margin-top: auto;
+    max-width: 450px;
+    margin: 40px auto;
+    padding: 30px 16px;
   }
 
-  .sel {
-    width: 100%;
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 5px;
+  .user-details-form h1 {
+    font-size: 28px;
   }
+
+  .user-details-form p {
+    font-size: 14px;
+  }
+
+  .user-details-form label {
+    font-size: 13px;
+  }
+
+  .user-details-form input,
+  .sel,
+  .phone-prefix-select {
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .phone-prefix-select {
+    width: 70px;
+  }
+
+  .submit-button {
+    padding: 12px 24px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-details-form {
+    max-width: 100%;
+    margin: 20px 10px;
+    padding: 20px 12px;
+  }
+
+  .user-details-form h1 {
+    font-size: 24px;
+  }
+
+  .user-details-form p {
+    font-size: 13px;
+  }
+
+  .user-details-form form {
+    gap: 16px;
+  }
+
+  .user-details-form label {
+    font-size: 12px;
+  }
+
+  .user-details-form input,
+  .sel,
+  .phone-prefix-select {
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  .phone-prefix-select {
+    width: 60px;
+  }
+
+  .submit-button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}

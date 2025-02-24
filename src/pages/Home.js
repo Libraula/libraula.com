@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
-import { FiPlusCircle, FiFilter, FiStar, FiClock } from 'react-icons/fi';
+import { FiPlus, FiFilter, FiStar } from 'react-icons/fi';
 import { BiMoviePlay } from 'react-icons/bi';
 import { MdLocalMovies } from 'react-icons/md';
+import MovieCard from '../components/MovieCard';
 import '../styles/home.css';
 
 function Home() {
@@ -110,13 +111,11 @@ function Home() {
             <h1>{dvds[0].title}</h1>
             <p className="hero-synopsis">{dvds[0].synopsis}</p>
             <div className="hero-actions">
-              {/* Updated Add to Queue button */}
               <button className="secondary-button" onClick={() => handleMovieClick(dvds[0])}>
                 <BiMoviePlay /> View Details
               </button>
-
               <button className="plus-button" onClick={() => handleAddToQueue(dvds[0])}>
-                <FiPlusCircle />
+                <FiPlus />
               </button>
             </div>
           </div>
@@ -157,31 +156,12 @@ function Home() {
 
         <div className="modern-movie-grid">
           {filteredMovies.map((movie) => (
-            <div key={movie.id} className="modern-movie-card" onClick={() => handleMovieClick(movie)}>
-              <div className="card-image-container">
-                <img src={movie.img} alt={movie.title} loading="lazy" />
-                <div className="card-overlay">
-                  {/* Updated Add to Queue button for each movie card */}
-                  <button
-                    className="plus-button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAddToQueue(movie);
-                    }}
-                  >
-                    <FiPlusCircle />
-                  </button>
-                </div>
-              </div>
-              <div className="modern-movie-info">
-                <h3>{movie.title}</h3>
-                <div className="movie-meta">
-                  <span className="rating"><FiStar /> {movie.rating}</span>
-                  <span className="duration"><FiClock /> {movie.duration || '2h 30m'}</span>
-                </div>
-                <p className="movie-synopsis">{movie.synopsis}</p>
-              </div>
-            </div>
+            <MovieCard
+              key={movie.id}
+              movie={movie}
+              handleMovieClick={handleMovieClick}
+              handleAddToQueue={handleAddToQueue}
+            />
           ))}
         </div>
       </section>
