@@ -110,11 +110,13 @@ function Home() {
             <h1>{dvds[0].title}</h1>
             <p className="hero-synopsis">{dvds[0].synopsis}</p>
             <div className="hero-actions">
-              <button className="primary-button" onClick={() => handleAddToQueue(dvds[0])}>
-                <FiPlusCircle /> Add to Queue
-              </button>
+              {/* Updated Add to Queue button */}
               <button className="secondary-button" onClick={() => handleMovieClick(dvds[0])}>
                 <BiMoviePlay /> View Details
+              </button>
+
+              <button className="plus-button" onClick={() => handleAddToQueue(dvds[0])}>
+                <FiPlusCircle />
               </button>
             </div>
           </div>
@@ -159,14 +161,15 @@ function Home() {
               <div className="card-image-container">
                 <img src={movie.img} alt={movie.title} loading="lazy" />
                 <div className="card-overlay">
+                  {/* Updated Add to Queue button for each movie card */}
                   <button
-                    className="card-action-button"
+                    className="plus-button"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleAddToQueue(movie);
                     }}
                   >
-                    <FiPlusCircle /> Add to Queue
+                    <FiPlusCircle />
                   </button>
                 </div>
               </div>
