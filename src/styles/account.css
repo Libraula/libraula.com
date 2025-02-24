@@ -1,188 +1,115 @@
 .Account {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    color: #333;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background-color: #f8f8f8;
-  }
-  
-  .Account-header {
-    background-color: #32CD32;
-    padding: 15px 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: white;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  }
-  
-  .logo {
-    font-size: 40px;
-    font-weight: 700;
-    letter-spacing: 1px;
-  }
-  
-  .nav-bar {
-    display: flex;
-    gap: 25px;
-  }
-  
-  .nav-bar a {
-    color: white;
-    text-decoration: none;
-    font-size: 16px;
-    font-weight: 500;
-    transition: color 0.3s ease;
-  }
-  
-  .nav-bar a:hover {
-    color: #e6f7e6;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f5f5f5; /* Light grey background */
+}
+
+.account-section {
+  flex: 1;
+  padding: 40px 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.account-section h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.account-details {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: left;
+}
+
+.account-details h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #4CAF50; /* Green headers */
+  margin: 20px 0 10px;
+  border-bottom: 2px solid #4CAF50;
+  padding-bottom: 5px;
+}
+
+.account-details p {
+  font-size: 16px;
+  color: #666;
+  margin: 10px 0;
+  line-height: 1.5;
+}
+
+.account-details p strong {
+  color: #333;
+  font-weight: 600;
+  display: inline-block;
+  width: 200px; /* Fixed width for labels */
+}
+
+.error {
+  color: red;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.Account-footer {
+  text-align: center;
+  padding: 20px;
+  background-color: #f9f9f9;
+  font-size: 14px;
+  color: #666;
+}
+
+.Account-footer a {
+  color: #007bff;
+  text-decoration: none;
+  margin: 0 5px;
+}
+
+.Account-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
   .account-section {
-    padding: 50px 30px;
-    max-width: 1000px;
-    margin: 0 auto;
+    padding: 20px 10px;
   }
-  
-  .account-section h1 {
-    font-size: 32px;
-    color: #32CD32;
-    margin-bottom: 15px;
-    text-align: center;
-    font-weight: 700;
+
+  .account-details {
+    padding: 15px;
   }
-  
-  .account-section p {
-    font-size: 18px;
-    color: #666;
-    margin-bottom: 40px;
-    text-align: center;
-  }
-  
-  .account-card {
-    background-color: white;
-    border-radius: 10px;
-    padding: 25px;
-    margin-bottom: 30px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  .account-card h2 {
+
+  .account-details h1 {
     font-size: 24px;
-    color: #32CD32;
-    margin-bottom: 20px;
-    font-weight: 600;
   }
-  
-  .subscription-details p,
-  .shipping-details p {
-    font-size: 16px;
-    margin: 10px 0;
-    color: #555;
+
+  .account-details h2 {
+    font-size: 18px;
   }
-  
-  .subscription-details p span.active {
-    color: #32CD32;
-    font-weight: 600;
-  }
-  
-  .subscription-details p span.cancelled {
-    color: #888;
-    font-weight: 600;
-  }
-  
-  .billing-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .billing-table th,
-  .billing-table td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .billing-table th {
-    background-color: #f0f0f0;
-    font-weight: 600;
+
+  .account-details p {
     font-size: 14px;
-    color: #333;
   }
-  
-  .billing-table td {
-    font-size: 13px;
-    color: #555;
+
+  .account-details p strong {
+    width: 150px; /* Adjust label width for smaller screens */
   }
-  
-  .account-actions,
-  .settings-options {
-    display: flex;
-    gap: 15px;
-    margin-top: 20px;
+}
+
+@media (max-width: 480px) {
+  .account-details p strong {
+    display: block; /* Stack labels and values on very small screens */
+    width: auto;
+    margin-bottom: 5px;
   }
-  
-  .action-button {
-    background-color: #32CD32;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 14px;
-    font-weight: 500;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+
+  .account-details p {
+    margin: 5px 0;
   }
-  
-  .action-button:hover {
-    background-color: #28A428;
-    transform: scale(1.05);
-  }
-  
-  .action-button.cancel {
-    background-color: #888;
-  }
-  
-  .action-button.cancel:hover {
-    background-color: #666;
-  }
-  
-  .Account-footer {
-    background-color: #222;
-    color: #ccc;
-    padding: 30px;
-    text-align: center;
-    font-size: 14px;
-    margin-top: auto;
-  }
-  
-  .footer-links a {
-    color: #ccc;
-    margin: 0 15px;
-    text-decoration: none;
-    transition: color 0.3s ease;
-  }
-  
-  .footer-links a:hover {
-    color: #32CD32;
-  }
-  
-  @media (max-width: 768px) {
-    .account-section {
-      padding: 30px 15px;
-    }
-    .account-actions,
-    .settings-options {
-      flex-direction: column;
-      gap: 10px;
-    }
-    .billing-table th,
-    .billing-table td {
-      font-size: 12px;
-    }
-  }
+}

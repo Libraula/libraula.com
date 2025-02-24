@@ -1,0 +1,119 @@
+.Subscription {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  .subscription-form {
+    flex: 1;
+    padding: 40px 20px;
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .subscription-form h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+  }
+  
+  .subscription-form p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 20px;
+  }
+  
+  .card-selection-body {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: left;
+  }
+  
+  .card-selection-body h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .input-field {
+    margin-bottom: 20px;
+  }
+  
+  .input-field label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 5px;
+  }
+  
+  .input-field select,
+  .input-field input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .phone-group {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .phone-group input:first-child {
+    width: 80px;
+    background-color: #f0f0f0;
+  }
+  
+  .phone-group input:last-child {
+    flex: 1;
+  }
+  
+  .pay-now-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .pay-now-button:hover {
+    background-color: #45a049;
+  }
+  
+  .terms-notice {
+    font-size: 12px;
+    color: #666;
+    margin-top: 10px;
+    text-align: center;
+  }
+  
+  .terms-notice a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .terms-notice a:hover {
+    text-decoration: underline;
+  }
+  
+  .error {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  
+  .Subscription-footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #f9f9f9;
+    font-size: 14px;
+    color: #666;
+  }
