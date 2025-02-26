@@ -103,7 +103,7 @@ const AddDvdForm = ({ onAddDvd }) => {
               placeholder="PG, PG-13, R" 
               value={newDvd.rating} 
               onChange={(e) => setNewDvd({ ...newDvd, rating: e.target.value })} 
-              required 
+            required 
             />
           </div>
           
@@ -300,10 +300,9 @@ const DvdList = ({ dvds, onUpdateStatus }) => {
 // Updated View Component: UserQueueList
 const UserQueueList = ({ userQueues, dvds, userDetails, onShip }) => {
   const [expandedUsers, setExpandedUsers] = useState({});
-  const [queueNotifications, setQueueNotifications] = useState({}); // Track added items per user
-  const [prevQueues, setPrevQueues] = useState(userQueues); // Store previous queue state
+  const [queueNotifications, setQueueNotifications] = useState({});
+  const [prevQueues, setPrevQueues] = useState(userQueues);
 
-  // Detect changes in userQueues to update notifications
   useEffect(() => {
     const newNotifications = { ...queueNotifications };
     Object.entries(userQueues).forEach(([uid, currentQueue]) => {
@@ -311,14 +310,13 @@ const UserQueueList = ({ userQueues, dvds, userDetails, onShip }) => {
       const addedItems = currentQueue.length - prevQueue.length;
       if (addedItems > 0) {
         newNotifications[uid] = (newNotifications[uid] || 0) + addedItems;
-        // Reset notification after 5 seconds
         setTimeout(() => {
           setQueueNotifications(prev => ({ ...prev, [uid]: 0 }));
         }, 5000);
       }
     });
     setQueueNotifications(newNotifications);
-    setPrevQueues(userQueues); // Update previous state
+    setPrevQueues(userQueues);
   }, [userQueues]);
 
   const toggleUserExpand = (uid) => {
@@ -328,7 +326,6 @@ const UserQueueList = ({ userQueues, dvds, userDetails, onShip }) => {
     }));
   };
 
-  // Calculate total added items across all users
   const totalAddedItems = Object.values(queueNotifications).reduce((sum, count) => sum + count, 0);
 
   return (
@@ -451,7 +448,6 @@ const ErrorMessage = ({ message }) => (
   </div>
 );
 
-// Main Admin Component (Unchanged except for passing userQueues)
 function Admin() {
   const [activeSection, setActiveSection] = useState('add-dvd');
   const [dvds, setDvds] = useState([]);
@@ -533,7 +529,33 @@ function Admin() {
   };
 
   const handleShip = async (uid, movie) => {
-    // Placeholder for shipping logic
+    try {
+      // Update DVD status to "Preparing" in dvds collection
+      const dvdRef = doc(db, 'dvds', movie.id);
+      await updateDoc(dvdRef, { status: 'Preparing' });
+      setDvds(prev => prev.map(dvd => dvd.id === movie.id ? { ...dvd, status: 'Preparing' } : dvd));
+
+      // Update userQueues: Move item from queue to preparing
+      const queueDocRef = doc(db, 'userQueues', uid);
+      const queueDocSnapshot = await getDoc(queueDocRef);
+      const currentData = queueDocSnapshot.exists() ? queueDocSnapshot.data() : { queue: [], preparing: [] };
+      
+      const updatedQueue = currentData.queue.filter(item => item.id !== movie.id);
+      const updatedPreparing = [...(currentData.preparing || []), { ...movie, status: 'Preparing' }];
+
+      await updateDoc(queueDocRef, {
+        queue: updatedQueue,
+        preparing: updatedPreparing,
+      });
+
+      setUserQueues(prev => ({
+        ...prev,
+        [uid]: updatedQueue
+      }));
+    } catch (err) {
+      setError('Failed to ship item: ' + err.message);
+      console.error('Error shipping item:', err);
+    }
   };
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);

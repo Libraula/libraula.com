@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
 import { ChevronUp, ChevronDown, Search } from 'lucide-react';
@@ -10,48 +10,54 @@ function MyQueue() {
   const [activeTab, setActiveTab] = useState('queue');
   const [searchQuery, setSearchQuery] = useState('');
   const [hideLongWaits, setHideLongWaits] = useState(false);
-  const [userQueues, setUserQueues] = useState({});
+  const [userQueues, setUserQueues] = useState({ queue: [], preparing: [] });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
+    const unsubscribeAuth = auth.onAuthStateChanged(user => {
       if (!user) {
         navigate('/');
         setLoading(false);
         return;
       }
 
-      const fetchUserQueues = async () => {
-        try {
-          const userId = user.uid;
-          const queueDocRef = doc(db, 'userQueues', userId);
-          const queueDocSnapshot = await getDoc(queueDocRef);
-          
-          if (queueDocSnapshot.exists()) {
-            setUserQueues({ [userId]: queueDocSnapshot.data().queue || [] });
-          } else {
-            setUserQueues({ [userId]: [] });
-          }
-        } catch (err) {
-          setError('Failed to load queue: ' + err.message);
-          console.error('Error fetching user queues:', err);
-        } finally {
-          setLoading(false);
+      const userId = user.uid;
+      const queueDocRef = doc(db, 'userQueues', userId);
+
+      const unsubscribeSnapshot = onSnapshot(queueDocRef, (docSnapshot) => {
+        if (docSnapshot.exists()) {
+          const data = docSnapshot.data();
+          console.log('Firestore data:', data); // Debug: Log raw Firestore data
+          const updatedQueues = {
+            queue: Array.isArray(data.queue) ? data.queue : [],
+            preparing: Array.isArray(data.preparing) ? data.preparing : []
+          };
+          setUserQueues(updatedQueues);
+          console.log('Updated userQueues:', updatedQueues); // Debug: Log state after update
+        } else {
+          console.log('No document exists, setting empty queues');
+          setUserQueues({ queue: [], preparing: [] });
         }
-      };
-      fetchUserQueues();
+        setLoading(false);
+      }, (err) => {
+        setError('Failed to load queue: ' + err.message);
+        console.error('Error fetching user queues:', err);
+        setLoading(false);
+      });
+
+      return () => unsubscribeSnapshot();
     });
 
-    return () => unsubscribe();
+    return () => unsubscribeAuth();
   }, [navigate]);
 
   const moveQueueItem = async (index, direction) => {
     if (!auth.currentUser) return;
     
     const userId = auth.currentUser.uid;
-    const queue = [...userQueues[userId]];
+    const queue = [...userQueues.queue];
     
     const newIndex = direction === 'up' ? index - 1 : index + 1;
     
@@ -61,7 +67,7 @@ function MyQueue() {
     queue[index] = queue[newIndex];
     queue[newIndex] = temp;
     
-    setUserQueues({ ...userQueues, [userId]: queue });
+    setUserQueues(prev => ({ ...prev, queue }));
     
     try {
       const queueDocRef = doc(db, 'userQueues', userId);
@@ -97,16 +103,19 @@ function MyQueue() {
   }
 
   const queueData = {
-    preparing: [],
+    preparing: userQueues.preparing,
     home: [],
-    queue: auth.currentUser ? userQueues[auth.currentUser.uid] || [] : [],
+    queue: userQueues.queue,
     history: [],
   };
 
-  const filteredQueue = queueData[activeTab].filter((item) =>
-    item.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
-    (!hideLongWaits || item.status !== 'wait')
-  );
+  console.log('queueData:', queueData); // Debug: Log queueData before rendering
+
+  const filteredQueue = queueData[activeTab].filter((item) => {
+    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesWaitFilter = !hideLongWaits || item.status !== 'Long Wait';
+    return matchesSearch && matchesWaitFilter;
+  });
 
   return (
     <div className="MyQueue">
@@ -183,8 +192,8 @@ function MyQueue() {
                   <div className="table-cell genre-cell">{item.genre}</div>
                   <div className="table-cell format-cell">{item.format || 'DVD'}</div>
                   <div className="table-cell status-cell">
-                    <span className={`status-badge ${item.status || 'available'}`}>
-                      {item.status || 'Available'}
+                    <span className={`status-badge ${item.status.toLowerCase().replace(' ', '-')}`}>
+                      {item.status}
                     </span>
                   </div>
                   <div className="table-cell actions-cell">
@@ -192,14 +201,14 @@ function MyQueue() {
                       <button 
                         className="reorder-btn" 
                         onClick={() => moveQueueItem(index, 'up')}
-                        disabled={index === 0}
+                        disabled={index === 0 || activeTab !== 'queue'}
                       >
                         <ChevronUp size={18} />
                       </button>
                       <button 
                         className="reorder-btn" 
                         onClick={() => moveQueueItem(index, 'down')}
-                        disabled={index === filteredQueue.length - 1}
+                        disabled={index === filteredQueue.length - 1 || activeTab !== 'queue'}
                       >
                         <ChevronDown size={18} />
                       </button>
