@@ -587,6 +587,11 @@
     border-radius: 8px; /* Match secondary button style */
   }
   
+  .hero-badge {
+    margin-top: -20px; /* Move the badge higher up */
+    margin-bottom: 10px; /* Adjust the margin below the badge */
+  }
+  
   .modern-popup {
     left: 16px;
     right: 16px;
