@@ -6,9 +6,9 @@
   background-color: #f8f8f8;
   color: #333;
   width: 100%;
-  max-width: 100vw; /* Prevent exceeding viewport */
-  overflow-x: hidden; /* Avoid horizontal overflow */
-  box-sizing: border-box; /* Include padding/border in width */
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .loading-container {
@@ -21,10 +21,10 @@
 }
 
 .loading-spinner {
-  width: clamp(30px, 5vw, 40px); /* Responsive size */
+  width: clamp(30px, 5vw, 40px);
   height: clamp(30px, 5vw, 40px);
   border: 3px solid #f3f3f3;
-  border-top: 3px solid #32CD32; /* Green theme */
+  border-top: 3px solid #32CD32;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: clamp(12px, 2vw, 16px);
@@ -41,7 +41,7 @@
   padding: clamp(12px, 2vw, 16px);
   border-radius: 4px;
   margin: clamp(15px, 3vw, 20px) auto;
-  max-width: 90%; /* Fit within smaller screens */
+  max-width: 90%;
   text-align: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
@@ -50,17 +50,17 @@
 
 .account-section {
   flex: 1;
-  padding: clamp(20px, 5vw, 40px) clamp(10px, 2vw, 20px); /* Reduced padding */
-  max-width: 100%; /* Remove fixed 800px */
-  width: 90%; /* Slightly less than full width for symmetry */
+  padding: clamp(20px, 5vw, 40px) clamp(10px, 2vw, 20px);
+  max-width: 100%;
+  width: 90%;
   margin: 0 auto;
   box-sizing: border-box;
 }
 
 .account-section h1 {
-  font-size: clamp(24px, 6vw, 32px); /* Responsive font size */
+  font-size: clamp(24px, 6vw, 32px);
   font-weight: 700;
-  color: #32CD32; /* Green theme */
+  color: #32CD32;
   margin-bottom: clamp(20px, 4vw, 30px);
   text-align: center;
 }
@@ -77,7 +77,7 @@
   -webkit-overflow-scrolling: touch;
   width: 100%;
   box-sizing: border-box;
-  gap: clamp(5px, 1vw, 10px); /* Add spacing between buttons */
+  gap: clamp(5px, 1vw, 10px);
 }
 
 .account-navbar button {
@@ -90,10 +90,10 @@
   padding: clamp(8px, 2vw, 12px) clamp(10px, 2vw, 20px);
   cursor: pointer;
   transition: all 0.2s ease;
-  min-width: clamp(60px, 15vw, 80px); /* Responsive min-width */
+  min-width: clamp(60px, 15vw, 80px);
   color: #666;
-  flex: 1; /* Equal width distribution */
-  max-width: 25%; /* Cap width for symmetry */
+  flex: 1;
+  max-width: 25%;
 }
 
 .account-navbar button:hover {
@@ -109,7 +109,7 @@
 
 .account-navbar button span {
   margin-top: clamp(4px, 1vw, 6px);
-  font-size: clamp(12px, 3vw, 14px); /* Responsive font */
+  font-size: clamp(12px, 3vw, 14px);
 }
 
 .account-details {
@@ -157,29 +157,37 @@
   padding: clamp(15px, 3vw, 20px);
   width: 100%;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  gap: clamp(12px, 2vw, 16px); /* Space between items */
 }
 
 .detail-item {
   display: flex;
-  flex-wrap: wrap;
-  margin-bottom: clamp(12px, 2vw, 16px);
+  flex-direction: row; /* Label and value side by side */
+  align-items: center;
   padding-bottom: clamp(6px, 1vw, 8px);
   border-bottom: 1px solid #f0f0f0;
   width: 100%;
+  gap: clamp(10px, 2vw, 15px); /* Horizontal spacing between label and value */
 }
 
 .detail-label {
-  width: clamp(100px, 30vw, 160px); /* Responsive width */
+  width: clamp(120px, 25vw, 160px);
   font-weight: 500;
   color: #666;
   flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .detail-value {
   flex: 1;
   color: #333;
   word-break: break-word;
-  min-width: 0; /* Prevent overflow */
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .edit-button {
@@ -193,8 +201,8 @@
   cursor: pointer;
   transition: all 0.2s ease;
   display: block;
-  width: 100%; /* Full width for symmetry */
-  max-width: clamp(150px, 40vw, 200px); /* Cap width */
+  width: 100%;
+  max-width: clamp(150px, 40vw, 200px);
   margin-left: auto;
   margin-right: auto;
   text-align: center;
@@ -263,20 +271,20 @@
 .Account-footer {
   background-color: #222;
   color: #ccc;
-  padding: clamp(15px, 3vw, 30px) clamp(10px, 2vw, 20px); /* Reduced padding */
+  padding: clamp(15px, 3vw, 30px) clamp(10px, 2vw, 20px);
   text-align: center;
   font-size: clamp(12px, 3vw, 14px);
   margin-top: auto;
   width: 100%;
-  max-width: 100vw; /* Fit viewport */
+  max-width: 100vw;
   box-sizing: border-box;
-  overflow: hidden; /* Prevent overflow */
+  overflow: hidden;
 }
 
 .footer-content {
   width: 100%;
-  max-width: 90%; /* Slightly less than full width */
-  margin: 0 auto; /* Center content */
+  max-width: 90%;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: clamp(10px, 2vw, 15px);
@@ -314,7 +322,7 @@
 @media (max-width: 768px) {
   .account-section {
     padding: clamp(15px, 3vw, 20px) clamp(8px, 1.5vw, 10px);
-    width: 95%; /* Slightly wider for medium screens */
+    width: 95%;
   }
 
   .account-navbar {
@@ -337,7 +345,7 @@
   }
 
   .detail-label {
-    width: clamp(90px, 25vw, 120px);
+    width: clamp(100px, 25vw, 140px);
   }
 
   .Account-footer {
@@ -360,7 +368,7 @@
   .account-navbar button {
     padding: clamp(6px, 1.5vw, 8px) clamp(8px, 2vw, 12px);
     min-width: clamp(40px, 12vw, 60px);
-    max-width: 33%; /* Slightly more space on tiny screens */
+    max-width: 33%;
   }
 
   .account-navbar button span {
@@ -368,7 +376,8 @@
   }
 
   .detail-item {
-    flex-direction: column;
+    flex-direction: column; /* Vertical for small screens */
+    align-items: flex-start;
   }
 
   .detail-label {
