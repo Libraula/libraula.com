@@ -238,11 +238,13 @@ function Account() {
         )}
       </section>
       <footer className="Account-footer">
-        <p>Customer Support: <a href="mailto:support@libraula.com">support@libraula.com</a> | <a href="#">Chat</a></p>
-        <div className="footer-links">
-          <a href="#">Help Center</a> | <a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a> | <a href="#">Contact Us</a>
+        <div className="footer-content">
+          <p>Customer Support: <a href="mailto:support@libraula.com">support@libraula.com</a> | <a href="#">Chat</a></p>
+          <div className="footer-links">
+            <a href="#">Help Center</a> | <a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a> | <a href="#">Contact Us</a>
+          </div>
+          <p>© 2025 Libraula. All rights reserved.</p>
         </div>
-        <p>© 2025 Libraula. All rights reserved.</p>
       </footer>
     </div>
   );

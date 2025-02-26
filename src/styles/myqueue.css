@@ -5,6 +5,10 @@
   display: flex;
   flex-direction: column;
   background-color: #f8f8f8;
+  width: 100%;
+  max-width: 100vw; /* Prevent exceeding viewport */
+  overflow-x: hidden; /* Avoid horizontal overflow */
+  box-sizing: border-box; /* Include padding/border in width */
 }
 
 .loading-container {
@@ -13,16 +17,17 @@
   align-items: center;
   justify-content: center;
   height: 50vh;
+  width: 100%;
 }
 
 .loading-spinner {
-  width: 40px;
-  height: 40px;
+  width: clamp(30px, 5vw, 40px); /* Responsive size */
+  height: clamp(30px, 5vw, 40px);
   border: 3px solid #f3f3f3;
-  border-top: 3px solid #32CD32;
+  border-top: 3px solid #32CD32; /* Green theme */
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin-bottom: 16px;
+  margin-bottom: clamp(12px, 2vw, 16px);
 }
 
 @keyframes spin {
@@ -33,32 +38,35 @@
 .error-message {
   background-color: #fff0f0;
   border-left: 4px solid #ff3333;
-  padding: 16px;
+  padding: clamp(12px, 2vw, 16px);
   border-radius: 4px;
-  margin: 20px auto;
-  max-width: 800px;
+  margin: clamp(15px, 3vw, 20px) auto;
+  max-width: 90%; /* Fit within smaller screens */
   text-align: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .queue-section {
-  padding: 40px 20px;
-  max-width: 1200px;
+  padding: clamp(20px, 5vw, 40px) clamp(10px, 2vw, 20px); /* Reduced padding */
+  max-width: 100%; /* Remove fixed 1200px */
+  width: 90%; /* Slightly less than full width for symmetry */
   margin: 0 auto;
-  width: 100%;
+  box-sizing: border-box;
 }
 
 .queue-section h1 {
-  font-size: 32px;
-  color: #32CD32;
-  margin-bottom: 30px;
+  font-size: clamp(24px, 6vw, 32px); /* Responsive font size */
+  color: #32CD32; /* Green theme */
+  margin-bottom: clamp(20px, 4vw, 30px);
   text-align: center;
   font-weight: 700;
 }
 
 .search-container {
-  margin: 0 auto 24px;
-  max-width: 600px;
+  margin: 0 auto clamp(15px, 3vw, 24px);
+  max-width: clamp(300px, 80vw, 600px); /* Responsive max-width */
   width: 100%;
 }
 
@@ -66,23 +74,26 @@
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .search-icon {
   position: absolute;
-  left: 12px;
+  left: clamp(8px, 2vw, 12px);
   color: #999;
+  flex-shrink: 0; /* Prevent shrinking */
 }
 
 .search-input {
   width: 100%;
-  padding: 12px 12px 12px 40px;
+  padding: clamp(10px, 2vw, 12px) clamp(10px, 2vw, 12px) clamp(10px, 2vw, 12px) clamp(30px, 8vw, 40px); /* Adjusted for icon */
   border-radius: 24px;
   border: 1px solid #ddd;
-  font-size: 16px;
+  font-size: clamp(14px, 4vw, 16px);
   transition: all 0.3s ease;
   background-color: white;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
 }
 
 .search-input:focus {
@@ -94,21 +105,26 @@
 .tabs {
   display: flex;
   justify-content: center;
-  gap: 12px;
-  margin-bottom: 30px;
+  gap: clamp(6px, 1vw, 12px);
+  margin-bottom: clamp(20px, 4vw, 30px);
   flex-wrap: wrap;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .tabs button {
   background-color: #e0e0e0;
   border: none;
-  padding: 12px 20px;
-  font-size: 15px;
+  padding: clamp(8px, 2vw, 12px) clamp(12px, 3vw, 20px);
+  font-size: clamp(13px, 3.5vw, 15px);
   font-weight: 500;
   border-radius: 20px;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  flex: 1; /* Equal width distribution */
+  max-width: clamp(80px, 25vw, 150px); /* Cap width */
+  min-width: clamp(60px, 20vw, 80px); /* Minimum width */
 }
 
 .tabs button.active,
@@ -122,8 +138,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding: 0 10px;
+  margin-bottom: clamp(15px, 3vw, 20px);
+  padding: 0 clamp(5px, 1vw, 10px);
+  width: 100%;
+  flex-wrap: wrap;
+  gap: clamp(10px, 2vw, 15px);
+  box-sizing: border-box;
 }
 
 .control-checkbox {
@@ -133,49 +153,58 @@
 }
 
 .control-checkbox input {
-  margin-right: 8px;
+  margin-right: clamp(6px, 1vw, 8px);
   accent-color: #32CD32;
+  flex-shrink: 0;
 }
 
 .checkbox-label {
-  font-size: 14px;
+  font-size: clamp(12px, 3vw, 14px);
   color: #666;
 }
 
 .suggestion {
-  font-size: 14px;
+  font-size: clamp(12px, 3vw, 14px);
   color: #888;
   font-style: italic;
+  text-align: center;
+  width: 100%;
 }
 
 .queue-list {
   background-color: white;
   border-radius: 12px;
-  padding: 20px;
+  padding: clamp(15px, 3vw, 20px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .empty-state {
   text-align: center;
-  padding: 40px 20px;
+  padding: clamp(20px, 5vw, 40px) clamp(10px, 2vw, 20px);
+  width: 100%;
 }
 
 .empty-state p {
-  font-size: 18px;
+  font-size: clamp(16px, 4vw, 18px);
   color: #666;
-  margin-bottom: 20px;
+  margin-bottom: clamp(15px, 3vw, 20px);
 }
 
 .add-button {
   background-color: #32CD32;
   color: white;
-  padding: 10px 20px;
+  padding: clamp(8px, 2vw, 10px) clamp(15px, 3vw, 20px);
   border: none;
   border-radius: 24px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  width: 100%;
+  max-width: clamp(150px, 40vw, 200px);
+  margin: 0 auto;
+  display: block;
 }
 
 .add-button:hover {
@@ -187,23 +216,27 @@
 .responsive-table {
   width: 100%;
   overflow-x: auto;
+  box-sizing: border-box;
 }
 
 .table-header {
   display: flex;
   font-weight: 600;
   border-bottom: 2px solid #eee;
-  padding: 12px 0;
+  padding: clamp(10px, 2vw, 12px) 0;
   background-color: #f8f8f8;
   position: sticky;
   top: 0;
+  width: 100%;
 }
 
 .table-row {
   display: flex;
   border-bottom: 1px solid #eee;
-  padding: 12px 0;
+  padding: clamp(10px, 2vw, 12px) 0;
   transition: background-color 0.2s ease;
+  width: 100%;
+  flex-wrap: wrap; /* Allow wrapping on small screens */
 }
 
 .table-row:hover {
@@ -211,55 +244,59 @@
 }
 
 .table-cell {
-  padding: 8px 12px;
+  padding: clamp(6px, 1.5vw, 8px) clamp(8px, 2vw, 12px);
   flex-shrink: 0;
   display: flex;
   align-items: center;
+  box-sizing: border-box;
 }
 
 .order-cell {
-  width: 40px;
+  width: clamp(30px, 8vw, 40px);
   justify-content: center;
   font-weight: 600;
 }
 
 .title-cell {
   flex: 2;
-  min-width: 180px;
+  min-width: clamp(120px, 30vw, 180px);
   flex-direction: column;
   align-items: flex-start;
 }
 
 .movie-title {
   font-weight: 500;
-  margin-bottom: 4px;
+  margin-bottom: clamp(2px, 0.5vw, 4px);
+  word-break: break-word;
 }
 
 .movie-details {
-  font-size: 12px;
+  font-size: clamp(10px, 2.5vw, 12px);
   color: #777;
 }
 
 .genre-cell {
   flex: 1;
-  min-width: 100px;
+  min-width: clamp(80px, 20vw, 100px);
 }
 
 .format-cell {
-  width: 80px;
+  width: clamp(60px, 15vw, 80px);
 }
 
 .status-cell {
-  width: 100px;
+  width: clamp(70px, 18vw, 100px);
 }
 
 .status-badge {
-  padding: 4px 10px;
+  padding: clamp(3px, 0.8vw, 4px) clamp(6px, 1.5vw, 10px);
   border-radius: 12px;
-  font-size: 12px;
+  font-size: clamp(10px, 2.5vw, 12px);
   font-weight: 500;
   background-color: #e6f7e6;
   color: #32CD32;
+  text-align: center;
+  display: block;
 }
 
 .status-badge.wait {
@@ -268,22 +305,22 @@
 }
 
 .actions-cell {
-  width: 80px;
+  width: clamp(60px, 15vw, 80px);
   justify-content: center;
 }
 
 .reorder-controls {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: clamp(3px, 0.8vw, 4px);
 }
 
 .reorder-btn {
   background-color: #f0f0f0;
   border: none;
   border-radius: 4px;
-  width: 28px;
-  height: 28px;
+  width: clamp(24px, 6vw, 28px);
+  height: clamp(24px, 6vw, 28px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -304,16 +341,29 @@
 .MyQueue-footer {
   background-color: #222;
   color: #ccc;
-  padding: 30px;
+  padding: clamp(15px, 3vw, 30px) clamp(10px, 2vw, 20px);
   text-align: center;
-  font-size: 14px;
+  font-size: clamp(12px, 3vw, 14px);
   margin-top: auto;
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.footer-content {
+  width: 100%;
+  max-width: 90%; /* Slightly less than full width */
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 2vw, 15px);
 }
 
 .MyQueue-footer a {
   color: #32CD32;
   text-decoration: none;
-  margin: 0 5px;
+  margin: 0 clamp(3px, 0.5vw, 5px);
 }
 
 .MyQueue-footer a:hover {
@@ -321,12 +371,16 @@
 }
 
 .footer-links {
-  margin: 15px 0;
+  margin: clamp(10px, 2vw, 15px) 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(5px, 1vw, 10px);
 }
 
 .footer-links a {
   color: #ccc;
-  margin: 0 10px;
+  margin: 0;
   transition: color 0.3s ease;
 }
 
@@ -334,59 +388,92 @@
   color: #32CD32;
 }
 
-/* Responsive adjustments */
+/* Responsive Adjustments */
 @media (max-width: 768px) {
   .queue-section {
-    padding: 20px 10px;
+    padding: clamp(15px, 3vw, 20px) clamp(8px, 1.5vw, 10px);
+    width: 95%;
   }
   
   .tabs {
-    gap: 6px;
+    gap: clamp(4px, 0.8vw, 6px);
   }
   
   .tabs button {
-    padding: 8px 12px;
-    font-size: 14px;
+    padding: clamp(6px, 1.5vw, 8px) clamp(8px, 2vw, 12px);
+    font-size: clamp(12px, 3vw, 14px);
+    max-width: clamp(70px, 22vw, 100px);
   }
   
   .queue-controls {
     flex-direction: column;
     align-items: flex-start;
-    gap: 15px;
+    gap: clamp(8px, 1.5vw, 15px);
   }
 
   .title-cell {
-    min-width: 140px;
+    min-width: clamp(100px, 25vw, 140px);
   }
   
   .genre-cell, .format-cell {
-    display: none;
+    display: none; /* Hide less critical columns */
   }
   
   .status-badge {
-    padding: 3px 6px;
-    font-size: 11px;
+    padding: clamp(2px, 0.5vw, 3px) clamp(4px, 1vw, 6px);
+    font-size: clamp(9px, 2vw, 11px);
+  }
+
+  .MyQueue-footer {
+    padding: clamp(12px, 2.5vw, 15px) clamp(8px, 1.5vw, 10px);
   }
 }
 
 @media (max-width: 480px) {
+  .queue-section h1 {
+    font-size: clamp(20px, 5vw, 24px);
+    margin-bottom: clamp(15px, 3vw, 20px);
+  }
+
   .responsive-table {
-    font-size: 13px;
+    font-size: clamp(12px, 3vw, 13px);
   }
   
   .table-cell {
-    padding: 6px 8px;
+    padding: clamp(4px, 1vw, 6px) clamp(6px, 1.5vw, 8px);
   }
   
   .order-cell {
-    width: 30px;
+    width: clamp(25px, 6vw, 30px);
+  }
+  
+  .title-cell {
+    min-width: clamp(80px, 25vw, 120px);
   }
   
   .status-cell {
-    width: 70px;
+    width: clamp(50px, 15vw, 70px);
   }
   
   .actions-cell {
-    width: 60px;
+    width: clamp(40px, 12vw, 60px);
+  }
+
+  .tabs button {
+    max-width: clamp(60px, 20vw, 80px);
+    min-width: clamp(50px, 15vw, 60px);
+  }
+
+  .search-input {
+    padding: clamp(8px, 2vw, 10px) clamp(8px, 2vw, 10px) clamp(8px, 2vw, 10px) clamp(25px, 6vw, 30px);
+  }
+
+  .MyQueue-footer {
+    padding: clamp(10px, 2vw, 12px) clamp(5px, 1vw, 8px);
+  }
+
+  .footer-links {
+    flex-direction: column;
+    gap: clamp(5px, 1.5vw, 8px);
   }
 }

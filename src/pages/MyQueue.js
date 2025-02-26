@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs, doc, getDoc, updateDoc, arrayMove } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
 import { ChevronUp, ChevronDown, Search } from 'lucide-react';
@@ -55,18 +55,14 @@ function MyQueue() {
     
     const newIndex = direction === 'up' ? index - 1 : index + 1;
     
-    // Check if the move is valid
     if (newIndex < 0 || newIndex >= queue.length) return;
     
-    // Swap the items
     const temp = queue[index];
     queue[index] = queue[newIndex];
     queue[newIndex] = temp;
     
-    // Update state
     setUserQueues({ ...userQueues, [userId]: queue });
     
-    // Update Firestore
     try {
       const queueDocRef = doc(db, 'userQueues', userId);
       await updateDoc(queueDocRef, { queue });
@@ -101,10 +97,10 @@ function MyQueue() {
   }
 
   const queueData = {
-    preparing: [], // Extend with real data if needed
-    home: [],      // Extend with real data if needed
+    preparing: [],
+    home: [],
     queue: auth.currentUser ? userQueues[auth.currentUser.uid] || [] : [],
-    history: [],   // Extend with real data if needed
+    history: [],
   };
 
   const filteredQueue = queueData[activeTab].filter((item) =>
@@ -216,11 +212,13 @@ function MyQueue() {
         </div>
       </section>
       <footer className="MyQueue-footer">
-        <p>Customer Support: <a href="mailto:support@libraula.com">support@libraula.com</a> | <a href="#">Chat</a></p>
-        <div className="footer-links">
-          <a href="#">Help Center</a> | <a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a> | <a href="#">Contact Us</a>
+        <div className="footer-content">
+          <p>Customer Support: <a href="mailto:support@libraula.com">support@libraula.com</a> | <a href="#">Chat</a></p>
+          <div className="footer-links">
+            <a href="#">Help Center</a> | <a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a> | <a href="#">Contact Us</a>
+          </div>
+          <p>© 2025 Libraula. All rights reserved.</p>
         </div>
-        <p>© 2025 Libraula. All rights reserved.</p>
       </footer>
     </div>
   );

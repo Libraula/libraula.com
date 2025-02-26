@@ -300,37 +300,72 @@ const DvdList = ({ dvds, onUpdateStatus }) => {
 // Updated View Component: UserQueueList
 const UserQueueList = ({ userQueues, dvds, userDetails, onShip }) => {
   const [expandedUsers, setExpandedUsers] = useState({});
-  
+  const [queueNotifications, setQueueNotifications] = useState({}); // Track added items per user
+  const [prevQueues, setPrevQueues] = useState(userQueues); // Store previous queue state
+
+  // Detect changes in userQueues to update notifications
+  useEffect(() => {
+    const newNotifications = { ...queueNotifications };
+    Object.entries(userQueues).forEach(([uid, currentQueue]) => {
+      const prevQueue = prevQueues[uid] || [];
+      const addedItems = currentQueue.length - prevQueue.length;
+      if (addedItems > 0) {
+        newNotifications[uid] = (newNotifications[uid] || 0) + addedItems;
+        // Reset notification after 5 seconds
+        setTimeout(() => {
+          setQueueNotifications(prev => ({ ...prev, [uid]: 0 }));
+        }, 5000);
+      }
+    });
+    setQueueNotifications(newNotifications);
+    setPrevQueues(userQueues); // Update previous state
+  }, [userQueues]);
+
   const toggleUserExpand = (uid) => {
     setExpandedUsers(prev => ({
       ...prev,
       [uid]: !prev[uid]
     }));
   };
-  
+
+  // Calculate total added items across all users
+  const totalAddedItems = Object.values(queueNotifications).reduce((sum, count) => sum + count, 0);
+
   return (
     <div className="admin-card">
       <div className="card-header">
         <UserCheck className="card-icon" />
-        <h2>User Queues</h2>
+        <h2>
+          User Queues
+          {totalAddedItems > 0 && (
+            <span className="notification-badge">{totalAddedItems}</span>
+          )}
+        </h2>
       </div>
       
       {Object.keys(userQueues).length > 0 ? (
         <div className="user-queue-container">
           {Object.entries(userQueues).map(([uid, queue]) => {
             const user = userDetails[uid] || { 
-              name: 'Unknown User', 
-              email: 'N/A',
-              phoneNumber: 'N/A', // Added default phone number
+              firstName: 'Unknown', 
+              lastName: 'User', 
+              phoneNumber: 'N/A',
               shippingAddress: { line1: 'N/A', city: 'N/A', state: 'N/A', zip: 'N/A' } 
             };
+            const fullName = `${user.firstName} ${user.lastName}`;
             const isExpanded = expandedUsers[uid] || false;
-            
+            const notificationCount = queueNotifications[uid] || 0;
+
             return (
               <div key={uid} className={`user-card ${isExpanded ? 'expanded' : ''}`}>
                 <div className="user-card-header" onClick={() => toggleUserExpand(uid)}>
                   <div className="user-info-summary">
-                    <h3>{user.name}</h3>
+                    <h3>
+                      {fullName}
+                      {notificationCount > 0 && (
+                        <span className="user-notification-badge">{notificationCount}</span>
+                      )}
+                    </h3>
                     <span className="queue-count">{queue.length} items</span>
                   </div>
                   <div className="expand-icon">
@@ -341,8 +376,7 @@ const UserQueueList = ({ userQueues, dvds, userDetails, onShip }) => {
                 {isExpanded && (
                   <div className="user-card-content">
                     <div className="user-details">
-                      <p><strong>Name:</strong> {user.name}</p>
-                      <p><strong>Email:</strong> {user.email || 'N/A'}</p>
+                      <p><strong>Name:</strong> {fullName}</p>
                       <p><strong>Phone Number:</strong> {user.phoneNumber || 'N/A'}</p>
                       <p><strong>Location:</strong> {user.shippingAddress.line1}, {user.shippingAddress.city}, {user.shippingAddress.state} {user.shippingAddress.zip}</p>
                     </div>
@@ -417,7 +451,7 @@ const ErrorMessage = ({ message }) => (
   </div>
 );
 
-// Main Admin Component (Unchanged)
+// Main Admin Component (Unchanged except for passing userQueues)
 function Admin() {
   const [activeSection, setActiveSection] = useState('add-dvd');
   const [dvds, setDvds] = useState([]);

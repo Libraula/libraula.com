@@ -185,6 +185,24 @@
   margin: 0;
   font-size: clamp(1.1rem, 2.5vw, 1.25rem);
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 1vw, 10px); /* Space for notification badge */
+}
+
+/* Notification Badge (Section-wide) */
+.notification-badge {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: clamp(18px, 2.5vw, 24px);
+  height: clamp(18px, 2.5vw, 24px);
+  background-color: #e63946; /* Red for visibility */
+  color: white;
+  border-radius: 50%;
+  font-size: clamp(0.7rem, 2vw, 0.9rem);
+  font-weight: 600;
+  animation: pulse 1s infinite alternate;
 }
 
 /* Add DVD Form Styles */
@@ -460,6 +478,9 @@
 .user-info-summary h3 {
   margin: 0;
   font-size: clamp(1rem, 2.5vw, 1.1rem);
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 1vw, 8px); /* Space for user notification badge */
 }
 
 .queue-count {
@@ -487,7 +508,7 @@
 .user-details p {
   margin: clamp(6px, 1.5vw, 8px) 0;
   font-size: clamp(0.85rem, 2vw, 0.9rem);
-  line-height: 1.4; /* Improved readability */
+  line-height: 1.4;
 }
 
 .queue-list h4 {
@@ -502,8 +523,8 @@
 }
 
 .queue-items-list {
-  max-height: 300px; /* Optional: limit height with scroll */
-  overflow-y: auto; /* Scroll if too many items */
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 .queue-item {
@@ -595,6 +616,27 @@
   text-align: center;
   color: #777;
   font-size: clamp(0.9rem, 2.5vw, 1rem);
+}
+
+/* Notification Badge (User-specific) */
+.user-notification-badge {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: clamp(16px, 2vw, 20px);
+  height: clamp(16px, 2vw, 20px);
+  background-color: #e63946; /* Red for visibility */
+  color: white;
+  border-radius: 50%;
+  font-size: clamp(0.65rem, 1.5vw, 0.8rem);
+  font-weight: 600;
+  animation: pulse 1s infinite alternate;
+}
+
+/* Pulse Animation for Notification Badges */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.1); }
 }
 
 /* Loading & Error Styles */
@@ -765,5 +807,12 @@
   
   .expand-icon {
     align-self: flex-end;
+  }
+
+  .notification-badge,
+  .user-notification-badge {
+    width: clamp(16px, 3vw, 20px);
+    height: clamp(16px, 3vw, 20px);
+    font-size: clamp(0.6rem, 2vw, 0.8rem);
   }
 }
