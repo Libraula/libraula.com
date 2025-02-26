@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, updateDoc, arrayMove } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
+import { ChevronUp, ChevronDown, Search } from 'lucide-react';
 import '../styles/myqueue.css';
 
 function MyQueue() {
@@ -12,12 +13,12 @@ function MyQueue() {
   const [userQueues, setUserQueues] = useState({});
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); // Define navigate here, before useEffect
+  const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
       if (!user) {
-        navigate('/'); // Now accessible
+        navigate('/');
         setLoading(false);
         return;
       }
@@ -31,7 +32,7 @@ function MyQueue() {
           if (queueDocSnapshot.exists()) {
             setUserQueues({ [userId]: queueDocSnapshot.data().queue || [] });
           } else {
-            setUserQueues({ [userId]: [] }); // Empty queue if no document
+            setUserQueues({ [userId]: [] });
           }
         } catch (err) {
           setError('Failed to load queue: ' + err.message);
@@ -44,13 +45,45 @@ function MyQueue() {
     });
 
     return () => unsubscribe();
-  }, [navigate]); // Include navigate in dependencies
+  }, [navigate]);
+
+  const moveQueueItem = async (index, direction) => {
+    if (!auth.currentUser) return;
+    
+    const userId = auth.currentUser.uid;
+    const queue = [...userQueues[userId]];
+    
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    
+    // Check if the move is valid
+    if (newIndex < 0 || newIndex >= queue.length) return;
+    
+    // Swap the items
+    const temp = queue[index];
+    queue[index] = queue[newIndex];
+    queue[newIndex] = temp;
+    
+    // Update state
+    setUserQueues({ ...userQueues, [userId]: queue });
+    
+    // Update Firestore
+    try {
+      const queueDocRef = doc(db, 'userQueues', userId);
+      await updateDoc(queueDocRef, { queue });
+    } catch (err) {
+      setError('Failed to update queue order: ' + err.message);
+      console.error('Error updating queue:', err);
+    }
+  };
 
   if (loading) {
     return (
       <div className="MyQueue">
         <Navbar />
-        <p>Loading queue...</p>
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading your queue...</p>
+        </div>
       </div>
     );
   }
@@ -61,7 +94,7 @@ function MyQueue() {
         <Navbar />
         <section className="queue-section">
           <h1>My Queue</h1>
-          <p className="error">{error}</p>
+          <div className="error-message">{error}</div>
         </section>
       </div>
     );
@@ -84,8 +117,22 @@ function MyQueue() {
       <Navbar />
       <section className="queue-section">
         <h1>My Queue</h1>
+        
+        <div className="search-container">
+          <div className="search-wrapper">
+            <Search size={18} className="search-icon" />
+            <input
+              type="text"
+              placeholder="Search your queue..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="search-input"
+            />
+          </div>
+        </div>
+        
         <div className="tabs">
-                    <button onClick={() => setActiveTab('queue')} className={activeTab === 'queue' ? 'active' : ''}>
+          <button onClick={() => setActiveTab('queue')} className={activeTab === 'queue' ? 'active' : ''}>
             Queue ({queueData.queue.length})
           </button>
           <button onClick={() => setActiveTab('preparing')} className={activeTab === 'preparing' ? 'active' : ''}>
@@ -94,20 +141,19 @@ function MyQueue() {
           <button onClick={() => setActiveTab('home')} className={activeTab === 'home' ? 'active' : ''}>
             Home ({queueData.home.length})
           </button>
-
           <button onClick={() => setActiveTab('history')} className={activeTab === 'history' ? 'active' : ''}>
             History ({queueData.history.length})
           </button>
         </div>
 
         <div className="queue-controls">
-          <label>
+          <label className="control-checkbox">
             <input
               type="checkbox"
               checked={hideLongWaits}
               onChange={() => setHideLongWaits(!hideLongWaits)}
             />
-            Hide long waits
+            <span className="checkbox-label">Hide long waits</span>
           </label>
           {activeTab === 'queue' && queueData.queue.length < 12 && (
             <p className="suggestion">For a better experience, we suggest having at least a dozen movies in your queue.</p>
@@ -116,30 +162,56 @@ function MyQueue() {
 
         <div className="queue-list">
           {filteredQueue.length === 0 ? (
-            <p>List Is Empty.</p>
+            <div className="empty-state">
+              <p>Your list is empty.</p>
+              {activeTab === 'queue' && <button className="add-button">Browse Catalog</button>}
+            </div>
           ) : (
-            <table>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Title</th>
-                  <th>Genre</th>
-                  <th>Format</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredQueue.map((item, index) => (
-                  <tr key={item.id}>
-                    <td>{index + 1}</td>
-                    <td>{item.title} ({item.year} {item.rating})</td>
-                    <td>{item.genre}</td>
-                    <td>{item.format || 'DVD'}</td>
-                    <td>{item.status || 'Available'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="responsive-table">
+              <div className="table-header">
+                <div className="table-cell order-cell">#</div>
+                <div className="table-cell title-cell">Title</div>
+                <div className="table-cell genre-cell">Genre</div>
+                <div className="table-cell format-cell">Format</div>
+                <div className="table-cell status-cell">Status</div>
+                <div className="table-cell actions-cell">Actions</div>
+              </div>
+              
+              {filteredQueue.map((item, index) => (
+                <div key={item.id} className="table-row">
+                  <div className="table-cell order-cell">{index + 1}</div>
+                  <div className="table-cell title-cell">
+                    <span className="movie-title">{item.title}</span>
+                    <span className="movie-details">({item.year} {item.rating})</span>
+                  </div>
+                  <div className="table-cell genre-cell">{item.genre}</div>
+                  <div className="table-cell format-cell">{item.format || 'DVD'}</div>
+                  <div className="table-cell status-cell">
+                    <span className={`status-badge ${item.status || 'available'}`}>
+                      {item.status || 'Available'}
+                    </span>
+                  </div>
+                  <div className="table-cell actions-cell">
+                    <div className="reorder-controls">
+                      <button 
+                        className="reorder-btn" 
+                        onClick={() => moveQueueItem(index, 'up')}
+                        disabled={index === 0}
+                      >
+                        <ChevronUp size={18} />
+                      </button>
+                      <button 
+                        className="reorder-btn" 
+                        onClick={() => moveQueueItem(index, 'down')}
+                        disabled={index === filteredQueue.length - 1}
+                      >
+                        <ChevronDown size={18} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </section>

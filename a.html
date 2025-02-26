@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>African Countries Trade Data Explorer</title>
+    <style>
+        :root {
+            --primary-color: #4a8522;
+            --secondary-color: #f0a500;
+            --dark-color: #333;
+            --light-color: #f4f4f4;
+            --danger-color: #dc3545;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            overflow-x: hidden;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .navbar-logo {
+            height: 40px;
+            margin-right: 10px;
+        }
+        
+        .navbar-menu {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .navbar-item {
+            color: var(--dark-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .navbar-item:hover {
+            color: var(--primary-color);
+        }
+        
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .notification {
+            background-color: #ffa500;
+            color: white;
+            padding: 0.5rem 1rem;
+            text-align: center;
+        }
+        
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+        
+        .search-bar {
+            width: 100%;
+            max-width: 600px;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border-radius: 25px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+        }
+        
+        .quick-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+            justify-content: center;
+        }
+        
+        .quick-link {
+            background-color: #f0f0f0;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--dark-color);
+            text-decoration: none;
+        }
+        
+        .globe-container {
+            width: 100%;
+            height: 500px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        
+        #globe-canvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+        
+        .country-popup {
+            position: absolute;
+            background-color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            width: 250px;
+            display: none;
+            z-index: 10;
+        }
+        
+        .country-popup h3 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+        
+        .country-popup .flag {
+            width: 30px;
+            height: 20px;
+            object-fit: cover;
+        }
+        
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .stat-value {
+            font-weight: 600;
+        }
+        
+        .negative {
+            color: var(--danger-color);
+        }
+        
+        .positive {
+            color: var(--primary-color);
+        }
+        
+        .view-profile {
+            text-align: center;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+        }
+        
+        .feature-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .feature-content {
+            padding: 1.5rem;
+        }
+        
+        .feature-tag {
+            display: inline-block;
+            background-color: #ffe082;
+            color: #855a00;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-title {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+                flex-wrap: wrap;
+            }
+            
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .globe-container {
+                height: 350px;
+            }
+            
+            .features {
+                padding: 1rem;
+            }
+        }
+        
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-screen">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="notification">NEW: World Trade TARIFFS Simulator!</div>
+    
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgNDAiPjxwYXRoIGQ9Ik0yMCAyMGMwLTExIDktMjAgMjAtMjBzMjAgOSAyMCAyMC05IDIwLTIwIDIwLTIwLTktMjAtMjB6IiBmaWxsPSIjNGE4NTIyIi8+PHBhdGggZD0iTTAgMjBjMC0xMSA5LTIwIDIwLTIwdjQwYy0xMSAwLTIwLTktMjAtMjB6IiBmaWxsPSIjMzMzIi8+PHBhdGggZD0iTTYwIDIwYzAtMTEgOS0yMCAyMC0yMHYyMGgtMjB6IiBmaWxsPSIjZjBhNTAwIi8+PC9zdmc+" alt="Logo" class="navbar-logo">
+            OEC Trade Data
+        </div>
+        <div class="navbar-menu">
+            <a href="#" class="navbar-item">PROFILES</a>
+            <a href="#" class="navbar-item">TOOLS</a>
+            <a href="#" class="navbar-item">DATA</a>
+            <a href="#" class="navbar-item">RANKINGS</a>
+            <a href="#" class="navbar-item">RESEARCH</a>
+        </div>
+        <div class="navbar-right">
+            <select id="language-selector">
+                <option value="en">EN</option>
+                <option value="fr">FR</option>
+                <option value="es">ES</option>
+            </select>
+            <a href="#" class="navbar-item">SIGN IN</a>
+            <a href="#" class="navbar-item" style="background-color: #ffd700; padding: 0.5rem 1rem; border-radius: 4px;">Pricing</a>
+        </div>
+    </nav>
+    
+    <section class="hero">
+        <h1>The Trade Data You Need, When You Need It</h1>
+        
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search a Country, Product, Region, ...">
+            <span class="search-icon">🔍</span>
+        </div>
+        
+        <div class="quick-links">
+            <a href="#" class="quick-link">Aluminum articles</a>
+            <a href="#" class="quick-link">United States</a>
+            <a href="#" class="quick-link">Coffee</a>
+            <a href="#" class="quick-link">Costco Wholesale</a>
+        </div>
+    </section>
+    
+    <div class="globe-container">
+        <canvas id="globe-canvas"></canvas>
+        <div class="country-popup" id="popup">
+            <h3><img class="flag" id="popup-flag" src="" alt="Flag"> <span id="popup-country"></span></h3>
+            <div class="stat-grid">
+                <div class="stat-item">
+                    <span class="stat-label">Yearly Balance</span>
+                    <span class="stat-value" id="popup-balance">-</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Exports</span>
+                    <span class="stat-value" id="popup-exports">-</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">YoY Change</span>
+                    <span class="stat-value" id="popup-exports-yoy">-</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Imports</span>
+                    <span class="stat-value" id="popup-imports">-</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">YoY Change</span>
+                    <span class="stat-value" id="popup-imports-yoy">-</span>
+                </div>
+            </div>
+            <div class="view-profile" id="view-profile">Click to View Profile</div>
+        </div>
+    </div>
+    
+    <section class="features">
+        <div class="feature-card">
+            <img src="/api/placeholder/400/180" alt="Tariffs Simulator" class="feature-image">
+            <div class="feature-content">
+                <span class="feature-tag">NEW</span>
+                <h3 class="feature-title">Tariffs Simulator (BETA)</h3>
+                <p>Explore the impact of tariff changes between countries with our interactive simulator.</p>
+            </div>
+        </div>
+        
+        <div class="feature-card">
+            <img src="/api/placeholder/400/180" alt="Chat OEC" class="feature-image">
+            <div class="feature-content">
+                <span class="feature-tag">NEW</span>
+                <h3 class="feature-title">Chat OEC</h3>
+                <p>Get instant answers about global trade data through our AI-powered chat interface.</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Mock data for African countries
+        const countriesData = {
+            "NGA": {
+                name: "Nigeria",
+                flag: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgNDAwIj48cGF0aCBmaWxsPSIjMDA4NzUxIiBkPSJNMCAwaDIwMHY0MDBIMHoiLz48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMjAwIDBoMjAwdjQwMEgyMDB6Ii8+PHBhdGggZmlsbD0iIzAwODc1MSIgZD0iTTQwMCAwaC4yMDAwdjQwMEg0MDB6Ii8+PC9zdmc+",
+                balance: "-12.3B",
+                exports: "46.8B",
+                exportsYoY: "-2.3% YoY",
+                imports: "59.1B",
+                importsYoY: "+3.8% YoY"
+            },
+            "ZAF": {
+                name: "South Africa",
+                flag: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgNDAwIj48cGF0aCBmaWxsPSIjZGUzODMxIiBkPSJNMCAwaDYwMHYxMzNIMHoiLz48cGF0aCBmaWxsPSIjMDAyMzk1IiBkPSJNMCAxMzNoNjAwdjEzNEg2MDB6Ii8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTAgMjY3aDYwMHYxMzNIMHoiLz48cGF0aCBmaWxsPSIjMDA3YTRkIiBkPSJNMCAwdjQwMGwyMDAtMjAwTDAgMHoiLz48cGF0aCBmaWxsPSIjZmZiNjEyIiBkPSJNMCAzMy4zdjMzMy40TDE2Ni43IDIwMCAwIDMzLjN6Ii8+PHBhdGggZmlsbD0iIzAwMCIgZD0iTTAgNTMuM3YyOTMuNEwxNDYuNyAyMDAgMCA1My4zeiIvPjwvc3ZnPg==",
+                balance: "+3.8B",
+                exports: "108.6B",
+                exportsYoY: "+1.2% YoY",
+                imports: "104.8B",
+                importsYoY: "-0.5% YoY"
+            },
+            "EGY": {
+                name: "Egypt",
+                flag: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgNDAwIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMCAwaDYwMHY0MDBIMHoiLz48cGF0aCBmaWxsPSIjY2UxMTI2IiBkPSJNMCAwaDYwMHYxMzNIMHoiLz48cGF0aCBmaWxsPSIjMDAwIiBkPSJNMCAyNjdoNjAwdjEzM0gweiIvPjxwYXRoIGZpbGw9IiNjOWI5MDAiIGQ9Ik0zMDAgMTMzYy0yNSAwLTMxIDgtNjQgMTZzLTQwIDEwLTQwIDM1IDcgMzYgNDAgNDRjMzMgOCAzOSAxNiA2NCAxNnMzMS04IDY0LTE2czQwLTEwIDQwLTM1LTctMzYtNDAtNDRjLTMzLTgtMzktMTYtNjQtMTZ6Ii8+PC9zdmc+",
+                balance: "-29.5B",
+                exports: "32.8B",
+                exportsYoY: "-6.7% YoY",
+                imports: "62.3B",
+                importsYoY: "+2.1% YoY"
+            },
+            "KEN": {
+                name: "Kenya",
+                flag: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgNDAwIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMCAwaDYwMHY0MDBIMHoiLz48cGF0aCBmaWxsPSIjMDAwIiBkPSJNMCAwaDYwMHYxMzRIMHoiLz48cGF0aCBmaWxsPSIjYmUzYTM0IiBkPSJNMCAxMzRoNjAwdjEzMkgweiIvPjxwYXRoIGZpbGw9IiMwMDgwMzkiIGQ9Ik0wIDI2Nmg2MDB2MTM0SDB6Ii8+PC9zdmc+",
+                balance: "-9.8B",
+                exports: "6.1B",
+                exportsYoY: "+4.3% YoY",
+                imports: "15.9B",
+                importsYoY: "+3.2% YoY"
+            },
+            "GHA": {
+                name: "Ghana",
+                flag: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgNDAwIj48cGF0aCBmaWxsPSIjMDA2YjNmIiBkPSJNMCAwaDYwMHYxMzRIMHoiLz48cGF0aCBmaWxsPSIjZmNkMTE2IiBkPSJNMCAxMzRoNjAwdjEzMkgweiIvPjxwYXRoIGZpbGw9IiNjZTExMjYiIGQ9Ik0wIDI2Nmg2MDB2MTM0SDB6Ii8+PHBhdGggZmlsbD0iIzAwMCIgZD0iTTMwMCAxMzRsNDAgMTMzLTEwNS0xMDRoMTMwbC0xMDUgMTA0eiIvPjwvc3ZnPg==",
+                balance: "-1.2B",
+                exports: "14.9B",
+                exportsYoY: "-1.8% YoY",
+                imports: "16.1B",
+                importsYoY: "+0.7% YoY"
+            },
+            "CAF": {
+                name: "Central African Republic",
+                flag: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgNDAwIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMCAwaDYwMHY0MDBIMHoiLz48cGF0aCBmaWxsPSIjMDA5NTQzIiBkPSJNMCAwaDYwMHY4MEgweiIvPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDgwaDYwMHY4MEgweiIvPjxwYXRoIGZpbGw9IiNmZmM5MWYiIGQ9Ik0wIDE2MGg2MDB2ODBIMHoiLz48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMCAyNDBoNjAwdjgwSDB6Ii8+PHBhdGggZmlsbD0iI2E0MDAwMCIgZD0iTTAgMzIwaDYwMHY4MEgweiIvPjxwYXRoIGZpbGw9IiMwMDMwYTciIGQ9Ik0wIDBoMjAwdjI0MEgweiIvPjxwYXRoIGZpbGw9IiNmZmMxMWUiIGQ9Ik01MCAxMGwxMyA0MGgzOGwtMzEgMjRsMTIgNDEtMzItMjNsLTMyIDIzIDEyLTQxLTMxLTI0aDM5eiIvPjwvc3ZnPg==",
+                balance: "-591M",
+                exports: "226M",
+                exportsYoY: "-4.2% YoY",
+                imports: "817M",
+                importsYoY: "-6.5% YoY"
+            }
+        };
+        
+        // Simulating the loading of the page
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.querySelector('.loading-screen').style.display = 'none';
+            }, 1500);
+        });
+        
+        // Initialize WebGL Globe
+        let canvas, renderer, scene, camera, controls, raycaster, mouse;
+        let earthMesh, highlightedCountry, selectedCountry;
+        let isRotating = true;
+        let countries = {};
+        
+        function initGlobe() {
+            canvas = document.getElementById('globe-canvas');
+            
+            // Setting up the Three.js scene
+            scene = {
+                african_countries: Object.keys(countriesData),
+                rotating: true,
+                rotationSpeed: 0.005
+            };
+            
+            // Mock setup for the globe rendering - in a real implementation this would use Three.js
+            setupMouseEvents();
+            renderGlobe();
+            animate();
+        }
+        
+        function setupMouseEvents() {
+            canvas.addEventListener('mousemove', onMouseMove);
+            canvas.addEventListener('click', onMouseClick);
+            
+            // For mobile
+            canvas.addEventListener('touchstart', onTouchStart);
+            canvas.addEventListener('touchend', onTouchEnd);
+            
+            // Toggle rotation when clicking the globe background
+            canvas.addEventListener('click', function(event) {
+                // If not clicking on a country
+                if (!getIntersectedCountry(event)) {
+                    isRotating = !isRotating;
+                }
+            });
+        }
+        
+        function getIntersectedCountry(event) {
+            // In a real implementation, this would use raycasting with Three.js
+            // For the demo, we're just simulating a random country selection
+            if (Math.random() > 0.5) {
+                const keys = Object.keys(countriesData);
+                return keys[Math.floor(Math.random() * keys.length)];
+            }
+            return null;
+        }
+        
+        function onMouseMove(event) {
+            // Get mouse position
+            const rect = canvas.getBoundingClientRect();
+            const x = ((event.clientX - rect.left) / canvas.clientWidth) * 2 - 1;
+            const y = -((event.clientY - rect.top) / canvas.clientHeight) * 2 + 1;
+            
+            // Convert to normalized device coordinates
+            mouse = { x, y };
+            
+            // Simulate country hover
+            const countryCode = getIntersectedCountry(event);
+            
+            if (countryCode) {
+                if (highlightedCountry !== countryCode) {
+                    highlightedCountry = countryCode;
+                    showCountryPopup(countryCode, event.clientX, event.clientY);
+                }
+            } else {
+                highlightedCountry = null;
+                hideCountryPopup();
+            }
+        }
+        
+        function onMouseClick(event) {
+            const countryCode = getIntersectedCountry(event);
+            if (countryCode) {
+                window.location.href = `/countries/${countryCode.toLowerCase()}`;
+            }
+        }
+        
+        function onTouchStart(event) {
+            if (event.touches.length === 1) {
+                const touch = event.touches[0];
+                onMouseMove(touch);
+            }
+        }
+        
+        function onTouchEnd(event) {
+            if (event.changedTouches.length === 1) {
+                const touch = event.changedTouches[0];
+                onMouseClick(touch);
+            }
+        }
+        
+        function showCountryPopup(countryCode, x, y) {
+            const popup = document.getElementById('popup');
+            const countryData = countriesData[countryCode];
+            
+            if (!countryData) return;
+            
+            document.getElementById('popup-country').textContent = countryData.name;
+            document.getElementById('popup-flag').src = countryData.flag;
+            document.getElementById('popup-balance').textContent = countryData.balance;
+            document.getElementById('popup-exports').textContent = countryData.exports;
+            document.getElementById('popup-exports-yoy').textContent = countryData.exportsYoY;
+            document.getElementById('popup-imports').textContent = countryData.imports;
+            document.getElementById('popup-imports-yoy').textContent = countryData.importsYoY;
+            
+            // Add color class based on if the balance is positive or negative
+            const balanceEl = document.getElementById('popup-balance');
+            if (countryData.balance.startsWith('-')) {
+                balanceEl.className = 'stat-value negative';
+            } else {
+                balanceEl.className = 'stat-value positive';
+            }
+            
+            // Update exports YoY color
+            const exportsYoyEl = document.getElementById('popup-exports-yoy');
+            if (countryData.exportsYoY.startsWith('-')) {
+                exportsYoyEl.className = 'stat-value negative';
+            } else {
+                exportsYoyEl.className = 'stat-value positive';
+            }
+            
+            // Update imports YoY color (reverse for imports since lower growth is better for trade balance)
+            const importsYoyEl = document.getElementById('popup-imports-yoy');
+            if (countryData.importsYoY.startsWith('+')) {
+                importsYoyEl.className = 'stat-value negative';
+            } else {
+                importsYoyEl.className = 'stat-value positive';
+            }
+            
+            // Position the popup
+            const viewportWidth = window.innerWidth;
+            const popupWidth = 250;
+            
+            let popupX = x + 20;
+            
+            // Ensure popup doesn't go off screen
+            if (popupX + popupWidth > viewportWidth) {
+                popupX = x - popupWidth - 20;
+            }
+            
+            popup.style.top = `${y - 100}px`;
+            popup.style.left = `${popupX}px`;
+            popup.style.display = 'block';
+            
+            // Set up click handler for view profile button
+            document.getElementById('view-profile').onclick = function() {
+                window.location.href = `/countries/${countryCode.toLowerCase()}`;
+            };
+        }
+        
+        function hideCountryPopup() {
+            document.getElementById('popup').style.display = 'none';
+        }
+        
+        function renderGlobe() {
+            // In a real implementation, this would draw the globe with Three.js
+            // For the demo, we'll just make a colored background
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw a simple circle for the globe
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, Math.min(canvas.width, canvas.height) / 3, 0, Math.PI * 2);
+            ctx.fillStyle = '#4a8522';
+            ctx.fill();
+            // Draw some simulated country boundaries
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 0.5;
+            
+            // North Africa region
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2 - 70, canvas.height / 2 - 40);
+            ctx.lineTo(canvas.width / 2 + 30, canvas.height / 2 - 60);
+            ctx.lineTo(canvas.width / 2 + 70, canvas.height / 2 - 20);
+            ctx.lineTo(canvas.width / 2 + 40, canvas.height / 2 + 10);
+            ctx.lineTo(canvas.width / 2 - 20, canvas.height / 2 + 5);
+            ctx.closePath();
+            ctx.stroke();
+            
+            // West Africa region
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2 - 90, canvas.height / 2 - 10);
+            ctx.lineTo(canvas.width / 2 - 40, canvas.height / 2 + 30);
+            ctx.lineTo(canvas.width / 2 - 60, canvas.height / 2 + 60);
+            ctx.lineTo(canvas.width / 2 - 100, canvas.height / 2 + 40);
+            ctx.closePath();
+            ctx.stroke();
+            
+            // East Africa region
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2 + 40, canvas.height / 2 + 10);
+            ctx.lineTo(canvas.width / 2 + 70, canvas.height / 2 + 30);
+            ctx.lineTo(canvas.width / 2 + 60, canvas.height / 2 + 70);
+            ctx.lineTo(canvas.width / 2 + 20, canvas.height / 2 + 50);
+            ctx.closePath();
+            ctx.stroke();
+            
+            // Southern Africa region
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, canvas.height / 2 + 60);
+            ctx.lineTo(canvas.width / 2 + 50, canvas.height / 2 + 80);
+            ctx.lineTo(canvas.width / 2 + 20, canvas.height / 2 + 100);
+            ctx.lineTo(canvas.width / 2 - 30, canvas.height / 2 + 90);
+            ctx.closePath();
+            ctx.stroke();
+            
+            // Central Africa region
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2 - 30, canvas.height / 2 + 20);
+            ctx.lineTo(canvas.width / 2 + 20, canvas.height / 2 + 30);
+            ctx.lineTo(canvas.width / 2 + 10, canvas.height / 2 + 60);
+            ctx.lineTo(canvas.width / 2 - 40, canvas.height / 2 + 50);
+            ctx.closePath();
+            ctx.stroke();
+            
+            // If there's a highlighted country, highlight it
+            if (highlightedCountry) {
+                // For demo, highlight a random region
+                const regions = [
+                    [canvas.width / 2 - 70, canvas.height / 2 - 40, canvas.width / 2 + 30, canvas.height / 2 - 60, canvas.width / 2 + 70, canvas.height / 2 - 20, canvas.width / 2 + 40, canvas.height / 2 + 10, canvas.width / 2 - 20, canvas.height / 2 + 5],
+                    [canvas.width / 2 - 90, canvas.height / 2 - 10, canvas.width / 2 - 40, canvas.height / 2 + 30, canvas.width / 2 - 60, canvas.height / 2 + 60, canvas.width / 2 - 100, canvas.height / 2 + 40],
+                    [canvas.width / 2 + 40, canvas.height / 2 + 10, canvas.width / 2 + 70, canvas.height / 2 + 30, canvas.width / 2 + 60, canvas.height / 2 + 70, canvas.width / 2 + 20, canvas.height / 2 + 50],
+                    [canvas.width / 2, canvas.height / 2 + 60, canvas.width / 2 + 50, canvas.height / 2 + 80, canvas.width / 2 + 20, canvas.height / 2 + 100, canvas.width / 2 - 30, canvas.height / 2 + 90],
+                    [canvas.width / 2 - 30, canvas.height / 2 + 20, canvas.width / 2 + 20, canvas.height / 2 + 30, canvas.width / 2 + 10, canvas.height / 2 + 60, canvas.width / 2 - 40, canvas.height / 2 + 50]
+                ];
+                
+                const countryIndex = highlightedCountry.charCodeAt(0) % regions.length;
+                const region = regions[countryIndex];
+                
+                ctx.beginPath();
+                ctx.moveTo(region[0], region[1]);
+                for (let i = 2; i < region.length; i += 2) {
+                    ctx.lineTo(region[i], region[i + 1]);
+                }
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(240, 165, 0, 0.7)';
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (isRotating) {
+                // Simulate rotation by redrawing with a slight offset
+                // In a real implementation, this would rotate the Three.js globe
+                rotateGlobe();
+            }
+            
+            renderGlobe();
+        }
+        
+        function rotateGlobe() {
+            // In a real implementation, this would update the rotation of the Three.js globe
+            // For the demo, we're just updating a timestamp to simulate animation
+            scene.timestamp = Date.now() * 0.001;
+        }
+        
+        // Resize canvas when window is resized
+        function resizeCanvas() {
+            const container = document.querySelector('.globe-container');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            renderGlobe();
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Initialize the globe when the page loads
+        window.addEventListener('load', function() {
+            canvas = document.getElementById('globe-canvas');
+            resizeCanvas();
+            initGlobe();
+        });
+    </script>
+</body>
+</html>
