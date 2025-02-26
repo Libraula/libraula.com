@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
+import { User, MapPin, CreditCard, Package } from 'lucide-react';
 import '../styles/account.css';
 
 function Account() {
   const [userDetails, setUserDetails] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [activeSection, setActiveSection] = useState('personal');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,7 +46,10 @@ function Account() {
     return (
       <div className="Account">
         <Navbar />
-        <p>Loading account details...</p>
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading account details...</p>
+        </div>
       </div>
     );
   }
@@ -55,46 +60,181 @@ function Account() {
         <Navbar />
         <section className="account-section">
           <h1>My Account</h1>
-          <p className="error">{error}</p>
+          <div className="error-message">{error}</div>
         </section>
       </div>
     );
   }
+
+  const renderPersonalDetails = () => (
+    <div className="details-card">
+      <div className="details-header">
+        <User size={22} />
+        <h2>Personal Details</h2>
+      </div>
+      <div className="details-content">
+        <div className="detail-item">
+          <span className="detail-label">First Name</span>
+          <span className="detail-value">{userDetails?.firstName || 'N/A'}</span>
+        </div>
+        <div className="detail-item">
+          <span className="detail-label">Last Name</span>
+          <span className="detail-value">{userDetails?.lastName || 'N/A'}</span>
+        </div>
+        <div className="detail-item">
+          <span className="detail-label">Phone Number</span>
+          <span className="detail-value">{userDetails?.phoneNumber || 'N/A'}</span>
+        </div>
+        <div className="detail-item">
+          <span className="detail-label">Additional Phone</span>
+          <span className="detail-value">{userDetails?.additionalPhoneNumber || 'N/A'}</span>
+        </div>
+        <button className="edit-button">Edit Personal Details</button>
+      </div>
+    </div>
+  );
+
+  const renderShippingAddress = () => (
+    <div className="details-card">
+      <div className="details-header">
+        <MapPin size={22} />
+        <h2>Shipping Address</h2>
+      </div>
+      <div className="details-content">
+        <div className="detail-item">
+          <span className="detail-label">Address</span>
+          <span className="detail-value">{userDetails?.shippingAddress?.address || 'N/A'}</span>
+        </div>
+        <div className="detail-item">
+          <span className="detail-label">Additional Info</span>
+          <span className="detail-value">{userDetails?.shippingAddress?.additionalInfo || 'N/A'}</span>
+        </div>
+        <div className="detail-item">
+          <span className="detail-label">Region</span>
+          <span className="detail-value">{userDetails?.shippingAddress?.region || 'N/A'}</span>
+        </div>
+        <div className="detail-item">
+          <span className="detail-label">City</span>
+          <span className="detail-value">{userDetails?.shippingAddress?.city || 'N/A'}</span>
+        </div>
+        <button className="edit-button">Update Address</button>
+      </div>
+    </div>
+  );
+
+  const renderSubscriptionDetails = () => (
+    <div className="details-card">
+      <div className="details-header">
+        <Package size={22} />
+        <h2>Subscription Details</h2>
+      </div>
+      <div className="details-content">
+        <div className="detail-item">
+          <span className="detail-label">Plan</span>
+          <span className="detail-value plan-badge">{userDetails?.plan || 'N/A'}</span>
+        </div>
+        <div className="detail-item">
+          <span className="detail-label">Start Date</span>
+          <span className="detail-value">{userDetails?.startDate || 'N/A'}</span>
+        </div>
+        <div className="detail-item">
+          <span className="detail-label">Next Billing Date</span>
+          <span className="detail-value">{userDetails?.nextBillingDate || 'N/A'}</span>
+        </div>
+        <div className="detail-item">
+          <span className="detail-label">Status</span>
+          <span className="detail-value status-badge">{userDetails?.status || 'N/A'}</span>
+        </div>
+        <button className="edit-button">Manage Subscription</button>
+      </div>
+    </div>
+  );
+
+  const renderPaymentDetails = () => (
+    <div className="details-card">
+      <div className="details-header">
+        <CreditCard size={22} />
+        <h2>Payment Details</h2>
+      </div>
+      <div className="details-content">
+        <div className="detail-item">
+          <span className="detail-label">Payment Method</span>
+          <span className="detail-value">{userDetails?.paymentDetails?.paymentMethod || 'N/A'}</span>
+        </div>
+        <div className="detail-item">
+          <span className="detail-label">Mobile Provider</span>
+          <span className="detail-value">{userDetails?.paymentDetails?.mobileProvider || 'N/A'}</span>
+        </div>
+        <div className="detail-item">
+          <span className="detail-label">Mobile Number</span>
+          <span className="detail-value">{userDetails?.paymentDetails?.phoneNumber || 'N/A'}</span>
+        </div>
+        <div className="detail-item">
+          <span className="detail-label">Amount Paid</span>
+          <span className="detail-value">
+            {userDetails?.paymentDetails?.subscriptionAmount 
+              ? `UGX ${userDetails.paymentDetails.subscriptionAmount.toLocaleString()}` 
+              : 'N/A'}
+          </span>
+        </div>
+        <div className="detail-item">
+          <span className="detail-label">Payment Date</span>
+          <span className="detail-value">{userDetails?.paymentDetails?.paymentDate || 'N/A'}</span>
+        </div>
+        <button className="edit-button">Update Payment Method</button>
+      </div>
+    </div>
+  );
 
   return (
     <div className="Account">
       <Navbar />
       <section className="account-section">
         <h1>My Account</h1>
+        
+        <div className="account-navbar">
+          <button 
+            className={activeSection === 'personal' ? 'active' : ''} 
+            onClick={() => setActiveSection('personal')}
+          >
+            <User size={18} />
+            <span>Personal</span>
+          </button>
+          <button 
+            className={activeSection === 'shipping' ? 'active' : ''} 
+            onClick={() => setActiveSection('shipping')}
+          >
+            <MapPin size={18} />
+            <span>Address</span>
+          </button>
+          <button 
+            className={activeSection === 'subscription' ? 'active' : ''} 
+            onClick={() => setActiveSection('subscription')}
+          >
+            <Package size={18} />
+            <span>Subscription</span>
+          </button>
+          <button 
+            className={activeSection === 'payment' ? 'active' : ''} 
+            onClick={() => setActiveSection('payment')}
+          >
+            <CreditCard size={18} />
+            <span>Payment</span>
+          </button>
+        </div>
+        
         {userDetails ? (
           <div className="account-details">
-            <h2>Personal Details</h2>
-            <p><strong>First Name:</strong> {userDetails.firstName || 'N/A'}</p>
-            <p><strong>Last Name:</strong> {userDetails.lastName || 'N/A'}</p>
-            <p><strong>Phone Number:</strong> {userDetails.phoneNumber || 'N/A'}</p>
-            <p><strong>Additional Phone Number:</strong> {userDetails.additionalPhoneNumber || 'N/A'}</p>
-
-            <h2>Shipping Address</h2>
-            <p><strong>Address:</strong> {userDetails.shippingAddress?.address || 'N/A'}</p>
-            <p><strong>Additional Info:</strong> {userDetails.shippingAddress?.additionalInfo || 'N/A'}</p>
-            <p><strong>Region:</strong> {userDetails.shippingAddress?.region || 'N/A'}</p>
-            <p><strong>City:</strong> {userDetails.shippingAddress?.city || 'N/A'}</p>
-
-            <h2>Subscription Details</h2>
-            <p><strong>Plan:</strong> {userDetails.plan || 'N/A'}</p>
-            <p><strong>Start Date:</strong> {userDetails.startDate || 'N/A'}</p>
-            <p><strong>Next Billing Date:</strong> {userDetails.nextBillingDate || 'N/A'}</p>
-            <p><strong>Status:</strong> {userDetails.status || 'N/A'}</p>
-
-            <h2>Payment Details</h2>
-            <p><strong>Payment Method:</strong> {userDetails.paymentDetails?.paymentMethod || 'N/A'}</p>
-            <p><strong>Mobile Provider:</strong> {userDetails.paymentDetails?.mobileProvider || 'N/A'}</p>
-            <p><strong>Mobile Number:</strong> {userDetails.paymentDetails?.phoneNumber || 'N/A'}</p>
-            <p><strong>Amount Paid:</strong> {userDetails.paymentDetails?.subscriptionAmount ? `UGX ${userDetails.paymentDetails.subscriptionAmount.toLocaleString()}` : 'N/A'}</p>
-            <p><strong>Payment Date:</strong> {userDetails.paymentDetails?.paymentDate || 'N/A'}</p>
+            {activeSection === 'personal' && renderPersonalDetails()}
+            {activeSection === 'shipping' && renderShippingAddress()}
+            {activeSection === 'subscription' && renderSubscriptionDetails()}
+            {activeSection === 'payment' && renderPaymentDetails()}
           </div>
         ) : (
-          <p>No account details available.</p>
+          <div className="empty-state">
+            <p>No account details available.</p>
+            <button className="primary-button">Complete Your Profile</button>
+          </div>
         )}
       </section>
       <footer className="Account-footer">
