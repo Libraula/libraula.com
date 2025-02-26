@@ -286,6 +286,7 @@
 
 .status-cell {
   width: clamp(70px, 18vw, 100px);
+  justify-content: center; /* Center status badge */
 }
 
 .status-badge {
@@ -324,12 +325,13 @@
 
 .status-badge.return-requested {
   background-color: #fce4ec;
-  color: #c2185b; /* Pink for Return Requested */
+  color: #c2185b;
 }
 
 .actions-cell {
-  width: clamp(60px, 15vw, 100px);
+  width: clamp(100px, 20vw, 150px); /* Increased base width for spacing */
   justify-content: center;
+  padding-right: clamp(8px, 2vw, 12px); /* Extra padding for spacing */
 }
 
 .reorder-controls {
@@ -364,14 +366,15 @@
 .return-button {
   display: flex;
   align-items: center;
-  padding: clamp(5px, 1vw, 6px) clamp(10px, 2vw, 12px);
-  background-color: #f44336; /* Red for return */
+  padding: clamp(6px, 1.2vw, 8px) clamp(12px, 2.5vw, 16px); /* Slightly larger default */
+  background-color: #f44336;
   color: white;
   border: none;
   border-radius: 4px;
-  font-size: clamp(0.75rem, 2vw, 0.85rem);
+  font-size: clamp(0.8rem, 2.2vw, 0.9rem);
   cursor: pointer;
   transition: background-color 0.2s ease;
+  gap: clamp(4px, 1vw, 6px); /* Space between icon and text */
 }
 
 .return-button:hover {
@@ -379,7 +382,7 @@
 }
 
 .return-button svg {
-  margin-right: clamp(4px, 1vw, 5px);
+  margin-right: clamp(4px, 1vw, 6px);
 }
 
 .MyQueue-footer {
@@ -473,13 +476,12 @@
   }
 
   .actions-cell {
-    width: clamp(80px, 20vw, 120px);
+    width: clamp(90px, 25vw, 130px); /* Slightly wider for spacing */
   }
 
   .return-button {
-    width: 100%;
-    justify-content: center;
-    padding: clamp(5px, 1vw, 6px) clamp(8px, 2vw, 10px);
+    padding: clamp(5px, 1vw, 6px) clamp(8px, 2vw, 10px); /* Reduced padding */
+    font-size: clamp(0.75rem, 2vw, 0.85rem);
   }
 }
 
@@ -506,11 +508,11 @@
   }
   
   .status-cell {
-    width: clamp(50px, 15vw, 70px);
+    width: clamp(60px, 15vw, 80px); /* Slightly wider to prevent overlap */
   }
   
   .actions-cell {
-    width: clamp(60px, 15vw, 100px);
+    width: clamp(80px, 20vw, 110px); /* Adjusted for spacing */
   }
 
   .tabs button {
@@ -532,7 +534,7 @@
   }
 
   .return-button {
-    padding: clamp(4px, 0.8vw, 5px) clamp(6px, 1.5vw, 8px);
-    font-size: clamp(0.7rem, 1.8vw, 0.8rem);
+    padding: clamp(4px, 0.8vw, 5px) clamp(6px, 1.5vw, 8px); /* Smaller padding */
+    font-size: clamp(0.65rem, 1.8vw, 0.75rem); /* Smaller font */
   }
 }

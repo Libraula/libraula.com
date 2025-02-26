@@ -208,50 +208,56 @@ function MyQueue() {
                 <div className="table-cell actions-cell">Actions</div>
               </div>
               
-              {filteredQueue.map((item, index) => (
-                <div key={item.id} className="table-row">
-                  <div className="table-cell order-cell">{index + 1}</div>
-                  <div className="table-cell title-cell">
-                    <span className="movie-title">{item.title}</span>
-                    <span className="movie-details">({item.year} {item.rating})</span>
-                  </div>
-                  <div className="table-cell genre-cell">{item.genre}</div>
-                  <div className="table-cell format-cell">{item.format || 'DVD'}</div>
-                  <div className="table-cell status-cell">
-                    <span className={`status-badge ${item.status.toLowerCase().replace(' ', '-')}`}>
-                      {item.status}
-                    </span>
-                  </div>
-                  <div className="table-cell actions-cell">
-                    {activeTab === 'queue' ? (
-                      <div className="reorder-controls">
+              {filteredQueue.map((item, index) => {
+                // Check if item in queue is in preparing, adjust status for display
+                const isInPreparing = activeTab === 'queue' && userQueues.preparing.some(prep => prep.id === item.id);
+                const displayStatus = isInPreparing ? 'Long Wait' : item.status;
+
+                return (
+                  <div key={item.id} className="table-row">
+                    <div className="table-cell order-cell">{index + 1}</div>
+                    <div className="table-cell title-cell">
+                      <span className="movie-title">{item.title}</span>
+                      <span className="movie-details">({item.year} {item.rating})</span>
+                    </div>
+                    <div className="table-cell genre-cell">{item.genre}</div>
+                    <div className="table-cell format-cell">{item.format || 'DVD'}</div>
+                    <div className="table-cell status-cell">
+                      <span className={`status-badge ${displayStatus.toLowerCase().replace(' ', '-')}`}>
+                        {displayStatus}
+                      </span>
+                    </div>
+                    <div className="table-cell actions-cell">
+                      {activeTab === 'queue' ? (
+                        <div className="reorder-controls">
+                          <button 
+                            className="reorder-btn" 
+                            onClick={() => moveQueueItem(index, 'up')}
+                            disabled={index === 0}
+                          >
+                            <ChevronUp size={18} />
+                          </button>
+                          <button 
+                            className="reorder-btn" 
+                            onClick={() => moveQueueItem(index, 'down')}
+                            disabled={index === filteredQueue.length - 1}
+                          >
+                            <ChevronDown size={18} />
+                          </button>
+                        </div>
+                      ) : activeTab === 'home' && item.status === 'Delivered' ? (
                         <button 
-                          className="reorder-btn" 
-                          onClick={() => moveQueueItem(index, 'up')}
-                          disabled={index === 0}
+                          className="return-button" 
+                          onClick={() => requestReturn(index)}
                         >
-                          <ChevronUp size={18} />
+                          <RotateCcw size={18} />
+                          <span>Request Return</span>
                         </button>
-                        <button 
-                          className="reorder-btn" 
-                          onClick={() => moveQueueItem(index, 'down')}
-                          disabled={index === filteredQueue.length - 1}
-                        >
-                          <ChevronDown size={18} />
-                        </button>
-                      </div>
-                    ) : activeTab === 'home' && item.status === 'Delivered' ? (
-                      <button 
-                        className="return-button" 
-                        onClick={() => requestReturn(index)}
-                      >
-                        <RotateCcw size={18} />
-                        <span>Request Return</span>
-                      </button>
-                    ) : null}
+                      ) : null}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
