@@ -11,7 +11,8 @@ import {
   PlusCircle, 
   Send, 
   List,
-  Truck // New icon for Deliver
+  Truck,
+  RotateCcw // New icon for Return Requests
 } from 'lucide-react';
 import '../styles/admin.css';
 
@@ -205,7 +206,7 @@ const AddDvdForm = ({ onAddDvd }) => {
   );
 };
 
-// View Component: DvdList (Unchanged)
+// View Component: DvdList (Updated with Return Requested Status)
 const DvdList = ({ dvds, onUpdateStatus }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
@@ -244,6 +245,7 @@ const DvdList = ({ dvds, onUpdateStatus }) => {
             <option value="Long Wait">Long Wait</option>
             <option value="Preparing">Preparing</option>
             <option value="Delivered">Delivered</option>
+            <option value="Return Requested">Return Requested</option>
           </select>
         </div>
       </div>
@@ -282,6 +284,7 @@ const DvdList = ({ dvds, onUpdateStatus }) => {
                       <option value="Long Wait">Long Wait</option>
                       <option value="Preparing">Preparing</option>
                       <option value="Delivered">Delivered</option>
+                      <option value="Return Requested">Return Requested</option>
                     </select>
                   </td>
                 </tr>
@@ -302,7 +305,7 @@ const DvdList = ({ dvds, onUpdateStatus }) => {
   );
 };
 
-// New View Component: PreparingList
+// View Component: PreparingList (Unchanged)
 const PreparingList = ({ userQueues, userDetails, onDeliver }) => {
   const preparingItems = [];
   Object.entries(userQueues).forEach(([uid, queues]) => {
@@ -368,7 +371,66 @@ const PreparingList = ({ userQueues, userDetails, onDeliver }) => {
   );
 };
 
-// Updated View Component: UserQueueList
+// New View Component: ReturnRequestsList
+const ReturnRequestsList = ({ userQueues, userDetails }) => {
+  const returnItems = [];
+  Object.entries(userQueues).forEach(([uid, queues]) => {
+    const user = userDetails[uid] || { 
+      firstName: 'Unknown', 
+      lastName: 'User', 
+      phoneNumber: 'N/A',
+      shippingAddress: { line1: 'N/A', city: 'N/A', state: 'N/A', zip: 'N/A' } 
+    };
+    const fullName = `${user.firstName} ${user.lastName}`;
+    (queues.returnRequests || []).forEach(movie => {
+      returnItems.push({ uid, movie, user: { fullName, ...user } });
+    });
+  });
+
+  return (
+    <div className="admin-card">
+      <div className="card-header">
+        <RotateCcw className="card-icon" />
+        <h2>Return Requests ({returnItems.length})</h2>
+      </div>
+      
+      {returnItems.length > 0 ? (
+        <div className="user-queue-container">
+          {returnItems.map(({ uid, movie, user }) => (
+            <div key={`${uid}-${movie.id}`} className="user-card">
+              <div className="user-card-content">
+                <div className="user-details">
+                  <p><strong>Name:</strong> {user.fullName}</p>
+                  <p><strong>Phone Number:</strong> {user.phoneNumber || 'N/A'}</p>
+                  <p><strong>Location:</strong> {user.shippingAddress.line1}, {user.shippingAddress.city}, {user.shippingAddress.state} {user.shippingAddress.zip}</p>
+                </div>
+                <div className="queue-list">
+                  <h4>Item</h4>
+                  <ul className="queue-items-list">
+                    <li className="queue-item">
+                      <div className="queue-item-info">
+                        <span className="movie-title">{movie.title}</span>
+                        <span className={`status-indicator ${movie.status.toLowerCase().replace(' ', '-')}`}>
+                          {movie.status}
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="no-users-message">
+          <p>No return requests currently</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// View Component: UserQueueList (Unchanged)
 const UserQueueList = ({ userQueues, dvds, userDetails, onShip }) => {
   const [expandedUsers, setExpandedUsers] = useState({});
   const [queueNotifications, setQueueNotifications] = useState({});
@@ -555,7 +617,8 @@ function Admin() {
             queues[doc.id] = {
               queue: doc.data().queue || [],
               preparing: doc.data().preparing || [],
-              home: doc.data().home || []
+              home: doc.data().home || [],
+              returnRequests: doc.data().returnRequests || []
             };
           });
           setUserQueues(queues);
@@ -611,7 +674,7 @@ function Admin() {
 
       const queueDocRef = doc(db, 'userQueues', uid);
       const queueDocSnapshot = await getDoc(queueDocRef);
-      const currentData = queueDocSnapshot.exists() ? queueDocSnapshot.data() : { queue: [], preparing: [], home: [] };
+      const currentData = queueDocSnapshot.exists() ? queueDocSnapshot.data() : { queue: [], preparing: [], home: [], returnRequests: [] };
       
       const updatedQueue = currentData.queue.filter(item => item.id !== movie.id);
       const updatedPreparing = [...(currentData.preparing || []), { ...movie, status: 'Preparing' }];
@@ -619,7 +682,8 @@ function Admin() {
       await updateDoc(queueDocRef, {
         queue: updatedQueue,
         preparing: updatedPreparing,
-        home: currentData.home || []
+        home: currentData.home || [],
+        returnRequests: currentData.returnRequests || []
       });
 
       setUserQueues(prev => ({
@@ -627,7 +691,8 @@ function Admin() {
         [uid]: {
           queue: updatedQueue,
           preparing: updatedPreparing,
-          home: prev[uid]?.home || []
+          home: prev[uid]?.home || [],
+          returnRequests: prev[uid]?.returnRequests || []
         }
       }));
     } catch (err) {
@@ -644,7 +709,7 @@ function Admin() {
 
       const queueDocRef = doc(db, 'userQueues', uid);
       const queueDocSnapshot = await getDoc(queueDocRef);
-      const currentData = queueDocSnapshot.exists() ? queueDocSnapshot.data() : { queue: [], preparing: [], home: [] };
+      const currentData = queueDocSnapshot.exists() ? queueDocSnapshot.data() : { queue: [], preparing: [], home: [], returnRequests: [] };
       
       const updatedPreparing = currentData.preparing.filter(item => item.id !== movie.id);
       const updatedHome = [...(currentData.home || []), { ...movie, status: 'Delivered' }];
@@ -652,7 +717,8 @@ function Admin() {
       await updateDoc(queueDocRef, {
         queue: currentData.queue || [],
         preparing: updatedPreparing,
-        home: updatedHome
+        home: updatedHome,
+        returnRequests: currentData.returnRequests || []
       });
 
       setUserQueues(prev => ({
@@ -660,7 +726,8 @@ function Admin() {
         [uid]: {
           queue: prev[uid]?.queue || [],
           preparing: updatedPreparing,
-          home: updatedHome
+          home: updatedHome,
+          returnRequests: prev[uid]?.returnRequests || []
         }
       }));
     } catch (err) {
@@ -703,6 +770,10 @@ function Admin() {
               <Package size={18} />
               <span>Preparing</span>
             </li>
+            <li className={activeSection === 'return-requests' ? 'active' : ''} onClick={() => { setActiveSection('return-requests'); setSidebarOpen(false); }}>
+              <RotateCcw size={18} />
+              <span>Return Requests</span>
+            </li>
           </ul>
           
           <div className="sidebar-footer">
@@ -718,6 +789,7 @@ function Admin() {
               {activeSection === 'manage-dvds' && 'Manage DVD Inventory'}
               {activeSection === 'user-queues' && 'User Queue Management'}
               {activeSection === 'preparing' && 'Preparing Items Management'}
+              {activeSection === 'return-requests' && 'Return Requests Management'}
             </h1>
           </div>
           
@@ -729,6 +801,9 @@ function Admin() {
             )}
             {activeSection === 'preparing' && (
               <PreparingList userQueues={userQueues} userDetails={userDetails} onDeliver={handleDeliver} />
+            )}
+            {activeSection === 'return-requests' && (
+              <ReturnRequestsList userQueues={userQueues} userDetails={userDetails} />
             )}
           </div>
         </main>

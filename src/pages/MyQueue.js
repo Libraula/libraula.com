@@ -3,14 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
-import { ChevronUp, ChevronDown, Search } from 'lucide-react';
+import { ChevronUp, ChevronDown, Search, RotateCcw } from 'lucide-react';
 import '../styles/myqueue.css';
 
 function MyQueue() {
   const [activeTab, setActiveTab] = useState('queue');
   const [searchQuery, setSearchQuery] = useState('');
   const [hideLongWaits, setHideLongWaits] = useState(false);
-  const [userQueues, setUserQueues] = useState({ queue: [], preparing: [], home: [] });
+  const [userQueues, setUserQueues] = useState({ queue: [], preparing: [], home: [], returnRequests: [] });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -33,13 +33,14 @@ function MyQueue() {
           const updatedQueues = {
             queue: Array.isArray(data.queue) ? data.queue : [],
             preparing: Array.isArray(data.preparing) ? data.preparing : [],
-            home: Array.isArray(data.home) ? data.home : []
+            home: Array.isArray(data.home) ? data.home : [],
+            returnRequests: Array.isArray(data.returnRequests) ? data.returnRequests : []
           };
           setUserQueues(updatedQueues);
           console.log('Updated userQueues:', updatedQueues);
         } else {
           console.log('No document exists, setting empty queues');
-          setUserQueues({ queue: [], preparing: [], home: [] });
+          setUserQueues({ queue: [], preparing: [], home: [], returnRequests: [] });
         }
         setLoading(false);
       }, (err) => {
@@ -76,6 +77,30 @@ function MyQueue() {
     } catch (err) {
       setError('Failed to update queue order: ' + err.message);
       console.error('Error updating queue:', err);
+    }
+  };
+
+  const requestReturn = async (index) => {
+    if (!auth.currentUser) return;
+    
+    const userId = auth.currentUser.uid;
+    const home = [...userQueues.home];
+    const itemToReturn = home[index];
+    
+    home.splice(index, 1); // Remove from home
+    const updatedReturnRequests = [...userQueues.returnRequests, { ...itemToReturn, status: 'Return Requested' }];
+    
+    setUserQueues(prev => ({ ...prev, home, returnRequests: updatedReturnRequests }));
+    
+    try {
+      const queueDocRef = doc(db, 'userQueues', userId);
+      await updateDoc(queueDocRef, { 
+        home,
+        returnRequests: updatedReturnRequests 
+      });
+    } catch (err) {
+      setError('Failed to request return: ' + err.message);
+      console.error('Error requesting return:', err);
     }
   };
 
@@ -198,22 +223,32 @@ function MyQueue() {
                     </span>
                   </div>
                   <div className="table-cell actions-cell">
-                    <div className="reorder-controls">
+                    {activeTab === 'queue' ? (
+                      <div className="reorder-controls">
+                        <button 
+                          className="reorder-btn" 
+                          onClick={() => moveQueueItem(index, 'up')}
+                          disabled={index === 0}
+                        >
+                          <ChevronUp size={18} />
+                        </button>
+                        <button 
+                          className="reorder-btn" 
+                          onClick={() => moveQueueItem(index, 'down')}
+                          disabled={index === filteredQueue.length - 1}
+                        >
+                          <ChevronDown size={18} />
+                        </button>
+                      </div>
+                    ) : activeTab === 'home' && item.status === 'Delivered' ? (
                       <button 
-                        className="reorder-btn" 
-                        onClick={() => moveQueueItem(index, 'up')}
-                        disabled={index === 0 || activeTab !== 'queue'}
+                        className="return-button" 
+                        onClick={() => requestReturn(index)}
                       >
-                        <ChevronUp size={18} />
+                        <RotateCcw size={18} />
+                        <span>Request Return</span>
                       </button>
-                      <button 
-                        className="reorder-btn" 
-                        onClick={() => moveQueueItem(index, 'down')}
-                        disabled={index === filteredQueue.length - 1 || activeTab !== 'queue'}
-                      >
-                        <ChevronDown size={18} />
-                      </button>
-                    </div>
+                    ) : null}
                   </div>
                 </div>
               ))}
