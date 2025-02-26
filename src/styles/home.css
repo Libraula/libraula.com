@@ -25,11 +25,11 @@
 /* Modern Hero Section - Sleek and Contemporary */
 .modern-hero-section {
   position: relative;
-  height: clamp(450px, 60vh, 600px); /* Responsive height */
+  height: clamp(450px, 60vh, 600px);
   overflow: hidden;
   margin-bottom: 60px;
-  background: #1a1a1a; /* Dark base for modern feel */
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); /* Subtle shadow */
+  background: #1a1a1a;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .hero-background {
@@ -38,12 +38,12 @@
   height: 100%;
   object-fit: cover;
   z-index: 1;
-  opacity: 0.7; /* Reduced opacity for sleek overlay effect */
+  opacity: 0.7;
   transition: transform 0.5s ease, opacity 0.5s ease;
 }
 
 .modern-hero-section:hover .hero-background {
-  transform: scale(1.03); /* Subtle zoom for interactivity */
+  transform: scale(1.03);
   opacity: 0.8;
 }
 
@@ -53,56 +53,56 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.7) 100%); /* Modern diagonal gradient */
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.7) 100%);
   z-index: 2;
 }
 
 .modern-hero-content {
   position: relative;
   z-index: 3;
-  max-width: 900px; /* Slightly wider for modern feel */
+  max-width: 900px;
   margin: 0 auto;
-  padding: clamp(80px, 15vh, 120px) 24px; /* Responsive padding */
+  padding: clamp(80px, 15vh, 120px) 24px;
   color: #fff;
-  text-align: left; /* Left-aligned for a sleek look */
+  text-align: left;
 }
 
 .hero-badge {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.15); /* Lighter, more transparent */
-  backdrop-filter: blur(12px); /* Enhanced blur for modernity */
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
   padding: 6px 14px;
-  border-radius: 20px; /* Slimmer pill shape */
+  border-radius: 20px;
   font-size: 14px;
   font-weight: 600;
-  text-transform: uppercase; /* Modern typography */
+  text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .modern-hero-content h1 {
-  font-size: clamp(36px, 5vw, 56px); /* Larger, responsive title */
-  font-weight: 900; /* Bolder for impact */
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 900;
   margin-bottom: 16px;
-  line-height: 1.1; /* Tighter line height */
-  letter-spacing: -1px; /* Sleek spacing */
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
+  line-height: 1.1;
+  letter-spacing: -1px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .hero-synopsis {
-  font-size: clamp(16px, 2.5vw, 20px); /* Responsive size */
+  font-size: clamp(16px, 2.5vw, 20px);
   line-height: 1.5;
   margin-bottom: 32px;
-  opacity: 0.85; /* Slightly less opaque for elegance */
-  max-width: 600px; /* Constrain width for readability */
+  opacity: 0.85;
+  max-width: 600px;
 }
 
 .hero-actions {
   display: flex;
-  gap: 20px; /* Slightly wider gap */
+  gap: 20px;
   align-items: center;
 }
 
@@ -110,12 +110,12 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 24px; /* Slimmer padding */
-  border-radius: 8px; /* Sharper, modern corners */
+  padding: 12px 24px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.2);
   color: white;
-  font-weight: 700; /* Bolder text */
-  text-transform: uppercase; /* Modern touch */
+  font-weight: 700;
+  text-transform: uppercase;
   letter-spacing: 0.5px;
   transition: all 0.3s ease;
   border: none;
@@ -126,17 +126,17 @@
 
 .secondary-button:hover {
   background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-3px); /* Slightly more lift */
+  transform: translateY(-3px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
 .plus-button {
-  width: 48px; /* Slightly smaller */
+  width: 48px;
   height: 48px;
   background: #4CAF50;
   color: white;
   border: none;
-  border-radius: 12px; /* Rectangle with rounded corners */
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -147,7 +147,7 @@
 }
 
 .plus-button:hover {
-  transform: scale(1.05); /* Subtle scale */
+  transform: scale(1.05);
   background-color: #43A047;
   box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
 }
@@ -199,7 +199,7 @@
 
 .search-wrapper {
   width: 100%;
-  max-width: clamp(300px, 80%, 400px); /* Responsive max-width */
+  max-width: clamp(300px, 80%, 400px);
   margin-bottom: 12px;
 }
 
@@ -218,14 +218,14 @@
 
 .modern-search {
   width: 100%;
-  padding: clamp(12px, 2vw, 14px) clamp(12px, 3vw, 20px) clamp(12px, 2vw, 14px) clamp(40px, 8vw, 44px); /* Adjusted padding for symmetry */
-  border-radius: 12px; /* Sleeker corners */
+  padding: clamp(12px, 2vw, 14px) clamp(12px, 3vw, 20px) clamp(12px, 2vw, 14px) clamp(40px, 8vw, 44px);
+  border-radius: 12px;
   border: 1px solid #e0e0e0;
   background: white;
-  font-size: clamp(14px, 3vw, 16px); /* Responsive font */
+  font-size: clamp(14px, 3vw, 16px);
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  box-sizing: border-box; /* Ensure padding fits within width */
+  box-sizing: border-box;
 }
 
 .modern-search:focus {
@@ -508,8 +508,8 @@
   }
   
   .search-wrapper {
-    max-width: 90%; /* Fit within screen with padding */
-    padding: 0 clamp(10px, 2vw, 20px); /* Symmetrical padding */
+    max-width: 90%;
+    padding: 0 clamp(10px, 2vw, 20px);
   }
   
   .modern-search {
@@ -551,23 +551,40 @@
 
 @media (max-width: 480px) {
   .modern-hero-section {
-    height: 450px;
+    height: clamp(550px, 80vh, 650px); /* Expansive height */
+  }
+  
+  .modern-hero-content {
+    padding: clamp(60px, 10vh, 80px) 16px;
   }
   
   .modern-hero-content h1 {
     font-size: 30px;
   }
   
+  .hero-synopsis {
+    font-size: clamp(14px, 3vw, 16px); /* Reduced size for mobile */
+    max-width: 100%;
+  }
+  
   .hero-actions {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+    flex-direction: row; /* Horizontal layout */
+    gap: 10px; /* Tighter gap for fit */
+    align-items: center;
+    flex-wrap: nowrap; /* Prevent wrapping */
   }
   
   .secondary-button {
-    width: 100%;
-    justify-content: center;
-    padding: 10px 20px;
+    width: auto; /* Fit content, not full width */
+    padding: 8px 16px; /* Smaller padding */
+    font-size: clamp(12px, 2.5vw, 14px); /* Smaller text */
+  }
+  
+  .plus-button {
+    width: 36px; /* Smaller button */
+    height: 36px;
+    font-size: 16px;
+    border-radius: 8px; /* Match secondary button style */
   }
   
   .modern-popup {
@@ -575,12 +592,6 @@
     right: 16px;
     bottom: 16px;
     padding: 14px 20px;
-  }
-
-  .plus-button {
-    width: 40px;
-    height: 40px;
-    font-size: 18px;
   }
   
   .modern-movie-grid {
@@ -597,7 +608,7 @@
   }
   
   .search-wrapper {
-    max-width: 85%; /* Slightly narrower for symmetry */
+    max-width: 85%;
     padding: 0 clamp(8px, 2vw, 16px);
   }
   

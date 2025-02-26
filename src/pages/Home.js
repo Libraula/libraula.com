@@ -7,7 +7,7 @@ import { FiPlus, FiFilter, FiStar, FiSearch } from 'react-icons/fi';
 import { BiMoviePlay } from 'react-icons/bi';
 import { MdLocalMovies } from 'react-icons/md';
 import MovieCard from '../components/MovieCard';
-import {AnimatePresence, motion} from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion';
 import '../styles/home.css';
 
 function Home() {
@@ -61,14 +61,11 @@ function Home() {
       const userId = auth.currentUser.uid;
       const queueRef = doc(db, 'userQueues', userId);
 
-      // Test write permission
       await setDoc(queueRef, { test: 'Permission test' }, { merge: true });
 
-      // Get current queue
       const queueDocSnapshot = await getDoc(queueRef);
       const userQueue = queueDocSnapshot.exists() && queueDocSnapshot.data().queue ? queueDocSnapshot.data().queue : [];
 
-      // Check if movie already in queue
       if (!userQueue.some(item => item.id === movie.id)) {
         const updatedQueue = [...userQueue, movie];
         await setDoc(queueRef, { queue: updatedQueue }, { merge: true });
@@ -77,7 +74,6 @@ function Home() {
         setPopup(`${movie.title} is already in your queue`);
       }
       
-      // Auto-hide popup after 2-3 seconds
       setTimeout(() => setPopup(null), 2000);
     } catch (err) {
       console.error('Error adding to queue:', err);
@@ -136,8 +132,8 @@ function Home() {
           </motion.button>
         </motion.div>
       </div>
-      <div className="hero-overlay"></div>
-      <img src={movie.img} alt={movie.title} className="hero-background" />
+      {/* Removed .hero-overlay */}
+     
     </motion.section>
   );
 
