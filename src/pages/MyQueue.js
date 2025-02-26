@@ -10,7 +10,7 @@ function MyQueue() {
   const [activeTab, setActiveTab] = useState('queue');
   const [searchQuery, setSearchQuery] = useState('');
   const [hideLongWaits, setHideLongWaits] = useState(false);
-  const [userQueues, setUserQueues] = useState({ queue: [], preparing: [] });
+  const [userQueues, setUserQueues] = useState({ queue: [], preparing: [], home: [] });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -29,16 +29,17 @@ function MyQueue() {
       const unsubscribeSnapshot = onSnapshot(queueDocRef, (docSnapshot) => {
         if (docSnapshot.exists()) {
           const data = docSnapshot.data();
-          console.log('Firestore data:', data); // Debug: Log raw Firestore data
+          console.log('Firestore data:', data);
           const updatedQueues = {
             queue: Array.isArray(data.queue) ? data.queue : [],
-            preparing: Array.isArray(data.preparing) ? data.preparing : []
+            preparing: Array.isArray(data.preparing) ? data.preparing : [],
+            home: Array.isArray(data.home) ? data.home : []
           };
           setUserQueues(updatedQueues);
-          console.log('Updated userQueues:', updatedQueues); // Debug: Log state after update
+          console.log('Updated userQueues:', updatedQueues);
         } else {
           console.log('No document exists, setting empty queues');
-          setUserQueues({ queue: [], preparing: [] });
+          setUserQueues({ queue: [], preparing: [], home: [] });
         }
         setLoading(false);
       }, (err) => {
@@ -104,12 +105,12 @@ function MyQueue() {
 
   const queueData = {
     preparing: userQueues.preparing,
-    home: [],
+    home: userQueues.home,
     queue: userQueues.queue,
     history: [],
   };
 
-  console.log('queueData:', queueData); // Debug: Log queueData before rendering
+  console.log('queueData:', queueData);
 
   const filteredQueue = queueData[activeTab].filter((item) => {
     const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase());

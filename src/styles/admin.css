@@ -187,7 +187,7 @@
   font-weight: 600;
   display: flex;
   align-items: center;
-  gap: clamp(6px, 1vw, 10px); /* Space for notification badge */
+  gap: clamp(6px, 1vw, 10px);
 }
 
 /* Notification Badge (Section-wide) */
@@ -197,7 +197,7 @@
   align-items: center;
   width: clamp(18px, 2.5vw, 24px);
   height: clamp(18px, 2.5vw, 24px);
-  background-color: #e63946; /* Red for visibility */
+  background-color: #e63946;
   color: white;
   border-radius: 50%;
   font-size: clamp(0.7rem, 2vw, 0.9rem);
@@ -412,6 +412,16 @@
   color: #cc0000;
 }
 
+.status-badge.preparing {
+  background-color: #e6f0fa;
+  color: #3366ff;
+}
+
+.status-badge.delivered {
+  background-color: #f0f4c3;
+  color: #827717;
+}
+
 .status-select {
   padding: clamp(5px, 1vw, 6px) clamp(6px, 1.5vw, 8px);
   border: 1px solid #ddd;
@@ -480,7 +490,7 @@
   font-size: clamp(1rem, 2.5vw, 1.1rem);
   display: flex;
   align-items: center;
-  gap: clamp(6px, 1vw, 8px); /* Space for user notification badge */
+  gap: clamp(6px, 1vw, 8px);
 }
 
 .queue-count {
@@ -584,6 +594,16 @@
   color: #cc0000;
 }
 
+.status-indicator.preparing {
+  background-color: #e6f0fa;
+  color: #3366ff;
+}
+
+.status-indicator.delivered {
+  background-color: #f0f4c3;
+  color: #827717;
+}
+
 .ship-button {
   display: flex;
   align-items: center;
@@ -602,6 +622,27 @@
 }
 
 .ship-button svg {
+  margin-right: clamp(4px, 1vw, 5px);
+}
+
+.deliver-button {
+  display: flex;
+  align-items: center;
+  padding: clamp(5px, 1vw, 6px) clamp(10px, 2vw, 12px);
+  background-color: #ff9800; /* Orange for Deliver */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: clamp(0.75rem, 2vw, 0.85rem);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.deliver-button:hover {
+  background-color: #fb8c00;
+}
+
+.deliver-button svg {
   margin-right: clamp(4px, 1vw, 5px);
 }
 
@@ -625,7 +666,7 @@
   align-items: center;
   width: clamp(16px, 2vw, 20px);
   height: clamp(16px, 2vw, 20px);
-  background-color: #e63946; /* Red for visibility */
+  background-color: #e63946;
   color: white;
   border-radius: 50%;
   font-size: clamp(0.65rem, 1.5vw, 0.8rem);
@@ -814,5 +855,17 @@
     width: clamp(16px, 3vw, 20px);
     height: clamp(16px, 3vw, 20px);
     font-size: clamp(0.6rem, 2vw, 0.8rem);
+  }
+
+  .queue-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ship-button,
+  .deliver-button {
+    width: 100%;
+    max-width: clamp(120px, 30vw, 150px);
+    margin: clamp(5px, 1vw, 8px) auto 0;
   }
 }

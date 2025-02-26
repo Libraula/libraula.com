@@ -10,7 +10,8 @@ import {
   UserCheck, 
   PlusCircle, 
   Send, 
-  List 
+  List,
+  Truck // New icon for Deliver
 } from 'lucide-react';
 import '../styles/admin.css';
 
@@ -241,6 +242,8 @@ const DvdList = ({ dvds, onUpdateStatus }) => {
             <option value="Available">Available</option>
             <option value="Short Wait">Short Wait</option>
             <option value="Long Wait">Long Wait</option>
+            <option value="Preparing">Preparing</option>
+            <option value="Delivered">Delivered</option>
           </select>
         </div>
       </div>
@@ -277,6 +280,8 @@ const DvdList = ({ dvds, onUpdateStatus }) => {
                       <option value="Available">Available</option>
                       <option value="Short Wait">Short Wait</option>
                       <option value="Long Wait">Long Wait</option>
+                      <option value="Preparing">Preparing</option>
+                      <option value="Delivered">Delivered</option>
                     </select>
                   </td>
                 </tr>
@@ -293,6 +298,72 @@ const DvdList = ({ dvds, onUpdateStatus }) => {
       <div className="table-pagination">
         <span className="showing-text">Showing {filteredDvds.length} of {dvds.length} DVDs</span>
       </div>
+    </div>
+  );
+};
+
+// New View Component: PreparingList
+const PreparingList = ({ userQueues, userDetails, onDeliver }) => {
+  const preparingItems = [];
+  Object.entries(userQueues).forEach(([uid, queues]) => {
+    const user = userDetails[uid] || { 
+      firstName: 'Unknown', 
+      lastName: 'User', 
+      phoneNumber: 'N/A',
+      shippingAddress: { line1: 'N/A', city: 'N/A', state: 'N/A', zip: 'N/A' } 
+    };
+    const fullName = `${user.firstName} ${user.lastName}`;
+    (queues.preparing || []).forEach(movie => {
+      preparingItems.push({ uid, movie, user: { fullName, ...user } });
+    });
+  });
+
+  return (
+    <div className="admin-card">
+      <div className="card-header">
+        <Package className="card-icon" />
+        <h2>Items in Preparing ({preparingItems.length})</h2>
+      </div>
+      
+      {preparingItems.length > 0 ? (
+        <div className="user-queue-container">
+          {preparingItems.map(({ uid, movie, user }) => (
+            <div key={`${uid}-${movie.id}`} className="user-card">
+              <div className="user-card-content">
+                <div className="user-details">
+                  <p><strong>Name:</strong> {user.fullName}</p>
+                  <p><strong>Phone Number:</strong> {user.phoneNumber || 'N/A'}</p>
+                  <p><strong>Location:</strong> {user.shippingAddress.line1}, {user.shippingAddress.city}, {user.shippingAddress.state} {user.shippingAddress.zip}</p>
+                </div>
+                <div className="queue-list">
+                  <h4>Item</h4>
+                  <ul className="queue-items-list">
+                    <li className="queue-item">
+                      <div className="queue-item-info">
+                        <span className="movie-title">{movie.title}</span>
+                        <span className={`status-indicator ${movie.status.toLowerCase().replace(' ', '-')}`}>
+                          {movie.status}
+                        </span>
+                      </div>
+                      <button 
+                        className="deliver-button" 
+                        onClick={() => onDeliver(uid, movie)}
+                      >
+                        <Truck size={16} />
+                        <span>Deliver</span>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="no-users-message">
+          <p>No items currently in Preparing</p>
+        </div>
+      )}
     </div>
   );
 };
@@ -481,7 +552,11 @@ function Admin() {
           const queueSnapshot = await getDocs(collection(db, 'userQueues'));
           const queues = {};
           queueSnapshot.forEach(doc => {
-            queues[doc.id] = doc.data().queue || [];
+            queues[doc.id] = {
+              queue: doc.data().queue || [],
+              preparing: doc.data().preparing || [],
+              home: doc.data().home || []
+            };
           });
           setUserQueues(queues);
 
@@ -530,15 +605,13 @@ function Admin() {
 
   const handleShip = async (uid, movie) => {
     try {
-      // Update DVD status to "Preparing" in dvds collection
       const dvdRef = doc(db, 'dvds', movie.id);
       await updateDoc(dvdRef, { status: 'Preparing' });
       setDvds(prev => prev.map(dvd => dvd.id === movie.id ? { ...dvd, status: 'Preparing' } : dvd));
 
-      // Update userQueues: Move item from queue to preparing
       const queueDocRef = doc(db, 'userQueues', uid);
       const queueDocSnapshot = await getDoc(queueDocRef);
-      const currentData = queueDocSnapshot.exists() ? queueDocSnapshot.data() : { queue: [], preparing: [] };
+      const currentData = queueDocSnapshot.exists() ? queueDocSnapshot.data() : { queue: [], preparing: [], home: [] };
       
       const updatedQueue = currentData.queue.filter(item => item.id !== movie.id);
       const updatedPreparing = [...(currentData.preparing || []), { ...movie, status: 'Preparing' }];
@@ -546,15 +619,53 @@ function Admin() {
       await updateDoc(queueDocRef, {
         queue: updatedQueue,
         preparing: updatedPreparing,
+        home: currentData.home || []
       });
 
       setUserQueues(prev => ({
         ...prev,
-        [uid]: updatedQueue
+        [uid]: {
+          queue: updatedQueue,
+          preparing: updatedPreparing,
+          home: prev[uid]?.home || []
+        }
       }));
     } catch (err) {
       setError('Failed to ship item: ' + err.message);
       console.error('Error shipping item:', err);
+    }
+  };
+
+  const handleDeliver = async (uid, movie) => {
+    try {
+      const dvdRef = doc(db, 'dvds', movie.id);
+      await updateDoc(dvdRef, { status: 'Delivered' });
+      setDvds(prev => prev.map(dvd => dvd.id === movie.id ? { ...dvd, status: 'Delivered' } : dvd));
+
+      const queueDocRef = doc(db, 'userQueues', uid);
+      const queueDocSnapshot = await getDoc(queueDocRef);
+      const currentData = queueDocSnapshot.exists() ? queueDocSnapshot.data() : { queue: [], preparing: [], home: [] };
+      
+      const updatedPreparing = currentData.preparing.filter(item => item.id !== movie.id);
+      const updatedHome = [...(currentData.home || []), { ...movie, status: 'Delivered' }];
+
+      await updateDoc(queueDocRef, {
+        queue: currentData.queue || [],
+        preparing: updatedPreparing,
+        home: updatedHome
+      });
+
+      setUserQueues(prev => ({
+        ...prev,
+        [uid]: {
+          queue: prev[uid]?.queue || [],
+          preparing: updatedPreparing,
+          home: updatedHome
+        }
+      }));
+    } catch (err) {
+      setError('Failed to deliver item: ' + err.message);
+      console.error('Error delivering item:', err);
     }
   };
 
@@ -588,6 +699,10 @@ function Admin() {
               <UserCheck size={18} />
               <span>User Queues</span>
             </li>
+            <li className={activeSection === 'preparing' ? 'active' : ''} onClick={() => { setActiveSection('preparing'); setSidebarOpen(false); }}>
+              <Package size={18} />
+              <span>Preparing</span>
+            </li>
           </ul>
           
           <div className="sidebar-footer">
@@ -602,6 +717,7 @@ function Admin() {
               {activeSection === 'add-dvd' && 'Add New DVD'}
               {activeSection === 'manage-dvds' && 'Manage DVD Inventory'}
               {activeSection === 'user-queues' && 'User Queue Management'}
+              {activeSection === 'preparing' && 'Preparing Items Management'}
             </h1>
           </div>
           
@@ -610,6 +726,9 @@ function Admin() {
             {activeSection === 'manage-dvds' && <DvdList dvds={dvds} onUpdateStatus={handleUpdateStatus} />}
             {activeSection === 'user-queues' && (
               <UserQueueList userQueues={userQueues} dvds={dvds} userDetails={userDetails} onShip={handleShip} />
+            )}
+            {activeSection === 'preparing' && (
+              <PreparingList userQueues={userQueues} userDetails={userDetails} onDeliver={handleDeliver} />
             )}
           </div>
         </main>
