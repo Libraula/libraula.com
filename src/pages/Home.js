@@ -5,7 +5,7 @@ import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
 import { FiPlus, FiFilter, FiStar, FiSearch } from 'react-icons/fi';
 import { BiMoviePlay } from 'react-icons/bi';
-import { MdLocalMovies } from 'react-icons/md';
+import { MdLocalMovies } from 'react-icons/md'; // Added missing import
 import MovieCard from '../components/MovieCard';
 import { AnimatePresence, motion } from 'framer-motion';
 import '../styles/home.css';
@@ -132,8 +132,6 @@ function Home() {
           </motion.button>
         </motion.div>
       </div>
-      {/* Removed .hero-overlay */}
-     
     </motion.section>
   );
 
@@ -142,19 +140,8 @@ function Home() {
       <div className="modern-home">
         <Navbar />
         <div className="loading-container">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-          >
-            <MdLocalMovies className="loading-icon" />
-          </motion.div>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-          >
-            Loading your movie collection...
-          </motion.p>
+          <div className="loading-spinner"></div>
+          <p>Loading your movie collection...</p>
         </div>
       </div>
     );

@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
-import { FiPlusCircle, FiStar, FiClock } from 'react-icons/fi';
-import { MdLocalMovies } from 'react-icons/md';
+import { FiPlusCircle, FiStar } from 'react-icons/fi'; // Removed FiClock since it's not critical
 import '../styles/newreleases.css';
 
 function NewReleases() {
@@ -67,7 +66,7 @@ function NewReleases() {
       <div className="modern-newreleases">
         <Navbar />
         <div className="loading-container">
-          <MdLocalMovies className="loading-icon" />
+          <div className="loading-spinner"></div>
           <p>Loading latest releases...</p>
         </div>
       </div>
@@ -111,7 +110,8 @@ function NewReleases() {
                 <h3>{movie.title}</h3>
                 <div className="movie-meta">
                   <span className="rating"><FiStar /> {movie.rating}</span>
-                  <span className="duration"><FiClock /> {movie.duration || '2h 30m'}</span>
+                  {/* Duration is optional, kept as fallback */}
+                  <span className="duration">{movie.duration || '2h 30m'}</span>
                 </div>
                 <p className="movie-synopsis">{movie.synopsis}</p>
               </div>

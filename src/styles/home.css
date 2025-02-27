@@ -7,19 +7,29 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* Loading State */
+/* Loading State - Copied from MyQueue */
 .loading-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 60vh;
-  color: #4CAF50;
+  height: 50vh;
+  width: 100%;
 }
 
-.loading-icon {
-  font-size: 48px;
-  color: #4CAF50;
+.loading-spinner {
+  width: clamp(30px, 5vw, 40px);
+  height: clamp(30px, 5vw, 40px);
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #4CAF50; /* Adjusted to match Home's color scheme */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: clamp(12px, 2vw, 16px);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* Modern Hero Section - Sleek and Contemporary */
@@ -104,8 +114,8 @@
   display: flex;
   gap: 20px;
   align-items: center;
-  justify-content: center; /* Center buttons on all screen sizes */
-  width: 100%; /* Full width for symmetry */
+  justify-content: center;
+  width: 100%;
 }
 
 .secondary-button {
@@ -544,15 +554,14 @@
     gap: 20px;
   }
 
-  /* Button styles */
   .modern-hero-section .hero-actions {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     gap: 16px;
     align-items: center;
-    justify-content: center; /* Center buttons */
-    width: 100%; /* Full width for symmetry */
+    justify-content: center;
+    width: 100%;
   }
 
   .hero-actions .secondary-button {
@@ -648,15 +657,14 @@
     padding: clamp(8px, 2vw, 10px) clamp(8px, 2vw, 12px) clamp(8px, 2vw, 10px) clamp(32px, 8vw, 36px);
   }
 
-  /* Button styles with centering */
   .modern-hero-section .hero-actions {
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: nowrap !important;
     gap: 10px !important;
     align-items: center !important;
-    justify-content: center !important; /* Center buttons */
-    width: 100% !important; /* Full width for symmetry */
+    justify-content: center !important;
+    width: 100% !important;
   }
 
   .modern-hero-section .hero-actions .secondary-button {
