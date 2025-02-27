@@ -104,6 +104,8 @@
   display: flex;
   gap: 20px;
   align-items: center;
+  justify-content: center; /* Center buttons on all screen sizes */
+  width: 100%; /* Full width for symmetry */
 }
 
 .secondary-button {
@@ -546,10 +548,11 @@
   .modern-hero-section .hero-actions {
     display: flex;
     flex-direction: row;
-    flex-wrap: nowrap; /* Prevent wrapping */
+    flex-wrap: nowrap;
     gap: 16px;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center; /* Center buttons */
+    width: 100%; /* Full width for symmetry */
   }
 
   .hero-actions .secondary-button {
@@ -559,7 +562,7 @@
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    min-width: 110px; /* Slightly larger for text */
+    min-width: 110px;
   }
 
   .hero-actions .plus-button {
@@ -645,15 +648,15 @@
     padding: clamp(8px, 2vw, 10px) clamp(8px, 2vw, 12px) clamp(8px, 2vw, 10px) clamp(32px, 8vw, 36px);
   }
 
-  /* Button styles with higher specificity */
+  /* Button styles with centering */
   .modern-hero-section .hero-actions {
-    display: flex !important; /* Force flex */
-    flex-direction: row !important; /* Force horizontal */
-    flex-wrap: nowrap !important; /* Prevent wrapping */
-    gap: 10px !important; /* Tight gap */
-    align-items: center !important; /* Keep level */
-    justify-content: flex-start !important; /* Align left */
-    width: 100%; /* Ensure full width available */
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 10px !important;
+    align-items: center !important;
+    justify-content: center !important; /* Center buttons */
+    width: 100% !important; /* Full width for symmetry */
   }
 
   .modern-hero-section .hero-actions .secondary-button {
@@ -663,8 +666,8 @@
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    min-width: 100px; /* Ensure text fits */
-    flex-shrink: 0; /* Prevent shrinking */
+    min-width: 100px;
+    flex-shrink: 0;
   }
 
   .modern-hero-section .hero-actions .plus-button {
@@ -672,7 +675,7 @@
     height: 36px;
     font-size: 16px;
     border-radius: 12px;
-    flex-shrink: 0; /* Prevent shrinking */
+    flex-shrink: 0;
   }
 
   .movie-card-actions {
