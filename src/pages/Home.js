@@ -4,16 +4,16 @@ import { collection, getDocs, doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
 import { FiPlus, FiFilter, FiStar, FiSearch } from 'react-icons/fi';
-import { BiMoviePlay } from 'react-icons/bi';
-import { MdLocalMovies } from 'react-icons/md'; // Added missing import
-import MovieCard from '../components/MovieCard';
+import { BiBookOpen } from 'react-icons/bi';
+import { MdBook } from 'react-icons/md';
+import BookCard from '../components/BookCard';
 import { AnimatePresence, motion } from 'framer-motion';
 import '../styles/home.css';
 
 function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('All');
-  const [dvds, setDvds] = useState([]);
+  const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [popup, setPopup] = useState(null);
   const navigate = useNavigate();
@@ -23,35 +23,35 @@ function Home() {
       if (!user) {
         navigate('/');
       } else {
-        fetchDvds();
+        fetchBooks();
       }
     });
 
     return () => unsubscribe();
   }, [navigate]);
 
-  const fetchDvds = async () => {
+  const fetchBooks = async () => {
     try {
-      const dvdSnapshot = await getDocs(collection(db, 'dvds'));
-      const dvdList = dvdSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setDvds(dvdList);
+      const bookSnapshot = await getDocs(collection(db, 'books'));
+      const bookList = bookSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setBooks(bookList);
     } catch (err) {
-      console.error('Error fetching DVDs:', err);
+      console.error('Error fetching books:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredMovies = dvds.filter((movie) =>
-    movie.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
-    (selectedGenre === 'All' || movie.genre === selectedGenre)
-  );
+  const filteredBooks = books.filter((book) =>
+    book.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
+    (selectedGenre === 'All' || (book.genre && book.genre.split(',').includes(selectedGenre)))
+  ); // Updated to handle comma-separated genres
 
-  const handleMovieClick = (movie) => {
-    navigate(`/movie/${movie.id}`, { state: { movie } });
+  const handleBookClick = (book) => {
+    navigate(`/book/${book.id}`, { state: { book } }); // Ensure correct route and state passing
   };
 
-  const handleAddToQueue = async (movie) => {
+  const handleAddToQueue = async (book) => {
     if (!auth.currentUser) {
       navigate('/login');
       return;
@@ -66,23 +66,23 @@ function Home() {
       const queueDocSnapshot = await getDoc(queueRef);
       const userQueue = queueDocSnapshot.exists() && queueDocSnapshot.data().queue ? queueDocSnapshot.data().queue : [];
 
-      if (!userQueue.some(item => item.id === movie.id)) {
-        const updatedQueue = [...userQueue, movie];
+      if (!userQueue.some(item => item.id === book.id)) {
+        const updatedQueue = [...userQueue, book];
         await setDoc(queueRef, { queue: updatedQueue }, { merge: true });
-        setPopup(`${movie.title} added to your queue!`);
+        setPopup(`${book.title} added to your queue!`);
       } else {
-        setPopup(`${movie.title} is already in your queue`);
+        setPopup(`${book.title} is already in your queue`);
       }
       
       setTimeout(() => setPopup(null), 2000);
     } catch (err) {
       console.error('Error adding to queue:', err);
-      setPopup(`Failed to add ${movie.title} to queue: ${err.message}`);
+      setPopup(`Failed to add ${book.title} to queue: ${err.message}`);
       setTimeout(() => setPopup(null), 3000);
     }
   };
 
-  const FeaturedMovie = ({ movie }) => (
+  const FeaturedBook = ({ book }) => (
     <motion.section 
       className="modern-hero-section"
       initial={{ opacity: 0 }}
@@ -96,14 +96,14 @@ function Home() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <FiStar /> Featured Film
+          <FiStar /> Featured Book {book.newRelease && '(New Release)'}
         </motion.div>
         <motion.h1
           initial={{ y: -10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.3 }}
         >
-          {movie.title}
+          {book.title}
         </motion.h1>
         <motion.p 
           className="hero-synopsis"
@@ -111,20 +111,28 @@ function Home() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4 }}
         >
-          {movie.synopsis}
+          {book.synopsis || 'No synopsis available.'}
         </motion.p>
+        <motion.div 
+          className="hero-meta"
+          initial={{ y: -10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.45 }}
+        >
+          <span>{book.author || 'Unknown Author'}</span> | <span>{book.pages || 'N/A'} pages</span> | <span>{book.format || 'N/A'}</span>
+        </motion.div>
         <motion.div 
           className="hero-actions"
           initial={{ y: -10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <button className="secondary-button" onClick={() => handleMovieClick(movie)}>
-            <BiMoviePlay /> View Details
+          <button className="secondary-button" onClick={() => handleBookClick(book)}>
+            <BiBookOpen /> View Details
           </button>
           <motion.button 
             className="plus-button" 
-            onClick={() => handleAddToQueue(movie)}
+            onClick={() => handleAddToQueue(book)}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
@@ -141,13 +149,13 @@ function Home() {
         <Navbar />
         <div className="loading-container">
           <div className="loading-spinner"></div>
-          <p>Loading your movie collection...</p>
+          <p>Loading your book collection...</p>
         </div>
       </div>
     );
   }
 
-  const genres = ['All', 'Action', 'Drama', 'Sci-Fi', 'Comedy', 'Horror', 'Romance'];
+  const genres = ['All', 'Novels', 'Non-Fiction', 'Manga', 'Comics', 'Graphic Novels'];
 
   return (
     <div className="modern-home">
@@ -168,7 +176,7 @@ function Home() {
         )}
       </AnimatePresence>
       
-      {dvds.length > 0 && <FeaturedMovie movie={dvds[0]} />}
+      {books.length > 0 && <FeaturedBook book={books[0]} />}
 
       <motion.section 
         className="modern-catalog"
@@ -185,7 +193,7 @@ function Home() {
                 <FiSearch className="search-icon" />
                 <input
                   type="text"
-                  placeholder="Search movies..."
+                  placeholder="Search books..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="modern-search"
@@ -213,7 +221,7 @@ function Home() {
         </div>
 
         <motion.div 
-          className="modern-movie-grid"
+          className="modern-book-grid" // Renamed from modern-movie-grid
           variants={{
             hidden: { opacity: 0 },
             show: {
@@ -226,31 +234,31 @@ function Home() {
           initial="hidden"
           animate="show"
         >
-          {filteredMovies.map((movie) => (
+          {filteredBooks.map((book) => (
             <motion.div
-              key={movie.id}
+              key={book.id}
               variants={{
                 hidden: { y: 20, opacity: 0 },
                 show: { y: 0, opacity: 1 }
               }}
             >
-              <MovieCard
-                movie={movie}
-                handleMovieClick={handleMovieClick}
+              <BookCard
+                book={book}
+                handleBookClick={handleBookClick}
                 handleAddToQueue={handleAddToQueue}
               />
             </motion.div>
           ))}
         </motion.div>
         
-        {filteredMovies.length === 0 && (
+        {filteredBooks.length === 0 && (
           <motion.div 
             className="no-results"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <MdLocalMovies className="no-results-icon" />
-            <h3>No movies found</h3>
+            <MdBook className="no-results-icon" />
+            <h3>No books found</h3>
             <p>Try adjusting your search or filter</p>
           </motion.div>
         )}

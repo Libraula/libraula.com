@@ -1,24 +1,24 @@
-/* Movie Grid */
-.modern-movie-grid {
+/* Book Grid - Renamed from Movie Grid */
+.modern-book-grid { /* Renamed from modern-movie-grid */
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* More adaptive */
   gap: 12px; /* Balanced spacing */
   padding: 10px;
 }
 
-/* Movie Card */
-.modern-movie-card {
+/* Book Card - Renamed from Movie Card */
+.modern-book-card { /* Renamed from modern-movie-card */
   position: relative;
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
-  aspect-ratio: 2 / 3;
+  aspect-ratio: 2 / 3; /* Kept for book cover proportions (adjustable if needed) */
   max-width: 100%;
 }
 
-.modern-movie-card:hover {
+.modern-book-card:hover {
   transform: scale(1.05);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
@@ -47,14 +47,14 @@
   z-index: 2;
 }
 
-.modern-movie-card:hover .card-overlay {
+.modern-book-card:hover .card-overlay { /* Updated selector */
   opacity: 1;
 }
 
 .plus-button {
   width: 30px;
   height: 30px;
-  background: #e50914;
+  background: #4CAF50; /* Changed to match site’s green theme */
   color: white;
   border: none;
   border-radius: 50%;
@@ -69,7 +69,7 @@
 
 .plus-button:hover {
   transform: scale(1.1);
-  background-color: #b20710;
+  background-color: #43A047; /* Darker green for hover */
 }
 
 /* Text Overlay */
@@ -85,7 +85,7 @@
   transition: opacity 0.3s ease;
 }
 
-.modern-movie-card:hover .card-text-overlay {
+.modern-book-card:hover .card-text-overlay { /* Updated selector */
   opacity: 1;
 }
 
@@ -98,7 +98,7 @@
   white-space: nowrap;
 }
 
-.movie-meta {
+.book-meta { /* Renamed from movie-meta */
   display: flex;
   justify-content: space-between;
   font-size: 13px;
@@ -107,7 +107,7 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .modern-movie-grid {
+  .modern-book-grid { /* Updated selector */
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   }
   .card-text-overlay h3 {
@@ -116,7 +116,7 @@
 }
 
 @media (max-width: 480px) {
-  .modern-movie-grid {
+  .modern-book-grid { /* Updated selector */
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   }
   .plus-button {

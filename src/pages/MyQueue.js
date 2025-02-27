@@ -110,7 +110,7 @@ function MyQueue() {
         <Navbar />
         <div className="loading-container">
           <div className="loading-spinner"></div>
-          <p>Loading your queue...</p>
+          <p>Loading your book queue...</p> {/* Updated text */}
         </div>
       </div>
     );
@@ -154,7 +154,7 @@ function MyQueue() {
             <Search size={18} className="search-icon" />
             <input
               type="text"
-              placeholder="Search your queue..."
+              placeholder="Search your book queue..." // Updated placeholder
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="search-input"
@@ -187,14 +187,14 @@ function MyQueue() {
             <span className="checkbox-label">Hide long waits</span>
           </label>
           {activeTab === 'queue' && queueData.queue.length < 12 && (
-            <p className="suggestion">For a better experience, we suggest having at least a dozen movies in your queue.</p>
+            <p className="suggestion">For a better experience, we suggest having at least a dozen books in your queue.</p> // Updated text
           )}
         </div>
 
         <div className="queue-list">
           {filteredQueue.length === 0 ? (
             <div className="empty-state">
-              <p>Your list is empty.</p>
+              <p>Your book list is empty.</p> {/* Updated text */}
               {activeTab === 'queue' && <button className="add-button">Browse Catalog</button>}
             </div>
           ) : (
@@ -209,7 +209,6 @@ function MyQueue() {
               </div>
               
               {filteredQueue.map((item, index) => {
-                // Check if item in queue is in preparing, adjust status for display
                 const isInPreparing = activeTab === 'queue' && userQueues.preparing.some(prep => prep.id === item.id);
                 const displayStatus = isInPreparing ? 'Long Wait' : item.status;
 
@@ -217,11 +216,11 @@ function MyQueue() {
                   <div key={item.id} className="table-row">
                     <div className="table-cell order-cell">{index + 1}</div>
                     <div className="table-cell title-cell">
-                      <span className="movie-title">{item.title}</span>
-                      <span className="movie-details">({item.year} {item.rating})</span>
+                      <span className="book-title">{item.title}</span> {/* Updated className */}
+                      <span className="book-details">({item.year} {item.pages ? `${item.pages} pages` : ''})</span> {/* Updated from rating to pages */}
                     </div>
                     <div className="table-cell genre-cell">{item.genre}</div>
-                    <div className="table-cell format-cell">{item.format || 'DVD'}</div>
+                    <div className="table-cell format-cell">{item.format || 'Hardcover'}</div> {/* Updated default from DVD to Hardcover */}
                     <div className="table-cell status-cell">
                       <span className={`status-badge ${displayStatus.toLowerCase().replace(' ', '-')}`}>
                         {displayStatus}

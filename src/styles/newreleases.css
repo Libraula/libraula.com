@@ -7,7 +7,7 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* Loading State - Copied from Home (originally from MyQueue) */
+/* Loading State */
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -160,14 +160,14 @@
   margin-bottom: 24px;
 }
 
-/* Movie Grid */
-.modern-movie-grid {
+/* Book Grid - Updated from Movie Grid */
+.modern-book-grid { /* Renamed from modern-movie-grid */
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 24px;
 }
 
-.modern-movie-card {
+.modern-book-card { /* Renamed from modern-movie-card */
   background: white;
   border-radius: 16px;
   overflow: hidden;
@@ -176,14 +176,14 @@
   cursor: pointer;
 }
 
-.modern-movie-card:hover {
+.modern-book-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 8px 30px rgba(0,0,0,0.12);
 }
 
 .card-image-container {
   position: relative;
-  aspect-ratio: 16/9;
+  aspect-ratio: 2/3; /* Adjusted for book cover proportions */
   overflow: hidden;
 }
 
@@ -205,7 +205,7 @@
   transition: opacity 0.3s ease;
 }
 
-.modern-movie-card:hover .card-overlay {
+.modern-book-card:hover .card-overlay {
   opacity: 1;
 }
 
@@ -228,18 +228,18 @@
   transform: scale(1.05);
 }
 
-.modern-movie-info {
+.modern-book-info { /* Renamed from modern-movie-info */
   padding: 20px;
 }
 
-.modern-movie-info h3 {
+.modern-book-info h3 {
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 12px;
   color: #1a1a1a;
 }
 
-.movie-meta {
+.book-meta { /* Renamed from movie-meta */
   display: flex;
   gap: 16px;
   margin-bottom: 12px;
@@ -247,13 +247,13 @@
   color: #666;
 }
 
-.movie-meta span {
+.book-meta span {
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
-.movie-synopsis {
+.book-synopsis { /* Renamed from movie-synopsis */
   font-size: 14px;
   line-height: 1.5;
   color: #666;

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import { FaBars, FaTimes, FaHome, FaFilm, FaList, FaUser, FaSignOutAlt, FaUserShield } from 'react-icons/fa';
+import { FaBars, FaTimes, FaHome, FaBookOpen, FaBookmark, FaUser, FaSignOutAlt, FaUserShield } from 'react-icons/fa'; // Updated icons
 import logo from './logo.png';
 import './navbar.css';
 
@@ -79,8 +79,8 @@ function Navbar() {
                 {isLoggedIn && (
                   <>
                     <Link to="/home" title="Browse"><FaHome size={24} /></Link>
-                    <Link to="/new-releases" title="New Releases"><FaFilm size={24} /></Link>
-                    <Link to="/queue" title="My Queue"><FaList size={24} /></Link>
+                    <Link to="/new-releases" title="New Releases"><FaBookOpen size={24} /></Link> {/* Replaced FaFilm with FaBookOpen */}
+                    <Link to="/queue" title="My Queue"><FaBookmark size={24} /></Link> {/* Replaced FaList with FaBookmark */}
                   </>
                 )}
               </div>
@@ -121,8 +121,8 @@ function Navbar() {
               {isLoggedIn && (
                 <>
                   <Link to="/home" onClick={toggleSideNav}><FaHome /> Browse</Link>
-                  <Link to="/new-releases" onClick={toggleSideNav}><FaFilm /> New Releases</Link>
-                  <Link to="/queue" onClick={toggleSideNav}><FaList /> My Queue</Link>
+                  <Link to="/new-releases" onClick={toggleSideNav}><FaBookOpen /> New Releases</Link> {/* Replaced FaFilm with FaBookOpen */}
+                  <Link to="/queue" onClick={toggleSideNav}><FaBookmark /> My Queue</Link> {/* Replaced FaList with FaBookmark */}
                   <Link to="/account" onClick={toggleSideNav}><FaUser /> Account</Link>
                   {isAdmin && <Link to="/admin" onClick={toggleSideNav}><FaUserShield /> Admin</Link>}
                   <span onClick={() => { handleSignOut(); toggleSideNav(); }} className="sign-out-link"><FaSignOutAlt /> Sign Out</span>

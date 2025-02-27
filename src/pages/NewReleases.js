@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
-import { FiPlusCircle, FiStar } from 'react-icons/fi'; // Removed FiClock since it's not critical
+import { FiPlusCircle, FiStar } from 'react-icons/fi';
 import '../styles/newreleases.css';
 
 function NewReleases() {
@@ -15,9 +15,9 @@ function NewReleases() {
   useEffect(() => {
     const fetchNewReleases = async () => {
       try {
-        const dvdSnapshot = await getDocs(collection(db, 'dvds'));
-        const dvdList = dvdSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        const filteredNewReleases = dvdList.filter(dvd => dvd.newRelease);
+        const bookSnapshot = await getDocs(collection(db, 'books')); // Changed from 'dvds' to 'books'
+        const bookList = bookSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const filteredNewReleases = bookList.filter(book => book.newRelease); // Updated from dvd to book
         setNewReleases(filteredNewReleases);
       } catch (err) {
         console.error('Error fetching new releases:', err);
@@ -28,7 +28,7 @@ function NewReleases() {
     fetchNewReleases();
   }, []);
 
-  const handleAddToQueue = async (movie) => {
+  const handleAddToQueue = async (book) => { // Updated from movie to book
     if (!auth.currentUser) {
       navigate('/login');
       return;
@@ -41,24 +41,24 @@ function NewReleases() {
       const queueDocSnapshot = await getDoc(queueRef);
       const userQueue = queueDocSnapshot.exists() && queueDocSnapshot.data().queue ? queueDocSnapshot.data().queue : [];
 
-      if (!userQueue.some(item => item.id === movie.id)) {
-        const updatedQueue = [...userQueue, movie];
+      if (!userQueue.some(item => item.id === book.id)) {
+        const updatedQueue = [...userQueue, book];
         await setDoc(queueRef, { queue: updatedQueue }, { merge: true });
-        setPopup(`${movie.title} added to your queue!`);
+        setPopup(`${book.title} added to your queue!`);
         setTimeout(() => setPopup(null), 2000);
       } else {
-        setPopup(`${movie.title} is already in your queue`);
+        setPopup(`${book.title} is already in your queue`);
         setTimeout(() => setPopup(null), 2000);
       }
     } catch (err) {
       console.error('Error adding to queue:', err);
-      setPopup(`Failed to add ${movie.title} to queue: ${err.message}`);
+      setPopup(`Failed to add ${book.title} to queue: ${err.message}`);
       setTimeout(() => setPopup(null), 3000);
     }
   };
 
-  const handleMovieClick = (movie) => {
-    navigate(`/movie/${movie.id}`, { state: { movie } });
+  const handleBookClick = (book) => { // Renamed from handleMovieClick
+    navigate(`/book/${book.id}`, { state: { book } }); // Changed route from /movie to /book
   };
 
   if (loading) {
@@ -67,7 +67,7 @@ function NewReleases() {
         <Navbar />
         <div className="loading-container">
           <div className="loading-spinner"></div>
-          <p>Loading latest releases...</p>
+          <p>Loading latest book releases...</p> {/* Updated text */}
         </div>
       </div>
     );
@@ -85,35 +85,34 @@ function NewReleases() {
 
       <section className="modern-catalog">
         <div className="catalog-controls">
-          <h2>New Releases</h2>
-          <p>Check out the latest DVDs added to our collection.</p>
+          <h2>New Book Releases</h2> {/* Updated title */}
+          <p>Check out the latest books added to our collection.</p> {/* Updated text */}
         </div>
 
-        <div className="modern-movie-grid">
-          {newReleases.map((movie) => (
-            <div key={movie.id} className="modern-movie-card" onClick={() => handleMovieClick(movie)}>
+        <div className="modern-book-grid"> {/* Updated className from modern-movie-grid */}
+          {newReleases.map((book) => ( // Updated from movie to book
+            <div key={book.id} className="modern-book-card" onClick={() => handleBookClick(book)}> {/* Updated className */}
               <div className="card-image-container">
-                <img src={movie.img} alt={movie.title} loading="lazy" />
+                <img src={book.img} alt={book.title} loading="lazy" />
                 <div className="card-overlay">
                   <button
                     className="card-action-button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleAddToQueue(movie);
+                      handleAddToQueue(book);
                     }}
                   >
                     <FiPlusCircle /> Add to Queue
                   </button>
                 </div>
               </div>
-              <div className="modern-movie-info">
-                <h3>{movie.title}</h3>
-                <div className="movie-meta">
-                  <span className="rating"><FiStar /> {movie.rating}</span>
-                  {/* Duration is optional, kept as fallback */}
-                  <span className="duration">{movie.duration || '2h 30m'}</span>
+              <div className="modern-book-info"> {/* Updated className */}
+                <h3>{book.title}</h3>
+                <div className="book-meta"> {/* Updated className */}
+                  <span className="pages"><FiStar /> {book.pages || 'N/A'} pages</span> {/* Updated from rating to pages */}
+                  {/* Removed duration as it’s less relevant for books */}
                 </div>
-                <p className="movie-synopsis">{movie.synopsis}</p>
+                <p className="book-synopsis">{book.synopsis}</p> {/* Updated className */}
               </div>
             </div>
           ))}

@@ -29,10 +29,10 @@
 }
 
 .logo {
-  max-height: 80px; /* Increased from 60px */
+  max-height: 80px;
   width: auto;
   transition: transform 0.3s ease;
-  object-fit: contain; /* Ensures image maintains aspect ratio */
+  object-fit: contain;
 }
 
 .logo:hover {
@@ -155,7 +155,7 @@
 /* Responsive Design */
 @media (max-width: 1024px) {
   .logo {
-    max-height: 70px; /* Increased from 50px */
+    max-height: 70px;
   }
 
   .nav-links {
@@ -181,7 +181,7 @@
   }
 
   .logo {
-    max-height: 60px; /* Increased from 48px */
+    max-height: 60px;
   }
 
   .logo-nav-container {
@@ -201,6 +201,6 @@
   }
 
   .logo {
-    max-height: 55px; /* Increased from 48px */
+    max-height: 55px;
   }
 }

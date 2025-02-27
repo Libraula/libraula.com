@@ -205,8 +205,8 @@
   animation: pulse 1s infinite alternate;
 }
 
-/* Add DVD Form Styles */
-.add-dvd-form {
+/* Add Book Form Styles - Renamed from Add DVD Form */
+.add-book-form { /* Updated from add-dvd-form */
   padding: clamp(15px, 3vw, 20px);
   display: flex;
   flex-direction: column;
@@ -310,7 +310,7 @@
   margin-right: clamp(6px, 1vw, 8px);
 }
 
-/* DVD List Table Styles */
+/* Book List Table Styles - Renamed from DVD List */
 .filter-controls {
   display: flex;
   flex-wrap: wrap;
@@ -353,13 +353,13 @@
   width: 100%;
 }
 
-.dvd-table {
+.book-table { /* Updated from dvd-table */
   width: 100%;
   border-collapse: collapse;
   text-align: left;
 }
 
-.dvd-table th {
+.book-table th { /* Updated selector */
   background-color: #f9fafc;
   padding: clamp(10px, 2vw, 12px) clamp(12px, 2.5vw, 15px);
   font-weight: 600;
@@ -368,14 +368,14 @@
   font-size: clamp(0.85rem, 2vw, 0.95rem);
 }
 
-.dvd-table td {
+.book-table td { /* Updated selector */
   padding: clamp(10px, 2vw, 12px) clamp(12px, 2.5vw, 15px);
   border-bottom: 1px solid #eee;
   vertical-align: middle;
   font-size: clamp(0.8rem, 2vw, 0.9rem);
 }
 
-.dvd-table tr:last-child td {
+.book-table tr:last-child td { /* Updated selector */
   border-bottom: none;
 }
 
@@ -424,7 +424,7 @@
 
 .status-badge.return-requested {
   background-color: #fce4ec;
-  color: #c2185b; /* Pink for Return Requested */
+  color: #c2185b;
 }
 
 .status-select {
@@ -570,7 +570,7 @@
   width: clamp(20px, 5vw, 24px);
 }
 
-.movie-title {
+.book-title { /* Updated from movie-title */
   font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -826,13 +826,13 @@
     padding: clamp(10px, 2vw, 15px);
   }
   
-  .dvd-table thead th:first-child,
-  .dvd-table tbody td:first-child {
+  .book-table thead th:first-child,
+  .book-table tbody td:first-child { /* Updated selector */
     display: none;
   }
   
-  .dvd-table th,
-  .dvd-table td {
+  .book-table th,
+  .book-table td { /* Updated selector */
     padding: clamp(8px, 2vw, 10px);
   }
   

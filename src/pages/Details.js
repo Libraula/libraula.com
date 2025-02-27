@@ -3,36 +3,41 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
-import { FiPlusCircle, FiStar, FiClock, FiChevronLeft } from 'react-icons/fi';
+import { FiPlusCircle, FiStar, FiChevronLeft } from 'react-icons/fi';
 import '../styles/details.css';
 
 function Details() {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const [movie, setMovie] = useState(location.state?.movie || null);
-  const [isLoading, setIsLoading] = useState(!movie);
+  const [book, setBook] = useState(location.state?.book || null);
+  const [isLoading, setIsLoading] = useState(!book);
   const [popup, setPopup] = useState(null);
   const [selectedImage, setSelectedImage] = useState(0);
 
   useEffect(() => {
-    const fetchMovie = async () => {
-      if (!movie && id) {
+    const fetchBook = async () => {
+      if (!book && id) {
         try {
           setIsLoading(true);
-          // Placeholder for actual movie fetching logic
-          // Example: const movieDoc = await getDoc(doc(db, 'dvds', id));
-          // if (movieDoc.exists()) setMovie({ id, ...movieDoc.data() });
+          const bookDocRef = doc(db, 'books', id);
+          const bookDocSnapshot = await getDoc(bookDocRef);
+          if (bookDocSnapshot.exists()) {
+            setBook({ id, ...bookDocSnapshot.data() });
+          } else {
+            setBook(null);
+          }
           setIsLoading(false);
         } catch (error) {
-          console.error('Error fetching movie:', error);
+          console.error('Error fetching book:', error);
+          setBook(null);
           setIsLoading(false);
         }
       }
     };
     
-    fetchMovie();
-  }, [id, movie]);
+    fetchBook();
+  }, [id, book]);
 
   const handleAddToQueue = async () => {
     if (!auth.currentUser) {
@@ -51,17 +56,17 @@ function Details() {
         ? queueDocSnapshot.data().queue 
         : [];
 
-      if (!userQueue.some(item => item.id === movie.id)) {
-        const updatedQueue = [...userQueue, movie];
+      if (!userQueue.some(item => item.id === book.id)) {
+        const updatedQueue = [...userQueue, book];
         await setDoc(queueRef, { queue: updatedQueue }, { merge: true });
-        setPopup(`${movie.title} added to your queue!`);
+        setPopup(`${book.title} added to your queue!`);
       } else {
-        setPopup(`${movie.title} is already in your queue`);
+        setPopup(`${book.title} is already in your queue`);
       }
       setTimeout(() => setPopup(null), 2000);
     } catch (err) {
       console.error('Error adding to queue:', err);
-      setPopup(`Failed to add ${movie.title} to queue: ${err.message}`);
+      setPopup(`Failed to add ${book.title} to queue: ${err.message}`);
       setTimeout(() => setPopup(null), 3000);
     }
   };
@@ -72,19 +77,19 @@ function Details() {
         <Navbar />
         <div className="loading-container">
           <div className="loading-spinner"></div>
-          <p>Loading movie details...</p>
+          <p>Loading book details...</p>
         </div>
       </div>
     );
   }
 
-  if (!movie) {
+  if (!book) {
     return (
       <div className="details-page">
         <Navbar />
         <div className="error-container">
-          <h2>Movie not found!</h2>
-          <p>The movie you're looking for may have been removed or doesn't exist.</p>
+          <h2>Book not found!</h2>
+          <p>The book you're looking for may have been removed or doesn't exist.</p>
           <button className="contact-btn" onClick={() => navigate('/home')}>
             <FiChevronLeft /> Return Home
           </button>
@@ -93,12 +98,12 @@ function Details() {
     );
   }
 
-  const images = movie.images && movie.images.length ? movie.images : [
-    movie.img || "https://placehold.co/400x600",
-    "https://placehold.co/400x600",
-    "https://placehold.co/400x600",
-    "https://placehold.co/400x600"
-  ];
+  const images = book.images && book.images.length ? book.images : [
+    book.img || "https://placehold.co/400x600",
+    book.img2 || "https://placehold.co/400x600",
+    book.img3 || "https://placehold.co/400x600",
+    book.img4 || "https://placehold.co/400x600"
+  ].filter(img => img); // Filter out empty strings
 
   return (
     <div className="details-page">
@@ -114,7 +119,7 @@ function Details() {
         <div className="image-gallery">
           <img 
             src={images[selectedImage]} 
-            alt={`${movie.title} poster`}
+            alt={`${book.title} cover ${selectedImage + 1}`}
             className="main-image"
           />
           <div className="thumbnail-strip">
@@ -122,7 +127,7 @@ function Details() {
               <img 
                 key={index}
                 src={img}
-                alt={`Thumbnail ${index + 1}`}
+                alt={`${book.title} thumbnail ${index + 1}`}
                 className={`thumbnail ${selectedImage === index ? 'active' : ''}`}
                 onClick={() => setSelectedImage(index)}
               />
@@ -131,38 +136,49 @@ function Details() {
         </div>
 
         <div className="details-info">
-          <h1>{movie.title}</h1>
+          <h1>{book.title}</h1>
           <div className="basic-info">
-            <p>Year: {movie.year || 'N/A'}</p>
-            <p>Rating: <FiStar /> {movie.rating || '8.5'}</p>
-            <p>Duration: <FiClock /> {movie.duration || '2h 30m'}</p>
+            <p><span className="label">Publication Year:</span> {book.year || 'N/A'}</p>
+            <p><span className="label">Pages:</span> <FiStar /> {book.pages || 'N/A'}</p>
+            <p><span className="label">Format:</span> {book.format || 'N/A'}</p>
+            <p><span className="label">Status:</span> {book.status || 'N/A'}</p>
+            {book.newRelease && <p><span className="label">New Release:</span> Yes</p>}
           </div>
 
           <div className="description">
             <h2>Synopsis</h2>
-            <p>{movie.synopsis || 'No synopsis available for this movie.'}</p>
+            <p>{book.synopsis || 'No synopsis available for this book.'}</p>
           </div>
 
-          <div className="hobbies">
+          <div className="genres">
             <h2>Genre</h2>
             <ul>
-              {(movie.genre || 'Drama,Action').split(',').map((genre, index) => (
+              {(book.genre || 'Unknown').split(',').map((genre, index) => (
                 <li key={index}>{genre.trim()}</li>
               ))}
             </ul>
           </div>
 
-          <div className="services">
-            <h2>Cast</h2>
+          <div className="authors">
+            <h2>Author(s)</h2>
             <ul>
-              {(movie.cast || ['Actor One', 'Actor Two']).map((actor, index) => (
-                <li key={index}>{actor}</li>
+              {(typeof book.author === 'string' ? [book.author] : book.author || ['Unknown']).map((author, index) => (
+                <li key={index}>{author}</li>
               ))}
             </ul>
           </div>
 
-          {/* Removed the "Details" section with Director, Format, Status */}
-          
+          {book.cast && book.cast.length > 0 && (
+            <div className="contributors">
+              <h2>Contributors (Co-authors/Illustrators)</h2>
+              <ul>
+                {book.cast.map((contributor, index) => (
+                  <li key={index}>{contributor}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <button className="contact-btn" onClick={handleAddToQueue}>
             <FiPlusCircle /> Add to Queue
           </button>

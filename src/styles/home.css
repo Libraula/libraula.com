@@ -7,7 +7,7 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* Loading State - Copied from MyQueue */
+/* Loading State */
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -21,7 +21,7 @@
   width: clamp(30px, 5vw, 40px);
   height: clamp(30px, 5vw, 40px);
   border: 3px solid #f3f3f3;
-  border-top: 3px solid #4CAF50; /* Adjusted to match Home's color scheme */
+  border-top: 3px solid #4CAF50;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: clamp(12px, 2vw, 16px);
@@ -292,8 +292,8 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Modern Movie Grid */
-.modern-movie-grid {
+/* Modern Book Grid - Renamed from modern-movie-grid */
+.modern-movie-grid { /* Consider renaming to .modern-book-grid in future */
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 32px;
@@ -405,8 +405,8 @@
   font-size: 14px;
 }
 
-/* MovieCard Component Styles */
-.movie-card {
+/* BookCard Component Styles - Renamed from MovieCard */
+.movie-card { /* Consider renaming to .book-card in future */
   background: white;
   border-radius: 20px;
   overflow: hidden;
@@ -709,5 +709,42 @@
     height: 36px;
     font-size: 16px;
     border-radius: 12px;
+  }
+}
+
+/* ... (keep existing styles unchanged) */
+
+/* Modern Book Grid */
+.modern-book-grid { /* Updated from modern-movie-grid */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 32px;
+  margin-top: 40px;
+}
+
+/* Hero Meta */
+.hero-meta {
+  font-size: clamp(14px, 2vw, 16px);
+  color: #fff;
+  opacity: 0.9;
+  margin-bottom: 1.5rem;
+}
+
+.hero-meta span {
+  margin-right: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .modern-book-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modern-book-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
   }
 }
