@@ -10,21 +10,33 @@ function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
+    console.log('Form submitted with:', { email, password }); // Debug log
+    setError(''); // Clear previous errors
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      console.log('Signed up successfully');
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      console.log('Signed up successfully:', userCredential.user); // Log success
       navigate('/pricing');
     } catch (err) {
-      setError('Failed to create account');
-      console.error('Signup error:', err);
-    } finally {
-      setIsLoading(false);
+      let errorMessage = 'Failed to create account';
+      switch (err.code) {
+        case 'auth/email-already-in-use':
+          errorMessage = 'This email is already in use.';
+          break;
+        case 'auth/invalid-email':
+          errorMessage = 'Invalid email format.';
+          break;
+        case 'auth/weak-password':
+          errorMessage = 'Password must be at least 6 characters.';
+          break;
+        default:
+          errorMessage = `Signup failed: ${err.message}`;
+      }
+      setError(errorMessage);
+      console.error('Signup error:', err.code, err.message); // Detailed error log
     }
   };
 
@@ -73,19 +85,9 @@ function Signup() {
               />
             </div>
 
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="signup-button"
-            >
-              {isLoading ? (
-                <span className="button-spinner"></span>
-              ) : (
-                <>
-                  <FiUserPlus />
-                  <span>Create Account</span>
-                </>
-              )}
+            <button type="submit" className="signup-button">
+              <FiUserPlus />
+              <span>Create Account</span>
             </button>
           </form>
 
