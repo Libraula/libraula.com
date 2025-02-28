@@ -10,7 +10,6 @@
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^13.5.0",
     "firebase": "^11.3.1",
-    "flutterwave-node-v3": "^1.1.14",
     "framer-motion": "^12.4.7",
     "lucide-react": "^0.476.0",
     "react": "^19.0.0",
@@ -26,12 +25,6 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -45,6 +38,7 @@
     ]
   },
   "devDependencies": {
-    "@types/react-beautiful-dnd": "^13.1.8"
+    "@types/react-beautiful-dnd": "^13.1.8",
+    "eslint": "^6.6.0"
   }
 }
