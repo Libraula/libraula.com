@@ -45,31 +45,37 @@ function Subscription() {
     try {
       const userId = auth.currentUser.uid;
       const email = auth.currentUser.email;
-      const txRef = `tx-${userId}-${Date.now()}`; // Unique transaction reference
-      const phoneNumber = `256${formData.phone}`; // Add country code
+      const txRef = `tx-${userId}-${Date.now()}`;
+      const phoneNumber = `256${formData.phone}`;
 
-      // Initiate payment with Flutterwave via backend
+      console.log('Sending payment request:', { phoneNumber, mobileProvider: formData.mobileProvider, amount: subscriptionPlan.priceUGX, email, txRef });
+
       const response = await axios.post('http://localhost:5000/initiate-payment', {
         phoneNumber,
         mobileProvider: formData.mobileProvider,
         amount: subscriptionPlan.priceUGX,
         email,
         txRef,
+      }, {
+        timeout: 10000 // Add timeout to prevent hanging
       });
 
       const paymentResponse = response.data;
       console.log('Payment initiation response:', paymentResponse);
 
       if (paymentResponse.status === 'success' && paymentResponse.meta?.authorization?.mode === 'redirect') {
-        // Redirect user to Flutterwave payment page
         window.location.href = paymentResponse.meta.authorization.redirect;
       } else {
-        throw new Error('Payment initiation failed');
+        throw new Error('Payment initiation failed: Invalid response from server');
       }
-
-      // Note: Webhook handling should update Firestore after payment completion (handled server-side)
     } catch (err) {
-      setError('Failed to initiate payment: ' + (err.message || 'Unknown error'));
+      if (err.code === 'ECONNREFUSED' || err.message === 'Network Error') {
+        setError('Failed to connect to payment server. Please ensure the backend is running.');
+      } else if (err.response) {
+        setError(`Payment server error: ${err.response.data.error || err.response.statusText}`);
+      } else {
+        setError(`Failed to initiate payment: ${err.message || 'Unknown error'}`);
+      }
       console.error('Payment error:', err);
       setIsLoading(false);
     }
