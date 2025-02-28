@@ -6,7 +6,7 @@ import Navbar from '../components/Navbar';
 import { 
   AlertCircle, 
   Package, 
-  BookOpen, // Replaced Film with BookOpen
+  BookOpen,
   UserCheck, 
   PlusCircle, 
   Send, 
@@ -16,48 +16,48 @@ import {
 } from 'lucide-react';
 import '../styles/admin.css';
 
-// View Component: AddBookForm (Renamed internally)
-const AddBookForm = ({ onAddBook }) => { // Renamed from AddDvdForm and onAddDvd
-  const [newBook, setNewBook] = useState({ // Changed from newDvd to newBook
+// View Component: AddBookForm
+const AddBookForm = ({ onAddBook }) => {
+  const [newBook, setNewBook] = useState({
     title: '',
-    img: 'https://placehold.co/400x600?text=New+Book', // Updated placeholder text
-    img2: '', // Added field for second image
-    img3: '', // Added field for third image
-    img4: '', // Added field for fourth image
+    img: 'https://placehold.co/400x600?text=New+Book',
+    img2: '',
+    img3: '',
+    img4: '',
     synopsis: '',
-    pages: '', // Replaced rating with pages
+    pages: '',
     genre: '',
-    author: '', // Replaced director with author
+    author: '',
     year: '',
-    cast: '', // Kept as-is, could be repurposed for co-authors or illustrators
+    cast: '',
     status: 'Available',
-    format: 'Hardcover', // Updated default from DVD to Hardcover
+    format: 'Hardcover',
     newRelease: false,
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const bookToAdd = { // Changed from dvdToAdd
+    const bookToAdd = {
       ...newBook,
-      cast: newBook.cast ? newBook.cast.split(',').map(name => name.trim()) : [], // Kept for potential co-authors
-      images: [newBook.img, newBook.img2, newBook.img3, newBook.img4].filter(img => img), // Added images array
+      cast: newBook.cast ? newBook.cast.split(',').map(name => name.trim()) : [],
+      images: [newBook.img, newBook.img2, newBook.img3, newBook.img4].filter(img => img),
       createdAt: new Date().toISOString(),
     };
-    await onAddBook(bookToAdd); // Updated function name
+    await onAddBook(bookToAdd);
     setNewBook({
       title: '',
-      img: 'https://placehold.co/400x600?text=New+Book', // Updated placeholder text
-      img2: '', // Reset second image
-      img3: '', // Reset third image
-      img4: '', // Reset fourth image
+      img: 'https://placehold.co/400x600?text=New+Book',
+      img2: '',
+      img3: '',
+      img4: '',
       synopsis: '',
-      pages: '', // Reset pages
+      pages: '',
       genre: '',
-      author: '', // Reset author
+      author: '',
       year: '',
       cast: '',
       status: 'Available',
-      format: 'Hardcover', // Updated default
+      format: 'Hardcover',
       newRelease: false,
     });
   };
@@ -66,9 +66,9 @@ const AddBookForm = ({ onAddBook }) => { // Renamed from AddDvdForm and onAddDvd
     <div className="admin-card">
       <div className="card-header">
         <PlusCircle className="card-icon" />
-        <h2>Add New Book</h2> {/* Updated text */}
+        <h2>Add New Book</h2>
       </div>
-      <form onSubmit={handleSubmit} className="add-book-form"> {/* Updated className */}
+      <form onSubmit={handleSubmit} className="add-book-form">
         <div className="form-group">
           <label htmlFor="title">Title</label>
           <input 
@@ -82,7 +82,7 @@ const AddBookForm = ({ onAddBook }) => { // Renamed from AddDvdForm and onAddDvd
         </div>
         
         <div className="form-group">
-          <label htmlFor="image">Cover Image URL</label> {/* Updated label */}
+          <label htmlFor="image">Cover Image URL</label>
           <input 
             id="image"
             type="text" 
@@ -93,7 +93,7 @@ const AddBookForm = ({ onAddBook }) => { // Renamed from AddDvdForm and onAddDvd
         </div>
         
         <div className="form-group">
-          <label htmlFor="image2">Additional Image 1 URL</label> {/* Added field */}
+          <label htmlFor="image2">Additional Image 1 URL</label>
           <input 
             id="image2"
             type="text" 
@@ -104,7 +104,7 @@ const AddBookForm = ({ onAddBook }) => { // Renamed from AddDvdForm and onAddDvd
         </div>
         
         <div className="form-group">
-          <label htmlFor="image3">Additional Image 2 URL</label> {/* Added field */}
+          <label htmlFor="image3">Additional Image 2 URL</label>
           <input 
             id="image3"
             type="text" 
@@ -115,7 +115,7 @@ const AddBookForm = ({ onAddBook }) => { // Renamed from AddDvdForm and onAddDvd
         </div>
         
         <div className="form-group">
-          <label htmlFor="image4">Additional Image 3 URL</label> {/* Added field */}
+          <label htmlFor="image4">Additional Image 3 URL</label>
           <input 
             id="image4"
             type="text" 
@@ -129,7 +129,7 @@ const AddBookForm = ({ onAddBook }) => { // Renamed from AddDvdForm and onAddDvd
           <label htmlFor="synopsis">Synopsis</label>
           <textarea 
             id="synopsis"
-            placeholder="Book description" // Updated placeholder
+            placeholder="Book description"
             value={newBook.synopsis} 
             onChange={(e) => setNewBook({ ...newBook, synopsis: e.target.value })} 
             required 
@@ -138,11 +138,11 @@ const AddBookForm = ({ onAddBook }) => { // Renamed from AddDvdForm and onAddDvd
         
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="pages">Pages</label> {/* Replaced Rating with Pages */}
+            <label htmlFor="pages">Pages</label>
             <input 
               id="pages"
-              type="number" // Changed to number type
-              placeholder="Number of pages" // Updated placeholder
+              type="number"
+              placeholder="Number of pages"
               value={newBook.pages} 
               onChange={(e) => setNewBook({ ...newBook, pages: e.target.value })} 
               required 
@@ -154,7 +154,7 @@ const AddBookForm = ({ onAddBook }) => { // Renamed from AddDvdForm and onAddDvd
             <input 
               id="genre"
               type="text" 
-              placeholder="Novels, Manga" // Updated placeholder
+              placeholder="Novels, Manga"
               value={newBook.genre} 
               onChange={(e) => setNewBook({ ...newBook, genre: e.target.value })} 
               required 
@@ -164,11 +164,11 @@ const AddBookForm = ({ onAddBook }) => { // Renamed from AddDvdForm and onAddDvd
         
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="author">Author</label> {/* Replaced Director with Author */}
+            <label htmlFor="author">Author</label>
             <input 
               id="author"
               type="text" 
-              placeholder="Author name" // Updated placeholder
+              placeholder="Author name"
               value={newBook.author} 
               onChange={(e) => setNewBook({ ...newBook, author: e.target.value })} 
               required 
@@ -180,7 +180,7 @@ const AddBookForm = ({ onAddBook }) => { // Renamed from AddDvdForm and onAddDvd
             <input 
               id="year"
               type="text" 
-              placeholder="Publication year" // Updated placeholder
+              placeholder="Publication year"
               value={newBook.year} 
               onChange={(e) => setNewBook({ ...newBook, year: e.target.value })} 
               required 
@@ -189,11 +189,11 @@ const AddBookForm = ({ onAddBook }) => { // Renamed from AddDvdForm and onAddDvd
         </div>
         
         <div className="form-group full-width">
-          <label htmlFor="cast">Co-authors/Illustrators</label> {/* Repurposed cast */}
+          <label htmlFor="cast">Co-authors/Illustrators</label>
           <input 
             id="cast"
             type="text" 
-            placeholder="Comma-separated names (optional)" // Updated placeholder
+            placeholder="Comma-separated names (optional)"
             value={newBook.cast} 
             onChange={(e) => setNewBook({ ...newBook, cast: e.target.value })} 
           />
@@ -240,19 +240,19 @@ const AddBookForm = ({ onAddBook }) => { // Renamed from AddDvdForm and onAddDvd
         
         <button type="submit" className="admin-button">
           <PlusCircle size={18} />
-          <span>Add Book</span> {/* Updated text */}
+          <span>Add Book</span>
         </button>
       </form>
     </div>
   );
 };
 
-// View Component: BookList (Renamed internally)
-const BookList = ({ books, onUpdateStatus }) => { // Renamed from DvdList and dvds
+// View Component: BookList
+const BookList = ({ books, onUpdateStatus }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   
-  const filteredBooks = books.filter(book => { // Changed from filteredDvds
+  const filteredBooks = books.filter(book => {
     const matchesSearch = book.title.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'All' || book.status === statusFilter;
     return matchesSearch && matchesStatus;
@@ -261,8 +261,8 @@ const BookList = ({ books, onUpdateStatus }) => { // Renamed from DvdList and dv
   return (
     <div className="admin-card">
       <div className="card-header">
-        <BookOpen className="card-icon" /> {/* Replaced Film with BookOpen */}
-        <h2>Manage Books</h2> {/* Updated text */}
+        <BookOpen className="card-icon" />
+        <h2>Manage Books</h2>
       </div>
       
       <div className="filter-controls">
@@ -292,7 +292,7 @@ const BookList = ({ books, onUpdateStatus }) => { // Renamed from DvdList and dv
       </div>
       
       <div className="table-container">
-        <table className="book-table"> {/* Updated className */}
+        <table className="book-table">
           <thead>
             <tr>
               <th>ID</th>
@@ -304,7 +304,7 @@ const BookList = ({ books, onUpdateStatus }) => { // Renamed from DvdList and dv
           </thead>
           <tbody>
             {filteredBooks.length > 0 ? (
-              filteredBooks.map((book) => ( // Changed from filteredDvds and dvd
+              filteredBooks.map((book) => (
                 <tr key={book.id}>
                   <td className="id-column">{book.id.substring(0, 6)}...</td>
                   <td className="title-column">{book.title}</td>
@@ -332,7 +332,7 @@ const BookList = ({ books, onUpdateStatus }) => { // Renamed from DvdList and dv
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="no-results">No books match your criteria</td> {/* Updated text */}
+                <td colSpan="5" className="no-results">No books match your criteria</td>
               </tr>
             )}
           </tbody>
@@ -340,13 +340,13 @@ const BookList = ({ books, onUpdateStatus }) => { // Renamed from DvdList and dv
       </div>
       
       <div className="table-pagination">
-        <span className="showing-text">Showing {filteredBooks.length} of {books.length} books</span> {/* Updated text */}
+        <span className="showing-text">Showing {filteredBooks.length} of {books.length} books</span>
       </div>
     </div>
   );
 };
 
-// View Component: PreparingList (Updated terminology)
+// View Component: PreparingList
 const PreparingList = ({ userQueues, userDetails, onDeliver }) => {
   const preparingItems = [];
   Object.entries(userQueues).forEach(([uid, queues]) => {
@@ -357,8 +357,8 @@ const PreparingList = ({ userQueues, userDetails, onDeliver }) => {
       shippingAddress: { line1: 'N/A', city: 'N/A', state: 'N/A', zip: 'N/A' } 
     };
     const fullName = `${user.firstName} ${user.lastName}`;
-    (queues.preparing || []).forEach(book => { // Changed from movie to book
-      preparingItems.push({ uid, book, user: { fullName, ...user } }); // Updated from movie to book
+    (queues.preparing || []).forEach(book => {
+      preparingItems.push({ uid, book, user: { fullName, ...user } });
     });
   });
 
@@ -371,7 +371,7 @@ const PreparingList = ({ userQueues, userDetails, onDeliver }) => {
       
       {preparingItems.length > 0 ? (
         <div className="user-queue-container">
-          {preparingItems.map(({ uid, book, user }) => ( // Updated from movie to book
+          {preparingItems.map(({ uid, book, user }) => (
             <div key={`${uid}-${book.id}`} className="user-card">
               <div className="user-card-content">
                 <div className="user-details">
@@ -384,14 +384,14 @@ const PreparingList = ({ userQueues, userDetails, onDeliver }) => {
                   <ul className="queue-items-list">
                     <li className="queue-item">
                       <div className="queue-item-info">
-                        <span className="book-title">{book.title}</span> {/* Updated className */}
+                        <span className="book-title">{book.title}</span>
                         <span className={`status-indicator ${book.status.toLowerCase().replace(' ', '-')}`}>
                           {book.status}
                         </span>
                       </div>
                       <button 
                         className="deliver-button" 
-                        onClick={() => onDeliver(uid, book)} // Updated from movie to book
+                        onClick={() => onDeliver(uid, book)}
                       >
                         <Truck size={16} />
                         <span>Deliver</span>
@@ -412,7 +412,7 @@ const PreparingList = ({ userQueues, userDetails, onDeliver }) => {
   );
 };
 
-// View Component: ReturnRequestsList (Updated terminology)
+// View Component: ReturnRequestsList
 const ReturnRequestsList = ({ userQueues, userDetails }) => {
   const returnItems = [];
   Object.entries(userQueues).forEach(([uid, queues]) => {
@@ -423,8 +423,8 @@ const ReturnRequestsList = ({ userQueues, userDetails }) => {
       shippingAddress: { line1: 'N/A', city: 'N/A', state: 'N/A', zip: 'N/A' } 
     };
     const fullName = `${user.firstName} ${user.lastName}`;
-    (queues.returnRequests || []).forEach(book => { // Changed from movie to book
-      returnItems.push({ uid, book, user: { fullName, ...user } }); // Updated from movie to book
+    (queues.returnRequests || []).forEach(book => {
+      returnItems.push({ uid, book, user: { fullName, ...user } });
     });
   });
 
@@ -437,7 +437,7 @@ const ReturnRequestsList = ({ userQueues, userDetails }) => {
       
       {returnItems.length > 0 ? (
         <div className="user-queue-container">
-          {returnItems.map(({ uid, book, user }) => ( // Updated from movie to book
+          {returnItems.map(({ uid, book, user }) => (
             <div key={`${uid}-${book.id}`} className="user-card">
               <div className="user-card-content">
                 <div className="user-details">
@@ -450,7 +450,7 @@ const ReturnRequestsList = ({ userQueues, userDetails }) => {
                   <ul className="queue-items-list">
                     <li className="queue-item">
                       <div className="queue-item-info">
-                        <span className="book-title">{book.title}</span> {/* Updated className */}
+                        <span className="book-title">{book.title}</span>
                         <span className={`status-indicator ${book.status.toLowerCase().replace(' ', '-')}`}>
                           {book.status}
                         </span>
@@ -471,17 +471,18 @@ const ReturnRequestsList = ({ userQueues, userDetails }) => {
   );
 };
 
-// View Component: UserQueueList (Updated terminology)
-const UserQueueList = ({ userQueues, books, userDetails, onShip }) => { // Changed dvds to books
+// View Component: UserQueueList
+const UserQueueList = ({ userQueues, books, userDetails, onShip }) => {
   const [expandedUsers, setExpandedUsers] = useState({});
   const [queueNotifications, setQueueNotifications] = useState({});
   const [prevQueues, setPrevQueues] = useState(userQueues);
 
   useEffect(() => {
+    console.log('User Queues:', userQueues); // Debug log to inspect data
     const newNotifications = { ...queueNotifications };
     Object.entries(userQueues).forEach(([uid, currentQueue]) => {
-      const prevQueue = prevQueues[uid] || [];
-      const addedItems = currentQueue.length - prevQueue.length;
+      const prevQueue = prevQueues[uid]?.queue || []; // Check queue field specifically
+      const addedItems = currentQueue.queue.length - prevQueue.length;
       if (addedItems > 0) {
         newNotifications[uid] = (newNotifications[uid] || 0) + addedItems;
         setTimeout(() => {
@@ -516,7 +517,7 @@ const UserQueueList = ({ userQueues, books, userDetails, onShip }) => { // Chang
       
       {Object.keys(userQueues).length > 0 ? (
         <div className="user-queue-container">
-          {Object.entries(userQueues).map(([uid, queue]) => {
+          {Object.entries(userQueues).map(([uid, queueData]) => {
             const user = userDetails[uid] || { 
               firstName: 'Unknown', 
               lastName: 'User', 
@@ -526,6 +527,7 @@ const UserQueueList = ({ userQueues, books, userDetails, onShip }) => { // Chang
             const fullName = `${user.firstName} ${user.lastName}`;
             const isExpanded = expandedUsers[uid] || false;
             const notificationCount = queueNotifications[uid] || 0;
+            const queueItems = queueData.queue || []; // Ensure queue field is accessed
 
             return (
               <div key={uid} className={`user-card ${isExpanded ? 'expanded' : ''}`}>
@@ -537,7 +539,7 @@ const UserQueueList = ({ userQueues, books, userDetails, onShip }) => { // Chang
                         <span className="user-notification-badge">{notificationCount}</span>
                       )}
                     </h3>
-                    <span className="queue-count">{queue.length} items</span>
+                    <span className="queue-count">{queueItems.length} items</span>
                   </div>
                   <div className="expand-icon">
                     {isExpanded ? '−' : '+'}
@@ -554,17 +556,17 @@ const UserQueueList = ({ userQueues, books, userDetails, onShip }) => { // Chang
                     
                     <div className="queue-list">
                       <h4>Queue Items</h4>
-                      {queue.length > 0 ? (
+                      {queueItems.length > 0 ? (
                         <ul className="queue-items-list">
-                          {queue.map((book, index) => { // Changed from movie to book
-                            const bookData = books.find((b) => b.id === book.id) || { status: 'Unknown' }; // Updated from dvd to book
+                          {queueItems.map((book, index) => {
+                            const bookData = books.find((b) => b.id === book.id) || { status: 'Unknown' };
                             const statusClass = bookData.status.toLowerCase().replace(' ', '-');
                             
                             return (
                               <li key={`${book.id}-${index}`} className="queue-item">
                                 <div className="queue-item-info">
                                   <span className="queue-position">{index + 1}.</span>
-                                  <span className="book-title">{book.title}</span> {/* Updated className */}
+                                  <span className="book-title">{book.title}</span>
                                   <span className={`status-indicator ${statusClass}`}>
                                     {bookData.status}
                                   </span>
@@ -573,7 +575,7 @@ const UserQueueList = ({ userQueues, books, userDetails, onShip }) => { // Chang
                                 {bookData.status === 'Available' && (
                                   <button 
                                     className="ship-button" 
-                                    onClick={() => onShip(uid, book)} // Updated from movie to book
+                                    onClick={() => onShip(uid, book)}
                                   >
                                     <Send size={16} />
                                     <span>Ship</span>
@@ -602,7 +604,7 @@ const UserQueueList = ({ userQueues, books, userDetails, onShip }) => { // Chang
   );
 };
 
-// Loading Component (Unchanged)
+// Loading Component
 const LoadingSpinner = () => (
   <div className="loading-container">
     <div className="loading-spinner"></div>
@@ -610,7 +612,7 @@ const LoadingSpinner = () => (
   </div>
 );
 
-// Error Component (Unchanged)
+// Error Component
 const ErrorMessage = ({ message }) => (
   <div className="error-container">
     <AlertCircle size={40} />
@@ -623,8 +625,8 @@ const ErrorMessage = ({ message }) => (
 );
 
 function Admin() {
-  const [activeSection, setActiveSection] = useState('add-book'); // Updated default section
-  const [books, setBooks] = useState([]); // Changed from dvds to books
+  const [activeSection, setActiveSection] = useState('add-book');
+  const [books, setBooks] = useState([]);
   const [userQueues, setUserQueues] = useState({});
   const [userDetails, setUserDetails] = useState({});
   const [isAdmin, setIsAdmin] = useState(null);
@@ -648,9 +650,9 @@ function Admin() {
         setIsAdmin(adminStatus);
 
         if (adminStatus) {
-          const bookSnapshot = await getDocs(collection(db, 'books')); // Changed from dvds to books
-          const bookList = bookSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); // Updated from dvdList
-          setBooks(bookList); // Updated from setDvds
+          const bookSnapshot = await getDocs(collection(db, 'books'));
+          const bookList = bookSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setBooks(bookList);
 
           const queueSnapshot = await getDocs(collection(db, 'userQueues'));
           const queues = {};
@@ -662,6 +664,7 @@ function Admin() {
               returnRequests: doc.data().returnRequests || []
             };
           });
+          console.log('Fetched User Queues:', queues); // Debug log
           setUserQueues(queues);
 
           const userSnapshot = await getDocs(collection(db, 'users'));
@@ -686,32 +689,32 @@ function Admin() {
   if (!isAdmin) return <Navigate to="/home" />;
   if (error) return <div className="Admin"><Navbar /><ErrorMessage message={error} /></div>;
 
-  const handleAddBook = async (book) => { // Renamed from handleAddDvd
+  const handleAddBook = async (book) => {
     try {
-      const docRef = await addDoc(collection(db, 'books'), book); // Changed from dvds to books
-      setBooks(prev => [...prev, { ...book, id: docRef.id }]); // Updated from setDvds
+      const docRef = await addDoc(collection(db, 'books'), book);
+      setBooks(prev => [...prev, { ...book, id: docRef.id }]);
       return true;
     } catch (err) {
-      setError('Error adding book: ' + err.message); // Updated text
+      setError('Error adding book: ' + err.message);
       return false;
     }
   };
 
   const handleUpdateStatus = async (id, status) => {
     try {
-      const bookRef = doc(db, 'books', id); // Changed from dvdRef and dvds
+      const bookRef = doc(db, 'books', id);
       await updateDoc(bookRef, { status });
-      setBooks(prev => prev.map(book => book.id === id ? { ...book, status } : book)); // Updated from setDvds
+      setBooks(prev => prev.map(book => book.id === id ? { ...book, status } : book));
     } catch (err) {
       setError('Error updating status: ' + err.message);
     }
   };
 
-  const handleShip = async (uid, book) => { // Updated from movie to book
+  const handleShip = async (uid, book) => {
     try {
-      const bookRef = doc(db, 'books', book.id); // Changed from dvdRef and dvds
+      const bookRef = doc(db, 'books', book.id);
       await updateDoc(bookRef, { status: 'Preparing' });
-      setBooks(prev => prev.map(b => b.id === book.id ? { ...b, status: 'Preparing' } : b)); // Updated from setDvds
+      setBooks(prev => prev.map(b => b.id === book.id ? { ...b, status: 'Preparing' } : b));
 
       const queueDocRef = doc(db, 'userQueues', uid);
       const queueDocSnapshot = await getDoc(queueDocRef);
@@ -742,11 +745,11 @@ function Admin() {
     }
   };
 
-  const handleDeliver = async (uid, book) => { // Updated from movie to book
+  const handleDeliver = async (uid, book) => {
     try {
-      const bookRef = doc(db, 'books', book.id); // Changed from dvdRef and dvds
+      const bookRef = doc(db, 'books', book.id);
       await updateDoc(bookRef, { status: 'Delivered' });
-      setBooks(prev => prev.map(b => b.id === book.id ? { ...b, status: 'Delivered' } : b)); // Updated from setDvds
+      setBooks(prev => prev.map(b => b.id === book.id ? { ...b, status: 'Delivered' } : b));
 
       const queueDocRef = doc(db, 'userQueues', uid);
       const queueDocSnapshot = await getDoc(queueDocRef);
@@ -797,11 +800,11 @@ function Admin() {
           <ul className="sidebar-nav">
             <li className={activeSection === 'add-book' ? 'active' : ''} onClick={() => { setActiveSection('add-book'); setSidebarOpen(false); }}>
               <PlusCircle size={18} />
-              <span>Add New Book</span> {/* Updated text */}
+              <span>Add New Book</span>
             </li>
             <li className={activeSection === 'manage-books' ? 'active' : ''} onClick={() => { setActiveSection('manage-books'); setSidebarOpen(false); }}>
-              <BookOpen size={18} /> {/* Replaced Film with BookOpen */}
-              <span>Manage Books</span> {/* Updated text */}
+              <BookOpen size={18} />
+              <span>Manage Books</span>
             </li>
             <li className={activeSection === 'user-queues' ? 'active' : ''} onClick={() => { setActiveSection('user-queues'); setSidebarOpen(false); }}>
               <UserCheck size={18} />
@@ -826,8 +829,8 @@ function Admin() {
         <main className="admin-content">
           <div className="content-header">
             <h1>
-              {activeSection === 'add-book' && 'Add New Book'} {/* Updated text */}
-              {activeSection === 'manage-books' && 'Manage Book Inventory'} {/* Updated text */}
+              {activeSection === 'add-book' && 'Add New Book'}
+              {activeSection === 'manage-books' && 'Manage Book Inventory'}
               {activeSection === 'user-queues' && 'User Queue Management'}
               {activeSection === 'preparing' && 'Preparing Items Management'}
               {activeSection === 'return-requests' && 'Return Requests Management'}
@@ -835,10 +838,10 @@ function Admin() {
           </div>
           
           <div className="content-body">
-            {activeSection === 'add-book' && <AddBookForm onAddBook={handleAddBook} />} {/* Updated component and prop */}
-            {activeSection === 'manage-books' && <BookList books={books} onUpdateStatus={handleUpdateStatus} />} {/* Updated component and prop */}
+            {activeSection === 'add-book' && <AddBookForm onAddBook={handleAddBook} />}
+            {activeSection === 'manage-books' && <BookList books={books} onUpdateStatus={handleUpdateStatus} />}
             {activeSection === 'user-queues' && (
-              <UserQueueList userQueues={userQueues} books={books} userDetails={userDetails} onShip={handleShip} /> // Updated prop from dvds to books
+              <UserQueueList userQueues={userQueues} books={books} userDetails={userDetails} onShip={handleShip} />
             )}
             {activeSection === 'preparing' && (
               <PreparingList userQueues={userQueues} userDetails={userDetails} onDeliver={handleDeliver} />
