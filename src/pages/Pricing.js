@@ -1,23 +1,28 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; // Add Link import
-import Navbar from '../components/Navbar'; // Adjust path if needed
+import { useNavigate, Link } from 'react-router-dom';
+import Navbar from '../components/Navbar';
 import '../styles/pricing.css';
 
 function Pricing() {
   const [selectedPlan, setSelectedPlan] = useState('basic');
   const navigate = useNavigate();
 
+  const plans = [
+    { id: 'basic', name: 'Basic', priceUSD: 7.99, priceUGX: 7900, discs: '1 disc at a time' },
+    { id: 'standard', name: 'Standard', priceUSD: 11.99, priceUGX: 11900, discs: '2 discs at a time' },
+    { id: 'premium', name: 'Premium', priceUSD: 15.99, priceUGX: 15900, discs: '3 discs at a time' },
+  ];
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    localStorage.setItem('selectedPlan', selectedPlan);
-    navigate('/user-details');
+    const plan = plans.find(p => p.id === selectedPlan);
+    localStorage.setItem('selectedPlan', JSON.stringify({
+      id: plan.id,
+      name: plan.name,
+      priceUGX: plan.priceUGX,
+    }));
+    navigate('/subscription'); // Changed to match your routing
   };
-
-  const plans = [
-    { id: 'basic', name: 'Basic', price: '$7.99/mo', discs: '1 disc at a time' },
-    { id: 'standard', name: 'Standard', price: '$11.99/mo', discs: '2 discs at a time' },
-    { id: 'premium', name: 'Premium', price: '$15.99/mo', discs: '3 discs at a time' },
-  ];
 
   return (
     <div className="Pricing">
@@ -34,7 +39,7 @@ function Pricing() {
                 onClick={() => setSelectedPlan(plan.id)}
               >
                 <h2>{plan.name}</h2>
-                <p className="price">{plan.price}</p>
+                <p className="price">{plan.priceUSD}/mo (UGX {plan.priceUGX.toLocaleString()})</p>
                 <p>{plan.discs}</p>
                 <span className="select-text">
                   {selectedPlan === plan.id ? 'Selected' : 'Select'}
