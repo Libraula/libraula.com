@@ -4,8 +4,8 @@ import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
-import { FiMail, FiLock, FiLogIn } from 'react-icons/fi';
-import { FcGoogle } from 'react-icons/fc'; // Google icon from react-icons
+import { FiMail, FiLock, FiLogIn, FiAlertCircle } from 'react-icons/fi';
+import { FcGoogle } from 'react-icons/fc';
 import '../styles/login.css';
 
 function Login() {
@@ -14,21 +14,27 @@ function Login() {
     password: '',
   });
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const navigate = useNavigate();
   const googleProvider = new GoogleAuthProvider();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       await signInWithEmailAndPassword(auth, formData.email, formData.password);
       await redirectUser(auth.currentUser);
     } catch (err) {
       setError('Failed to sign in: ' + err.message);
       console.error('Email sign-in error:', err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true);
     try {
       console.log('Attempting Google Sign-In');
       const result = await signInWithPopup(auth, googleProvider);
@@ -41,6 +47,8 @@ function Login() {
       } else {
         setError('Failed to sign in with Google: ' + err.message);
       }
+    } finally {
+      setIsGoogleLoading(false);
     }
   };
 
@@ -58,45 +66,91 @@ function Login() {
   };
 
   return (
-    <div className="modern-login">
+    <div className="login-container">
       <Navbar />
-      <section className="modern-login-form">
-        <h1>Sign In</h1>
-        <p className="form-subtitle">Enter your email and password to sign in.</p>
-        {error && <p className="error">{error}</p>}
-        <form onSubmit={handleSubmit}>
-          <div className="input-container">
-            <FiMail className="input-icon" />
-            <input
-              type="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              required
-            />
+      
+      <main className="login-main">
+        <div className="login-card">
+          <div className="login-header">
+            <h1>Sign In</h1>
+            <p>Enter your email and password to sign in.</p>
           </div>
-          <div className="input-container">
-            <FiLock className="input-icon" />
-            <input
-              type="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              required
-            />
+
+          {error && (
+            <div className="login-error">
+              <FiAlertCircle />
+              <p>{error}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="login-form">
+            <div className="input-group">
+              <div className="input-icon">
+                <FiMail />
+              </div>
+              <input
+                type="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                required
+              />
+            </div>
+
+            <div className="input-group">
+              <div className="input-icon">
+                <FiLock />
+              </div>
+              <input
+                type="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="login-button"
+            >
+              {isLoading ? (
+                <span className="button-spinner"></span>
+              ) : (
+                <>
+                  <FiLogIn />
+                  <span>Sign In</span>
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="divider">
+            <span>OR</span>
           </div>
-          <button type="submit" className="primary-button">
-            <FiLogIn /> Sign In
+
+          <button 
+            onClick={handleGoogleSignIn} 
+            disabled={isGoogleLoading}
+            className="google-button"
+          >
+            {isGoogleLoading ? (
+              <span className="button-spinner dark"></span>
+            ) : (
+              <>
+                <FcGoogle />
+                <span>Sign in with Google</span>
+              </>
+            )}
           </button>
-        </form>
-        <p className="or-sign-in">OR</p>
-        <button className="google-login-button" onClick={handleGoogleSignIn}>
-          <FcGoogle className="google-icon" /> Sign in with Google
-        </button>
-        <p className="signup-link">
-          Don't have an account? <Link to="/signup">Sign up here</Link>.
-        </p>
-      </section>
+
+          <p className="signup-redirect">
+            Don't have an account? <Link to="/signup">Sign up here</Link>.
+          </p>
+        </div>
+      </main>
+      
       <footer className="modern-footer">
         <div className="footer-content">
           <p className="copyright">© 2025 Libraula. All rights reserved.</p>

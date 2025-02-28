@@ -1,198 +1,309 @@
-/* Modern Login Layout */
-.modern-login {
+/* Modern Login Styles - modern-login.css */
+
+/* Base Styles */
+.login-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #141414;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   color: #fff;
+  background: linear-gradient(to bottom, #141414, #000000);
 }
 
-.modern-login-form {
+.login-main {
   flex: 1;
-  max-width: 360px;
-  margin: 40px auto;
-  padding: 40px 24px;
-  background: #303030;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+/* Card Styles */
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background-color: rgba(48, 48, 48, 0.7);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  padding: 2.5rem 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Header Styles */
+.login-header {
   text-align: center;
+  margin-bottom: 2rem;
 }
 
-.modern-login-form h1 {
-  font-size: 32px;
+.login-header h1 {
+  font-size: 2rem;
   font-weight: 700;
-  margin-bottom: 16px;
+  margin-bottom: 0.75rem;
+  color: #4CAF50;
 }
 
-.form-subtitle {
-  font-size: 16px;
-  color: #ccc;
-  margin-bottom: 24px;
+.login-header p {
+  color: #cccccc;
+  font-size: 1rem;
 }
 
-.error {
-  color: #ff4d4d;
-  font-size: 14px;
-  margin-bottom: 20px;
+/* Error Message */
+.login-error {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+  background-color: rgba(220, 38, 38, 0.2);
+  border: 1px solid rgba(220, 38, 38, 0.5);
+  border-radius: 8px;
+  color: #ffb4b4;
 }
 
-.input-container {
+.login-error svg {
+  flex-shrink: 0;
+}
+
+.login-error p {
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* Form Styles */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.input-group {
   position: relative;
-  margin-bottom: 16px;
 }
 
 .input-icon {
   position: absolute;
   top: 50%;
-  left: 12px;
+  left: 1rem;
   transform: translateY(-50%);
-  color: #ccc;
-  font-size: 16px;
-}
-
-.modern-login-form input {
-  width: 100%;
-  padding: 10px 16px 10px 36px;
-  font-size: 14px;
-  border: 1px solid #4CAF50;
-  border-radius: 6px;
-  background: #fff;
-  color: #333;
-  transition: all 0.2s ease;
-  box-sizing: border-box;
-}
-
-.modern-login-form input:focus {
-  border-color: #43A047;
-  box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.1);
-  outline: none;
-}
-
-.primary-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 28px;
-  border-radius: 6px;
-  font-weight: 600;
-  background: #4CAF50;
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  width: 100%;
-  margin-top: 10px;
-  font-size: 16px;
-}
-
-.primary-button:hover {
-  background: #43A047;
-  transform: translateY(-2px);
-}
-
-.or-sign-in {
-  margin: 16px 0;
-  font-size: 14px;
-  color: #757575;
-}
-
-.google-login-button {
-  display: inline-flex;
+  color: #aaaaaa;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  background: #fff;
-  color: #4285f4; /* Google blue */
-  border: 1px solid #dadce0;
-  padding: 12px 28px;
-  font-size: 16px;
-  font-weight: 600;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.input-group input {
   width: 100%;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  background-color: #303030;
+  border: 2px solid #388E3C;
+  border-radius: 8px;
+  padding: 0.875rem 1rem 0.875rem 2.5rem;
+  color: white;
+  font-size: 1rem;
+  transition: all 0.2s ease;
 }
 
-.google-login-button:hover {
-  background: #f7f7f7;
+.input-group input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+.input-group input::placeholder {
+  color: #888888;
+}
+
+/* Button Styles */
+.login-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background-color: #43A047;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.5rem;
+}
+
+.login-button:hover {
+  background-color: #4CAF50;
   transform: translateY(-2px);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(67, 160, 71, 0.3);
 }
 
-.google-icon {
-  font-size: 20px;
+.login-button:active {
+  background-color: #388E3C;
+  transform: translateY(0);
 }
 
-.signup-link {
-  margin-top: 16px;
-  font-size: 14px;
-  color: #ccc;
+.login-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: translateY(0);
+  box-shadow: none;
 }
 
-.signup-link a {
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.divider span {
+  padding: 0 1rem;
+  color: #777777;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Google Button */
+.google-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  background-color: white;
+  color: #333333;
+  border: none;
+  border-radius: 8px;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.google-button:hover {
+  background-color: #f5f5f5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.google-button:active {
+  background-color: #e5e5e5;
+  transform: translateY(0);
+}
+
+.google-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.google-button svg {
+  font-size: 1.25rem;
+}
+
+/* Spinner Animation */
+.button-spinner {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.8s linear infinite;
+}
+
+.button-spinner.dark {
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-top-color: #333333;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Signup Redirect */
+.signup-redirect {
+  margin-top: 1.5rem;
+  text-align: center;
+  color: #aaaaaa;
+  font-size: 0.875rem;
+}
+
+.signup-redirect a {
   color: #4CAF50;
   text-decoration: none;
+  transition: color 0.2s ease;
 }
 
-.signup-link a:hover {
+.signup-redirect a:hover {
+  color: #65d668;
   text-decoration: underline;
 }
 
-/* Modern Footer */
+/* Footer Styles */
 .modern-footer {
-  background: #000;
-  padding: 40px 24px;
-  border-top: 8px solid #222;
-  color: #757575;
+  background-color: #000000;
+  padding: 1.5rem 1rem;
+  border-top: 1px solid #222222;
 }
 
 .footer-content {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
   text-align: center;
 }
 
 .copyright {
-  font-size: 12px;
+  color: #666666;
+  font-size: 0.75rem;
 }
 
-/* Responsive Design */
+/* Responsive Styles */
 @media (max-width: 768px) {
-  .modern-login-form {
-    max-width: 320px;
-    margin: 20px auto;
-    padding: 30px 16px;
+  .login-card {
+    padding: 2rem 1.5rem;
   }
-
-  .modern-login-form h1 {
-    font-size: 28px;
-  }
-
-  .form-subtitle {
-    font-size: 14px;
+  
+  .login-header h1 {
+    font-size: 1.75rem;
   }
 }
 
 @media (max-width: 480px) {
-  .modern-login-form {
-    max-width: 280px;
-    margin: 10px auto;
-    padding: 20px 12px;
+  .login-card {
+    padding: 1.75rem 1.25rem;
   }
-
-  .modern-login-form h1 {
-    font-size: 24px;
+  
+  .login-header h1 {
+    font-size: 1.5rem;
   }
-
-  .modern-login-form input {
-    padding: 8px 14px 8px 32px;
-    font-size: 13px;
+  
+  .login-header p {
+    font-size: 0.875rem;
   }
-
-  .primary-button, .google-login-button {
-    padding: 10px 24px;
-    font-size: 14px;
+  
+  .input-group input {
+    padding: 0.75rem 1rem 0.75rem 2.25rem;
+    font-size: 0.875rem;
+  }
+  
+  .login-button,
+  .google-button {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
   }
 }
