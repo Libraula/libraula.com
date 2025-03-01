@@ -8,9 +8,27 @@ function Pricing() {
   const navigate = useNavigate();
 
   const plans = [
-    { id: 'basic', name: 'Basic', priceUSD: 7.99, priceUGX: 7900, discs: '1 disc at a time' },
-    { id: 'standard', name: 'Standard', priceUSD: 11.99, priceUGX: 11900, discs: '2 discs at a time' },
-    { id: 'premium', name: 'Premium', priceUSD: 15.99, priceUGX: 15900, discs: '3 discs at a time' },
+    { 
+      id: 'basic', 
+      name: 'Basic', 
+      priceUGX: 50000, 
+      books: '2 books at a time',
+      perks: 'Access to bestsellers'
+    },
+    { 
+      id: 'standard', 
+      name: 'Standard', 
+      priceUGX: 75000, 
+      books: '3 books at a time',
+      perks: 'Priority reservation + access to bestsellers'
+    },
+    { 
+      id: 'premium', 
+      name: 'Premium', 
+      priceUGX: 100000, 
+      books: '3 books at a time',
+      perks: 'Request new titles + priority reservation + access to bestsellers'
+    },
   ];
 
   const handleSubmit = (e) => {
@@ -21,7 +39,7 @@ function Pricing() {
       name: plan.name,
       priceUGX: plan.priceUGX,
     }));
-    navigate('/subscription'); // Changed to match your routing
+    navigate('/subscription');
   };
 
   return (
@@ -39,8 +57,9 @@ function Pricing() {
                 onClick={() => setSelectedPlan(plan.id)}
               >
                 <h2>{plan.name}</h2>
-                <p className="price">{plan.priceUSD}/mo (UGX {plan.priceUGX.toLocaleString()})</p>
-                <p>{plan.discs}</p>
+                <p className="price">UGX {plan.priceUGX.toLocaleString()}/mo</p>
+                <p>{plan.books}</p>
+                <p>{plan.perks}</p>
                 <span className="select-text">
                   {selectedPlan === plan.id ? 'Selected' : 'Select'}
                 </span>
