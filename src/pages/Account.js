@@ -10,7 +10,6 @@ import '../styles/account.css';
 
 function Account() {
   const [userDetails, setUserDetails] = useState(null);
-  const [subscriptionDetails, setSubscriptionDetails] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState('personal');
@@ -27,14 +26,12 @@ function Account() {
 
       if (subscriptionLoading || detailsLoading) return;
 
-      // Redirect to pricing only if not subscribed or subscription expired
       if (isSubscribed === false) {
         console.log('User is not subscribed or subscription expired, redirecting to pricing.');
         navigate('/pricing');
         return;
       }
 
-      // If subscribed but missing shipping details, redirect to user-details
       if (isSubscribed && hasDetails === false) {
         console.log('User is subscribed but lacks shipping details, redirecting to user-details.');
         navigate('/user-details');
@@ -44,33 +41,20 @@ function Account() {
       try {
         const userId = auth.currentUser.uid;
 
-        // Fetch user details from 'users' collection
+        // Fetch all details from 'users' collection
         const userDocRef = doc(db, 'users', userId);
         const userDocSnapshot = await getDoc(userDocRef);
 
         if (userDocSnapshot.exists()) {
-          setUserDetails(userDocSnapshot.data());
-          console.log('Fetched user details:', userDocSnapshot.data());
+          const data = userDocSnapshot.data();
+          setUserDetails(data);
+          console.log('Fetched user details:', data);
         } else {
+          setError('No account details found.');
           console.log('No user document exists in Firestore.');
         }
 
-        // Fetch subscription details from 'subscriptions' collection
-        const subscriptionRef = doc(db, 'subscriptions', userId);
-        const subscriptionDocSnapshot = await getDoc(subscriptionRef);
-
-        if (subscriptionDocSnapshot.exists()) {
-          setSubscriptionDetails(subscriptionDocSnapshot.data());
-          console.log('Fetched subscription details:', subscriptionDocSnapshot.data());
-        } else {
-          console.log('No subscription document exists in Firestore.');
-          setSubscriptionDetails({
-            plan: 'N/A',
-            startDate: 'N/A',
-            nextBillingDate: 'N/A',
-            isActive: false,
-          });
-        }
+        // Note: Removed separate subscription fetch since data is in users collection
       } catch (err) {
         setError('Failed to load account details: ' + err.message);
         console.error('Error fetching details:', err);
@@ -175,21 +159,19 @@ function Account() {
       <div className="details-content">
         <div className="detail-item">
           <span className="detail-label">Plan</span>
-          <span className="detail-value plan-badge">{subscriptionDetails?.plan || 'N/A'}</span>
+          <span className="detail-value plan-badge">{userDetails?.plan || 'N/A'}</span>
         </div>
         <div className="detail-item">
           <span className="detail-label">Start Date</span>
-          <span className="detail-value">{subscriptionDetails?.startDate || 'N/A'}</span>
+          <span className="detail-value">{userDetails?.startDate || 'N/A'}</span>
         </div>
         <div className="detail-item">
           <span className="detail-label">Next Billing Date</span>
-          <span className="detail-value">{subscriptionDetails?.nextBillingDate || 'N/A'}</span>
+          <span className="detail-value">{userDetails?.nextBillingDate || 'N/A'}</span>
         </div>
         <div className="detail-item">
           <span className="detail-label">Status</span>
-          <span className="detail-value status-badge">
-            {subscriptionDetails?.isActive ? 'Active' : 'Inactive'}
-          </span>
+          <span className="detail-value status-badge">{userDetails?.status || 'Inactive'}</span>
         </div>
         <button className="edit-button" onClick={() => navigate('/subscription')}>
           Manage Subscription

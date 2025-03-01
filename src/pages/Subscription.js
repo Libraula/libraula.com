@@ -66,7 +66,7 @@ function Subscription() {
       console.log('Payment initiation response:', paymentResponse);
 
       if (paymentResponse.status === 'success' && paymentResponse.meta?.authorization?.mode === 'redirect') {
-        // Store payment details in Firestore
+        // Store payment details
         const paymentDetails = {
           paymentMethod: 'Mobile Money',
           mobileProvider: formData.mobileProvider === 'MTNUG' ? 'MTN' : 'Airtel',
@@ -76,7 +76,7 @@ function Subscription() {
           transactionRef: txRef,
         };
 
-        // Store subscription details in Firestore
+        // Store subscription details
         const subscriptionDetails = {
           plan: subscriptionPlan.name,
           startDate: new Date().toISOString().split('T')[0],
@@ -87,14 +87,14 @@ function Subscription() {
         const userDocRef = doc(db, 'users', userId);
         const subscriptionRef = doc(db, 'subscriptions', userId);
 
-        // Save both payment and subscription details
+        // Save data and confirm success
         await setDoc(userDocRef, { paymentDetails }, { merge: true });
+        console.log('Payment details saved successfully:', paymentDetails);
+
         await setDoc(subscriptionRef, subscriptionDetails, { merge: true });
+        console.log('Subscription details saved successfully:', subscriptionDetails);
 
-        console.log('Payment details saved to Firestore:', paymentDetails);
-        console.log('Subscription details saved to Firestore:', subscriptionDetails);
-
-        // Redirect to payment confirmation page
+        // Redirect to payment confirmation
         window.location.href = paymentResponse.meta.authorization.redirect;
       } else {
         throw new Error('Payment initiation failed: Invalid response');
@@ -132,7 +132,6 @@ function Subscription() {
           <h2>Mobile Money</h2>
           <form id="mobileMoney" className="pi-submit" onSubmit={handleSubmit}>
             <input name="paymentMethod" type="hidden" value="mobileMoney" />
-
             <div className="input-field">
               <label htmlFor="mobileProvider">Select your operator</label>
               <select
@@ -147,7 +146,6 @@ function Subscription() {
                 <option value="AIRTELUG">Airtel</option>
               </select>
             </div>
-
             <div className="input-field phone-group">
               <input
                 className="disable dont-clear"
@@ -170,7 +168,6 @@ function Subscription() {
                 disabled={isLoading}
               />
             </div>
-
             <button type="submit" className="pay-now-button" disabled={isLoading}>
               {isLoading ? 'Processing...' : `Pay Now: UGX ${subscriptionPlan.priceUGX.toLocaleString()}`}
             </button>
