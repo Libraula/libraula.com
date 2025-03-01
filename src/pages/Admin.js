@@ -12,11 +12,12 @@ import {
   Send, 
   List,
   Truck,
-  RotateCcw 
+  RotateCcw,
+  Star
 } from 'lucide-react';
 import '../styles/admin.css';
 
-// View Component: AddBookForm
+// View Component: AddBookForm (unchanged except for adding featured field)
 const AddBookForm = ({ onAddBook }) => {
   const [newBook, setNewBook] = useState({
     title: '',
@@ -33,6 +34,7 @@ const AddBookForm = ({ onAddBook }) => {
     status: 'Available',
     format: 'Hardcover',
     newRelease: false,
+    featured: false, // Added featured field
   });
 
   const handleSubmit = async (e) => {
@@ -59,6 +61,7 @@ const AddBookForm = ({ onAddBook }) => {
       status: 'Available',
       format: 'Hardcover',
       newRelease: false,
+      featured: false,
     });
   };
 
@@ -236,6 +239,14 @@ const AddBookForm = ({ onAddBook }) => {
             />
             <span>New Release</span>
           </label>
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={newBook.featured}
+              onChange={(e) => setNewBook({ ...newBook, featured: e.target.checked })}
+            />
+            <span>Set as Featured</span>
+          </label>
         </div>
         
         <button type="submit" className="admin-button">
@@ -247,8 +258,8 @@ const AddBookForm = ({ onAddBook }) => {
   );
 };
 
-// View Component: BookList
-const BookList = ({ books, onUpdateStatus }) => {
+// Updated View Component: BookList
+const BookList = ({ books, onUpdateStatus, onSetFeatured }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   
@@ -299,6 +310,7 @@ const BookList = ({ books, onUpdateStatus }) => {
               <th>Title</th>
               <th>Format</th>
               <th>Status</th>
+              <th>Featured</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -313,6 +325,15 @@ const BookList = ({ books, onUpdateStatus }) => {
                     <span className={`status-badge ${book.status.toLowerCase().replace(' ', '-')}`}>
                       {book.status}
                     </span>
+                  </td>
+                  <td>
+                    <button 
+                      className={`featured-toggle ${book.featured ? 'active' : ''}`}
+                      onClick={() => onSetFeatured(book.id, !book.featured)}
+                    >
+                      <Star size={16} />
+                      {book.featured ? 'Featured' : 'Set Featured'}
+                    </button>
                   </td>
                   <td>
                     <select 
@@ -332,7 +353,7 @@ const BookList = ({ books, onUpdateStatus }) => {
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="no-results">No books match your criteria</td>
+                <td colSpan="6" className="no-results">No books match your criteria</td>
               </tr>
             )}
           </tbody>
@@ -346,7 +367,7 @@ const BookList = ({ books, onUpdateStatus }) => {
   );
 };
 
-// View Component: PreparingList
+// View Component: PreparingList (unchanged)
 const PreparingList = ({ userQueues, userDetails, onDeliver }) => {
   const preparingItems = [];
   Object.entries(userQueues).forEach(([uid, queues]) => {
@@ -412,7 +433,7 @@ const PreparingList = ({ userQueues, userDetails, onDeliver }) => {
   );
 };
 
-// View Component: ReturnRequestsList
+// View Component: ReturnRequestsList (unchanged)
 const ReturnRequestsList = ({ userQueues, userDetails }) => {
   const returnItems = [];
   Object.entries(userQueues).forEach(([uid, queues]) => {
@@ -471,17 +492,17 @@ const ReturnRequestsList = ({ userQueues, userDetails }) => {
   );
 };
 
-// View Component: UserQueueList
+// View Component: UserQueueList (unchanged)
 const UserQueueList = ({ userQueues, books, userDetails, onShip }) => {
   const [expandedUsers, setExpandedUsers] = useState({});
   const [queueNotifications, setQueueNotifications] = useState({});
   const [prevQueues, setPrevQueues] = useState(userQueues);
 
   useEffect(() => {
-    console.log('User Queues:', userQueues); // Debug log to inspect data
+    console.log('User Queues:', userQueues);
     const newNotifications = { ...queueNotifications };
     Object.entries(userQueues).forEach(([uid, currentQueue]) => {
-      const prevQueue = prevQueues[uid]?.queue || []; // Check queue field specifically
+      const prevQueue = prevQueues[uid]?.queue || [];
       const addedItems = currentQueue.queue.length - prevQueue.length;
       if (addedItems > 0) {
         newNotifications[uid] = (newNotifications[uid] || 0) + addedItems;
@@ -527,7 +548,7 @@ const UserQueueList = ({ userQueues, books, userDetails, onShip }) => {
             const fullName = `${user.firstName} ${user.lastName}`;
             const isExpanded = expandedUsers[uid] || false;
             const notificationCount = queueNotifications[uid] || 0;
-            const queueItems = queueData.queue || []; // Ensure queue field is accessed
+            const queueItems = queueData.queue || [];
 
             return (
               <div key={uid} className={`user-card ${isExpanded ? 'expanded' : ''}`}>
@@ -604,7 +625,7 @@ const UserQueueList = ({ userQueues, books, userDetails, onShip }) => {
   );
 };
 
-// Loading Component
+// Loading Component (unchanged)
 const LoadingSpinner = () => (
   <div className="loading-container">
     <div className="loading-spinner"></div>
@@ -612,7 +633,7 @@ const LoadingSpinner = () => (
   </div>
 );
 
-// Error Component
+// Error Component (unchanged)
 const ErrorMessage = ({ message }) => (
   <div className="error-container">
     <AlertCircle size={40} />
@@ -664,7 +685,7 @@ function Admin() {
               returnRequests: doc.data().returnRequests || []
             };
           });
-          console.log('Fetched User Queues:', queues); // Debug log
+          console.log('Fetched User Queues:', queues);
           setUserQueues(queues);
 
           const userSnapshot = await getDocs(collection(db, 'users'));
@@ -707,6 +728,28 @@ function Admin() {
       setBooks(prev => prev.map(book => book.id === id ? { ...book, status } : book));
     } catch (err) {
       setError('Error updating status: ' + err.message);
+    }
+  };
+
+  const handleSetFeatured = async (id, featured) => {
+    try {
+      // If setting a book as featured, ensure only one book is featured
+      if (featured) {
+        // Unset all other books as featured
+        const updates = books.map(book => {
+          if (book.id !== id && book.featured) {
+            return updateDoc(doc(db, 'books', book.id), { featured: false });
+          }
+          return Promise.resolve();
+        });
+        await Promise.all(updates);
+      }
+
+      const bookRef = doc(db, 'books', id);
+      await updateDoc(bookRef, { featured });
+      setBooks(prev => prev.map(book => book.id === id ? { ...book, featured } : { ...book, featured: book.id === id ? featured : false }));
+    } catch (err) {
+      setError('Error setting featured status: ' + err.message);
     }
   };
 
@@ -839,7 +882,9 @@ function Admin() {
           
           <div className="content-body">
             {activeSection === 'add-book' && <AddBookForm onAddBook={handleAddBook} />}
-            {activeSection === 'manage-books' && <BookList books={books} onUpdateStatus={handleUpdateStatus} />}
+            {activeSection === 'manage-books' && (
+              <BookList books={books} onUpdateStatus={handleUpdateStatus} onSetFeatured={handleSetFeatured} />
+            )}
             {activeSection === 'user-queues' && (
               <UserQueueList userQueues={userQueues} books={books} userDetails={userDetails} onShip={handleShip} />
             )}

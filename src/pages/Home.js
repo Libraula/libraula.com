@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs, doc, setDoc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
-import { useSubscription } from '../hooks/useSubscription'; // Import the new hook
+import { useSubscription } from '../hooks/useSubscription';
 import Navbar from '../components/Navbar';
 import { FiPlus, FiFilter, FiStar, FiSearch } from 'react-icons/fi';
 import { BiBookOpen } from 'react-icons/bi';
@@ -15,6 +15,7 @@ function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGenre, setSelectedGenre] = useState('All');
   const [books, setBooks] = useState([]);
+  const [featuredBook, setFeaturedBook] = useState(null);
   const [loading, setLoading] = useState(true);
   const [popup, setPopup] = useState(null);
   const navigate = useNavigate();
@@ -37,6 +38,10 @@ function Home() {
       const bookSnapshot = await getDocs(collection(db, 'books'));
       const bookList = bookSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setBooks(bookList);
+
+      // Find the book marked as featured
+      const featured = bookList.find(book => book.featured === true) || bookList[0]; // Fallback to first book if none featured
+      setFeaturedBook(featured);
     } catch (err) {
       console.error('Error fetching books:', err);
     } finally {
@@ -193,7 +198,7 @@ function Home() {
         )}
       </AnimatePresence>
       
-      {books.length > 0 && <FeaturedBook book={books[0]} />}
+      {featuredBook && <FeaturedBook book={featuredBook} />}
 
       <motion.section 
         className="modern-catalog"

@@ -879,3 +879,31 @@
     margin: clamp(5px, 1vw, 8px) auto 0;
   }
 }
+
+/* Add to admin.css */
+.featured-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: #f5f5f5;
+  color: #333;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.featured-toggle.active {
+  background: #4CAF50;
+  color: white;
+}
+
+.featured-toggle:hover {
+  background: #e0e0e0;
+}
+
+.featured-toggle.active:hover {
+  background: #43A047;
+}
