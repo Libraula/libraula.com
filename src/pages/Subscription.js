@@ -66,7 +66,6 @@ function Subscription() {
       console.log('Payment initiation response:', paymentResponse);
 
       if (paymentResponse.status === 'success' && paymentResponse.meta?.authorization?.mode === 'redirect') {
-        // Store payment details
         const paymentDetails = {
           paymentMethod: 'Mobile Money',
           mobileProvider: formData.mobileProvider === 'MTNUG' ? 'MTN' : 'Airtel',
@@ -76,26 +75,28 @@ function Subscription() {
           transactionRef: txRef,
         };
 
-        // Store subscription details
         const subscriptionDetails = {
           plan: subscriptionPlan.name,
           startDate: new Date().toISOString().split('T')[0],
           nextBillingDate: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split('T')[0],
           isActive: true,
+          status: 'Active', // Ensure status is saved
         };
 
         const userDocRef = doc(db, 'users', userId);
         const subscriptionRef = doc(db, 'subscriptions', userId);
 
-        // Save data and confirm success
-        await setDoc(userDocRef, { paymentDetails }, { merge: true });
-        console.log('Payment details saved successfully:', paymentDetails);
+        // Save payment and subscription details
+        await setDoc(userDocRef, {
+          ...subscriptionDetails, // Root-level subscription details
+          paymentDetails // Nested payment details
+        }, { merge: true });
+        console.log('User details saved successfully:', { ...subscriptionDetails, paymentDetails });
 
         await setDoc(subscriptionRef, subscriptionDetails, { merge: true });
         console.log('Subscription details saved successfully:', subscriptionDetails);
 
-        // Redirect to payment confirmation
-        window.location.href = paymentResponse.meta.authorization.redirect;
+        navigate('/payment-confirmation');
       } else {
         throw new Error('Payment initiation failed: Invalid response');
       }

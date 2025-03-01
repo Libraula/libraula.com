@@ -40,8 +40,6 @@ function Account() {
 
       try {
         const userId = auth.currentUser.uid;
-
-        // Fetch all details from 'users' collection
         const userDocRef = doc(db, 'users', userId);
         const userDocSnapshot = await getDoc(userDocRef);
 
@@ -53,8 +51,6 @@ function Account() {
           setError('No account details found.');
           console.log('No user document exists in Firestore.');
         }
-
-        // Note: Removed separate subscription fetch since data is in users collection
       } catch (err) {
         setError('Failed to load account details: ' + err.message);
         console.error('Error fetching details:', err);
@@ -211,7 +207,9 @@ function Account() {
           <span className="detail-label">Payment Date</span>
           <span className="detail-value">{userDetails?.paymentDetails?.paymentDate || 'N/A'}</span>
         </div>
-        <button className="edit-button">Update Payment Method</button>
+        <button className="edit-button" onClick={() => navigate('/subscription')}>
+          Update Payment Method
+        </button>
       </div>
     </div>
   );
