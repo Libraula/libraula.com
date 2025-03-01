@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebase';
-import { doc, setDoc, getDoc } from 'firebase/firestore'; // Added getDoc for verification
-import { useUserDetails } from '../hooks/useUserDetails'; // Import the new hook
+import { doc, setDoc } from 'firebase/firestore';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 import '../styles/subscription.css';
@@ -16,7 +15,6 @@ function Subscription() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { hasDetails, loading: detailsLoading } = useUserDetails();
 
   useEffect(() => {
     const plan = JSON.parse(localStorage.getItem('selectedPlan'));
@@ -38,11 +36,6 @@ function Subscription() {
     if (!auth.currentUser) {
       setError('You must be logged in to process payment.');
       navigate('/login');
-      return;
-    }
-
-    if (detailsLoading) {
-      setError('Checking your profile details, please wait...');
       return;
     }
 
@@ -73,7 +66,7 @@ function Subscription() {
       console.log('Payment initiation response:', paymentResponse);
 
       if (paymentResponse.status === 'success' && paymentResponse.meta?.authorization?.mode === 'redirect') {
-        // Store payment details in Firestore before redirecting
+        // Store payment details in Firestore
         const paymentDetails = {
           paymentMethod: 'Mobile Money',
           mobileProvider: formData.mobileProvider === 'MTNUG' ? 'MTN' : 'Airtel',
@@ -83,17 +76,25 @@ function Subscription() {
           transactionRef: txRef,
         };
 
+        // Store subscription details in Firestore
+        const subscriptionDetails = {
+          plan: subscriptionPlan.name,
+          startDate: new Date().toISOString().split('T')[0],
+          nextBillingDate: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split('T')[0],
+          isActive: true,
+        };
+
         const userDocRef = doc(db, 'users', userId);
-        await setDoc(userDocRef, { paymentDetails }, { merge: true });
-        console.log('Payment details saved to Firestore:', paymentDetails);
-
-        // Store subscription status (assuming payment initiation implies subscription start)
         const subscriptionRef = doc(db, 'subscriptions', userId);
-        await setDoc(subscriptionRef, { isActive: true }, { merge: true });
 
-        // Redirect based on whether user details exist
-        const redirectUrl = hasDetails ? '/home' : '/user-details';
-        navigate(redirectUrl, { state: { fromPayment: !hasDetails } });
+        // Save both payment and subscription details
+        await setDoc(userDocRef, { paymentDetails }, { merge: true });
+        await setDoc(subscriptionRef, subscriptionDetails, { merge: true });
+
+        console.log('Payment details saved to Firestore:', paymentDetails);
+        console.log('Subscription details saved to Firestore:', subscriptionDetails);
+
+        // Redirect to payment confirmation page
         window.location.href = paymentResponse.meta.authorization.redirect;
       } else {
         throw new Error('Payment initiation failed: Invalid response');
@@ -140,7 +141,7 @@ function Subscription() {
                 className="mtn validate unselect"
                 value={formData.mobileProvider}
                 onChange={(e) => setFormData({ ...formData, mobileProvider: e.target.value })}
-                disabled={isLoading || detailsLoading}
+                disabled={isLoading}
               >
                 <option value="MTNUG">MTN</option>
                 <option value="AIRTELUG">Airtel</option>
@@ -166,11 +167,11 @@ function Subscription() {
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 placeholder="Insert mobile number without 0"
                 required
-                disabled={isLoading || detailsLoading}
+                disabled={isLoading}
               />
             </div>
 
-            <button type="submit" className="pay-now-button" disabled={isLoading || detailsLoading}>
+            <button type="submit" className="pay-now-button" disabled={isLoading}>
               {isLoading ? 'Processing...' : `Pay Now: UGX ${subscriptionPlan.priceUGX.toLocaleString()}`}
             </button>
             <p className="terms-notice">

@@ -27,34 +27,49 @@ export function useSubscription() {
         if (subscriptionDoc.exists()) {
           const subscriptionData = subscriptionDoc.data();
           console.log('Subscription data:', subscriptionData);
-          if (subscriptionData.isActive) {
+
+          const currentDate = new Date();
+          const nextBillingDate = subscriptionData.nextBillingDate 
+            ? new Date(subscriptionData.nextBillingDate) 
+            : null;
+
+          // Subscription is valid if isActive is true and nextBillingDate is in the future
+          if (subscriptionData.isActive && (!nextBillingDate || nextBillingDate > currentDate)) {
             setIsSubscribed(true);
             console.log('User is subscribed based on subscriptions collection.');
-            setLoading(false);
-            return;
+          } else {
+            setIsSubscribed(false);
+            console.log('Subscription expired or inactive:', {
+              isActive: subscriptionData.isActive,
+              nextBillingDate: subscriptionData.nextBillingDate,
+              currentDate: currentDate.toISOString(),
+            });
           }
         } else {
           console.log('No subscription document found in subscriptions collection.');
-        }
+          // Fallback to users collection
+          const userDocRef = doc(db, 'users', userId);
+          const userDoc = await getDoc(userDocRef);
 
-        // Fallback: Check users collection for payment details as an indicator
-        const userDocRef = doc(db, 'users', userId);
-        const userDoc = await getDoc(userDocRef);
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            console.log('User data:', userData);
+            const nextBillingDate = userData.nextBillingDate 
+              ? new Date(userData.nextBillingDate) 
+              : null;
 
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          console.log('User data:', userData);
-          // Check if paymentDetails or a subscription status exists
-          if (userData.paymentDetails?.subscriptionAmount || userData.status === 'Active') {
-            setIsSubscribed(true);
-            console.log('User is subscribed based on users collection (paymentDetails or status).');
+            if ((userData.paymentDetails?.subscriptionAmount || userData.status === 'Active') && 
+                (!nextBillingDate || nextBillingDate > new Date())) {
+              setIsSubscribed(true);
+              console.log('User is subscribed based on users collection.');
+            } else {
+              setIsSubscribed(false);
+              console.log('No active subscription in users collection.');
+            }
           } else {
             setIsSubscribed(false);
-            console.log('User is not subscribed based on users collection.');
+            console.log('No user document found in users collection.');
           }
-        } else {
-          setIsSubscribed(false);
-          console.log('No user document found in users collection.');
         }
       } catch (err) {
         console.error('Error checking subscription:', err);
@@ -66,7 +81,6 @@ export function useSubscription() {
 
     checkSubscription();
 
-    // Listen for auth state changes
     const unsubscribe = auth.onAuthStateChanged(() => {
       checkSubscription();
     });

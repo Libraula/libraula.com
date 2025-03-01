@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { useSubscription } from '../hooks/useSubscription';
-import { useUserDetails } from '../hooks/useUserDetails'; // Import the user details hook
+import { useUserDetails } from '../hooks/useUserDetails';
 import Navbar from '../components/Navbar';
 import { User, MapPin, CreditCard, Package } from 'lucide-react';
 import '../styles/account.css';
 
 function Account() {
   const [userDetails, setUserDetails] = useState(null);
+  const [subscriptionDetails, setSubscriptionDetails] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState('personal');
@@ -24,23 +25,26 @@ function Account() {
         return;
       }
 
-      // Wait for both subscription and details loading to resolve
       if (subscriptionLoading || detailsLoading) return;
 
-      // Redirect to pricing if not subscribed
+      // Redirect to pricing only if not subscribed or subscription expired
       if (isSubscribed === false) {
+        console.log('User is not subscribed or subscription expired, redirecting to pricing.');
         navigate('/pricing');
         return;
       }
 
-      // If subscribed but no details, redirect to user-details
+      // If subscribed but missing shipping details, redirect to user-details
       if (isSubscribed && hasDetails === false) {
+        console.log('User is subscribed but lacks shipping details, redirecting to user-details.');
         navigate('/user-details');
         return;
       }
 
       try {
         const userId = auth.currentUser.uid;
+
+        // Fetch user details from 'users' collection
         const userDocRef = doc(db, 'users', userId);
         const userDocSnapshot = await getDoc(userDocRef);
 
@@ -48,11 +52,28 @@ function Account() {
           setUserDetails(userDocSnapshot.data());
           console.log('Fetched user details:', userDocSnapshot.data());
         } else {
-          setError('No account details found.');
+          console.log('No user document exists in Firestore.');
+        }
+
+        // Fetch subscription details from 'subscriptions' collection
+        const subscriptionRef = doc(db, 'subscriptions', userId);
+        const subscriptionDocSnapshot = await getDoc(subscriptionRef);
+
+        if (subscriptionDocSnapshot.exists()) {
+          setSubscriptionDetails(subscriptionDocSnapshot.data());
+          console.log('Fetched subscription details:', subscriptionDocSnapshot.data());
+        } else {
+          console.log('No subscription document exists in Firestore.');
+          setSubscriptionDetails({
+            plan: 'N/A',
+            startDate: 'N/A',
+            nextBillingDate: 'N/A',
+            isActive: false,
+          });
         }
       } catch (err) {
         setError('Failed to load account details: ' + err.message);
-        console.error('Error fetching user details:', err);
+        console.error('Error fetching details:', err);
       } finally {
         setLoading(false);
       }
@@ -61,7 +82,6 @@ function Account() {
     fetchUserDetails();
   }, [navigate, isSubscribed, subscriptionLoading, hasDetails, detailsLoading]);
 
-  // Combined loading state for subscription, user details, and local fetch
   if (loading || subscriptionLoading || detailsLoading) {
     return (
       <div className="Account">
@@ -155,21 +175,25 @@ function Account() {
       <div className="details-content">
         <div className="detail-item">
           <span className="detail-label">Plan</span>
-          <span className="detail-value plan-badge">{userDetails?.plan || 'N/A'}</span>
+          <span className="detail-value plan-badge">{subscriptionDetails?.plan || 'N/A'}</span>
         </div>
         <div className="detail-item">
           <span className="detail-label">Start Date</span>
-          <span className="detail-value">{userDetails?.startDate || 'N/A'}</span>
+          <span className="detail-value">{subscriptionDetails?.startDate || 'N/A'}</span>
         </div>
         <div className="detail-item">
           <span className="detail-label">Next Billing Date</span>
-          <span className="detail-value">{userDetails?.nextBillingDate || 'N/A'}</span>
+          <span className="detail-value">{subscriptionDetails?.nextBillingDate || 'N/A'}</span>
         </div>
         <div className="detail-item">
           <span className="detail-label">Status</span>
-          <span className="detail-value status-badge">{userDetails?.status || 'N/A'}</span>
+          <span className="detail-value status-badge">
+            {subscriptionDetails?.isActive ? 'Active' : 'Inactive'}
+          </span>
         </div>
-        <button className="edit-button">Manage Subscription</button>
+        <button className="edit-button" onClick={() => navigate('/subscription')}>
+          Manage Subscription
+        </button>
       </div>
     </div>
   );
