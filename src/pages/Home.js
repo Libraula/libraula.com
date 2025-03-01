@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
+import { useSubscription } from '../hooks/useSubscription'; // Import the new hook
 import Navbar from '../components/Navbar';
 import { FiPlus, FiFilter, FiStar, FiSearch } from 'react-icons/fi';
 import { BiBookOpen } from 'react-icons/bi';
@@ -17,6 +18,7 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [popup, setPopup] = useState(null);
   const navigate = useNavigate();
+  const { isSubscribed, loading: subscriptionLoading } = useSubscription();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
@@ -45,15 +47,30 @@ function Home() {
   const filteredBooks = books.filter((book) =>
     book.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
     (selectedGenre === 'All' || (book.genre && book.genre.split(',').includes(selectedGenre)))
-  ); // Updated to handle comma-separated genres
+  );
 
   const handleBookClick = (book) => {
-    navigate(`/book/${book.id}`, { state: { book } }); // Ensure correct route and state passing
+    navigate(`/book/${book.id}`, { state: { book } });
   };
 
   const handleAddToQueue = async (book) => {
     if (!auth.currentUser) {
       navigate('/login');
+      return;
+    }
+
+    if (subscriptionLoading) {
+      setPopup('Checking subscription status...');
+      setTimeout(() => setPopup(null), 2000);
+      return;
+    }
+
+    if (!isSubscribed) {
+      setPopup('Please subscribe to add books to your queue.');
+      setTimeout(() => {
+        setPopup(null);
+        navigate('/pricing');
+      }, 2000);
       return;
     }
 
@@ -143,7 +160,7 @@ function Home() {
     </motion.section>
   );
 
-  if (loading) {
+  if (loading || subscriptionLoading) {
     return (
       <div className="modern-home">
         <Navbar />
@@ -221,7 +238,7 @@ function Home() {
         </div>
 
         <motion.div 
-          className="modern-book-grid" // Renamed from modern-movie-grid
+          className="modern-book-grid"
           variants={{
             hidden: { opacity: 0 },
             show: {

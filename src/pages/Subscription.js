@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
+import { doc, setDoc, getDoc } from 'firebase/firestore'; // Added getDoc for verification
+import { useUserDetails } from '../hooks/useUserDetails'; // Import the new hook
 import axios from 'axios';
 import Navbar from '../components/Navbar';
-import '../styles/subscription.css'; // Verify this path matches your project structure
+import '../styles/subscription.css';
 
 function Subscription() {
   const [formData, setFormData] = useState({
@@ -14,6 +16,7 @@ function Subscription() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { hasDetails, loading: detailsLoading } = useUserDetails();
 
   useEffect(() => {
     const plan = JSON.parse(localStorage.getItem('selectedPlan'));
@@ -35,6 +38,11 @@ function Subscription() {
     if (!auth.currentUser) {
       setError('You must be logged in to process payment.');
       navigate('/login');
+      return;
+    }
+
+    if (detailsLoading) {
+      setError('Checking your profile details, please wait...');
       return;
     }
 
@@ -65,6 +73,27 @@ function Subscription() {
       console.log('Payment initiation response:', paymentResponse);
 
       if (paymentResponse.status === 'success' && paymentResponse.meta?.authorization?.mode === 'redirect') {
+        // Store payment details in Firestore before redirecting
+        const paymentDetails = {
+          paymentMethod: 'Mobile Money',
+          mobileProvider: formData.mobileProvider === 'MTNUG' ? 'MTN' : 'Airtel',
+          phoneNumber: phoneNumber,
+          subscriptionAmount: subscriptionPlan.priceUGX,
+          paymentDate: new Date().toISOString().split('T')[0],
+          transactionRef: txRef,
+        };
+
+        const userDocRef = doc(db, 'users', userId);
+        await setDoc(userDocRef, { paymentDetails }, { merge: true });
+        console.log('Payment details saved to Firestore:', paymentDetails);
+
+        // Store subscription status (assuming payment initiation implies subscription start)
+        const subscriptionRef = doc(db, 'subscriptions', userId);
+        await setDoc(subscriptionRef, { isActive: true }, { merge: true });
+
+        // Redirect based on whether user details exist
+        const redirectUrl = hasDetails ? '/home' : '/user-details';
+        navigate(redirectUrl, { state: { fromPayment: !hasDetails } });
         window.location.href = paymentResponse.meta.authorization.redirect;
       } else {
         throw new Error('Payment initiation failed: Invalid response');
@@ -111,7 +140,7 @@ function Subscription() {
                 className="mtn validate unselect"
                 value={formData.mobileProvider}
                 onChange={(e) => setFormData({ ...formData, mobileProvider: e.target.value })}
-                disabled={isLoading}
+                disabled={isLoading || detailsLoading}
               >
                 <option value="MTNUG">MTN</option>
                 <option value="AIRTELUG">Airtel</option>
@@ -137,11 +166,11 @@ function Subscription() {
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 placeholder="Insert mobile number without 0"
                 required
-                disabled={isLoading}
+                disabled={isLoading || detailsLoading}
               />
             </div>
 
-            <button type="submit" className="pay-now-button" disabled={isLoading}>
+            <button type="submit" className="pay-now-button" disabled={isLoading || detailsLoading}>
               {isLoading ? 'Processing...' : `Pay Now: UGX ${subscriptionPlan.priceUGX.toLocaleString()}`}
             </button>
             <p className="terms-notice">

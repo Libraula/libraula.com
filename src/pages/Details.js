@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
+import { useSubscription } from '../hooks/useSubscription'; // Import the new hook
 import Navbar from '../components/Navbar';
 import { FiPlusCircle, FiStar, FiChevronLeft } from 'react-icons/fi';
 import '../styles/details.css';
@@ -14,6 +15,7 @@ function Details() {
   const [isLoading, setIsLoading] = useState(!book);
   const [popup, setPopup] = useState(null);
   const [selectedImage, setSelectedImage] = useState(0);
+  const { isSubscribed, loading: subscriptionLoading } = useSubscription();
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -45,6 +47,21 @@ function Details() {
       return;
     }
 
+    if (subscriptionLoading) {
+      setPopup('Checking subscription status...');
+      setTimeout(() => setPopup(null), 2000);
+      return;
+    }
+
+    if (!isSubscribed) {
+      setPopup('Please subscribe to add books to your queue.');
+      setTimeout(() => {
+        setPopup(null);
+        navigate('/pricing');
+      }, 2000);
+      return;
+    }
+
     try {
       const userId = auth.currentUser.uid;
       const queueRef = doc(db, 'userQueues', userId);
@@ -71,7 +88,7 @@ function Details() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || subscriptionLoading) {
     return (
       <div className="details-page">
         <Navbar />
@@ -103,7 +120,7 @@ function Details() {
     book.img2 || "https://placehold.co/400x600",
     book.img3 || "https://placehold.co/400x600",
     book.img4 || "https://placehold.co/400x600"
-  ].filter(img => img); // Filter out empty strings
+  ].filter(img => img);
 
   return (
     <div className="details-page">

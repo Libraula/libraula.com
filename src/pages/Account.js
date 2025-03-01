@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
+import { useSubscription } from '../hooks/useSubscription';
+import { useUserDetails } from '../hooks/useUserDetails'; // Import the user details hook
 import Navbar from '../components/Navbar';
 import { User, MapPin, CreditCard, Package } from 'lucide-react';
 import '../styles/account.css';
@@ -12,11 +14,28 @@ function Account() {
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState('personal');
   const navigate = useNavigate();
+  const { isSubscribed, loading: subscriptionLoading } = useSubscription();
+  const { hasDetails, loading: detailsLoading } = useUserDetails();
 
   useEffect(() => {
     const fetchUserDetails = async () => {
       if (!auth.currentUser) {
         navigate('/login');
+        return;
+      }
+
+      // Wait for both subscription and details loading to resolve
+      if (subscriptionLoading || detailsLoading) return;
+
+      // Redirect to pricing if not subscribed
+      if (isSubscribed === false) {
+        navigate('/pricing');
+        return;
+      }
+
+      // If subscribed but no details, redirect to user-details
+      if (isSubscribed && hasDetails === false) {
+        navigate('/user-details');
         return;
       }
 
@@ -40,9 +59,10 @@ function Account() {
     };
 
     fetchUserDetails();
-  }, [navigate]);
+  }, [navigate, isSubscribed, subscriptionLoading, hasDetails, detailsLoading]);
 
-  if (loading) {
+  // Combined loading state for subscription, user details, and local fetch
+  if (loading || subscriptionLoading || detailsLoading) {
     return (
       <div className="Account">
         <Navbar />
@@ -89,7 +109,9 @@ function Account() {
           <span className="detail-label">Additional Phone</span>
           <span className="detail-value">{userDetails?.additionalPhoneNumber || 'N/A'}</span>
         </div>
-        <button className="edit-button">Edit Personal Details</button>
+        <button className="edit-button" onClick={() => navigate('/user-details')}>
+          Edit Personal Details
+        </button>
       </div>
     </div>
   );
@@ -117,7 +139,9 @@ function Account() {
           <span className="detail-label">City</span>
           <span className="detail-value">{userDetails?.shippingAddress?.city || 'N/A'}</span>
         </div>
-        <button className="edit-button">Update Address</button>
+        <button className="edit-button" onClick={() => navigate('/user-details')}>
+          Update Address
+        </button>
       </div>
     </div>
   );
@@ -233,7 +257,9 @@ function Account() {
         ) : (
           <div className="empty-state">
             <p>No account details available.</p>
-            <button className="primary-button">Complete Your Profile</button>
+            <button className="primary-button" onClick={() => navigate('/user-details')}>
+              Complete Your Profile
+            </button>
           </div>
         )}
       </section>

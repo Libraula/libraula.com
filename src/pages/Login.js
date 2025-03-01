@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../firebase';
+import { auth } from '../firebase';
 import Navbar from '../components/Navbar';
 import { FiMail, FiLock, FiLogIn, FiAlertCircle } from 'react-icons/fi';
 import { FcGoogle } from 'react-icons/fc';
@@ -24,7 +23,7 @@ function Login() {
     setIsLoading(true);
     try {
       await signInWithEmailAndPassword(auth, formData.email, formData.password);
-      await redirectUser(auth.currentUser);
+      navigate('/home'); // Always redirect to home
     } catch (err) {
       setError('Failed to sign in: ' + err.message);
       console.error('Email sign-in error:', err);
@@ -39,7 +38,7 @@ function Login() {
       console.log('Attempting Google Sign-In');
       const result = await signInWithPopup(auth, googleProvider);
       console.log('Google Sign-In successful, user:', result.user.uid);
-      await redirectUser(result.user);
+      navigate('/home'); // Always redirect to home
     } catch (err) {
       console.error('Google Sign-In error:', err.code, err.message);
       if (err.code === 'auth/popup-closed-by-user') {
@@ -49,19 +48,6 @@ function Login() {
       }
     } finally {
       setIsGoogleLoading(false);
-    }
-  };
-
-  const redirectUser = async (user) => {
-    const userDocRef = doc(db, 'users', user.uid);
-    const userDocSnapshot = await getDoc(userDocRef);
-
-    if (userDocSnapshot.exists()) {
-      console.log('Returning user, redirecting to /home');
-      navigate('/home');
-    } else {
-      console.log('New user, redirecting to /pricing');
-      navigate('/pricing');
     }
   };
 

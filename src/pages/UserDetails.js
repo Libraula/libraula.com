@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom'; // Added useLocation for payment confirmation check
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import Navbar from '../components/Navbar';
@@ -19,7 +19,15 @@ function UserDetails() {
     city: '',
   });
   const [error, setError] = useState('');
+  const [isPostPayment, setIsPostPayment] = useState(false); // Track if coming from payment
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Check if coming from payment confirmation
+  useEffect(() => {
+    const fromPayment = location.state?.fromPayment || false;
+    setIsPostPayment(fromPayment);
+  }, [location]);
 
   // Region and city options (unchanged)
   const regions = [
@@ -140,7 +148,7 @@ function UserDetails() {
 
       await setDoc(userDocRef, userDetails, { merge: true });
       console.log(`User details for ${userId} saved to Firestore`);
-      navigate('/subscription');
+      navigate('/home'); // Redirect to home after saving details
     } catch (err) {
       setError('Failed to save your details: ' + err.message);
       console.error('Error saving user details:', err);
@@ -156,8 +164,12 @@ function UserDetails() {
     <div className="UserDetails">
       <Navbar />
       <section className="user-details-form">
-        <h1>Customer Address</h1>
-        <p>Please provide your shipping details below</p>
+        <h1>{isPostPayment ? "Welcome to the Libraula Family!" : "Customer Address"}</h1>
+        <p>
+          {isPostPayment
+            ? "Thank you for joining us! We’re thrilled to have you on board. To ensure your books arrive right at your doorstep, please take a moment to share your shipping details below. Let’s get started!"
+            : "Please provide your shipping details below to ensure seamless delivery of your books."}
+        </p>
         {error && <p className="error">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div>
@@ -271,7 +283,9 @@ function UserDetails() {
               ))}
             </select>
           </div>
-          <button type="submit" className="submit-button">Save Details</button>
+          <button type="submit" className="submit-button">
+            {isPostPayment ? "Complete Your Setup" : "Save Details"}
+          </button>
         </form>
       </section>
       <footer className="UserDetails-footer">

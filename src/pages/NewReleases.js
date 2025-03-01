@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { collection, getDocs, doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
+import { useSubscription } from '../hooks/useSubscription'; // Import the new hook
 import Navbar from '../components/Navbar';
 import { FiPlusCircle, FiStar } from 'react-icons/fi';
 import '../styles/newreleases.css';
@@ -11,13 +12,14 @@ function NewReleases() {
   const [loading, setLoading] = useState(true);
   const [popup, setPopup] = useState(null);
   const navigate = useNavigate();
+  const { isSubscribed, loading: subscriptionLoading } = useSubscription();
 
   useEffect(() => {
     const fetchNewReleases = async () => {
       try {
-        const bookSnapshot = await getDocs(collection(db, 'books')); // Changed from 'dvds' to 'books'
+        const bookSnapshot = await getDocs(collection(db, 'books'));
         const bookList = bookSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        const filteredNewReleases = bookList.filter(book => book.newRelease); // Updated from dvd to book
+        const filteredNewReleases = bookList.filter(book => book.newRelease);
         setNewReleases(filteredNewReleases);
       } catch (err) {
         console.error('Error fetching new releases:', err);
@@ -28,11 +30,27 @@ function NewReleases() {
     fetchNewReleases();
   }, []);
 
-  const handleAddToQueue = async (book) => { // Updated from movie to book
+  const handleAddToQueue = async (book) => {
     if (!auth.currentUser) {
       navigate('/login');
       return;
     }
+
+    if (subscriptionLoading) {
+      setPopup('Checking subscription status...');
+      setTimeout(() => setPopup(null), 2000);
+      return;
+    }
+
+    if (!isSubscribed) {
+      setPopup('Please subscribe to add books to your queue.');
+      setTimeout(() => {
+        setPopup(null);
+        navigate('/pricing');
+      }, 2000);
+      return;
+    }
+
     try {
       const userId = auth.currentUser.uid;
       const queueRef = doc(db, 'userQueues', userId);
@@ -57,17 +75,17 @@ function NewReleases() {
     }
   };
 
-  const handleBookClick = (book) => { // Renamed from handleMovieClick
-    navigate(`/book/${book.id}`, { state: { book } }); // Changed route from /movie to /book
+  const handleBookClick = (book) => {
+    navigate(`/book/${book.id}`, { state: { book } });
   };
 
-  if (loading) {
+  if (loading || subscriptionLoading) {
     return (
       <div className="modern-newreleases">
         <Navbar />
         <div className="loading-container">
           <div className="loading-spinner"></div>
-          <p>Loading latest book releases...</p> {/* Updated text */}
+          <p>Loading latest book releases...</p>
         </div>
       </div>
     );
@@ -85,13 +103,13 @@ function NewReleases() {
 
       <section className="modern-catalog">
         <div className="catalog-controls">
-          <h2>New Book Releases</h2> {/* Updated title */}
-          <p>Check out the latest books added to our collection.</p> {/* Updated text */}
+          <h2>New Book Releases</h2>
+          <p>Check out the latest books added to our collection.</p>
         </div>
 
-        <div className="modern-book-grid"> {/* Updated className from modern-movie-grid */}
-          {newReleases.map((book) => ( // Updated from movie to book
-            <div key={book.id} className="modern-book-card" onClick={() => handleBookClick(book)}> {/* Updated className */}
+        <div className="modern-book-grid">
+          {newReleases.map((book) => (
+            <div key={book.id} className="modern-book-card" onClick={() => handleBookClick(book)}>
               <div className="card-image-container">
                 <img src={book.img} alt={book.title} loading="lazy" />
                 <div className="card-overlay">
@@ -106,13 +124,12 @@ function NewReleases() {
                   </button>
                 </div>
               </div>
-              <div className="modern-book-info"> {/* Updated className */}
+              <div className="modern-book-info">
                 <h3>{book.title}</h3>
-                <div className="book-meta"> {/* Updated className */}
-                  <span className="pages"><FiStar /> {book.pages || 'N/A'} pages</span> {/* Updated from rating to pages */}
-                  {/* Removed duration as it’s less relevant for books */}
+                <div className="book-meta">
+                  <span className="pages"><FiStar /> {book.pages || 'N/A'} pages</span>
                 </div>
-                <p className="book-synopsis">{book.synopsis}</p> {/* Updated className */}
+                <p className="book-synopsis">{book.synopsis}</p>
               </div>
             </div>
           ))}

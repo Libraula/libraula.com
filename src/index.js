@@ -1,3 +1,4 @@
+// index.js (unchanged)
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
@@ -18,7 +19,7 @@ import PaymentConfirmation from './pages/PaymentConfirmation';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useAuth } from './hooks/useAuth';
 import Navbar from './components/Navbar';
-import './styles/subscription.css'; // Import the CSS here since Subscription is defined inline
+import './styles/subscription.css';
 
 const AuthRedirect = ({ children }) => {
   const { user, loading } = useAuth();
@@ -44,7 +45,7 @@ const AuthRedirect = ({ children }) => {
   return loading ? <div>Loading...</div> : children;
 };
 
-const Subscription = () => { // Renamed from SubscriptionComponent to Subscription
+const Subscription = () => {
   const [formData, setFormData] = useState({
     mobileProvider: 'MTNUG',
     phone: '',
@@ -66,7 +67,7 @@ const Subscription = () => { // Renamed from SubscriptionComponent to Subscripti
   }, [navigate]);
 
   const config = {
-    public_key: 'FLWPUBK-95625711d2a488c26ac6fdd2bf291d04-X',
+    public_key: 'FLWPUBK_TEST-472e4bd67d6ccbf1c7561970bb3d0ba6-X',
     tx_ref: Date.now().toString(),
     amount: subscriptionPlan?.priceUGX || 0,
     currency: 'UGX',
@@ -79,7 +80,7 @@ const Subscription = () => { // Renamed from SubscriptionComponent to Subscripti
     customizations: {
       title: 'Libraula Subscription',
       description: `Payment for ${subscriptionPlan?.name} subscription`,
-      logo: 'https://your-logo-url.com/logo.png', // Replace with your logo URL
+      logo: 'https://your-logo-url.com/logo.png',
     },
   };
 
