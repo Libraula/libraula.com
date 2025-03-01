@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { auth, db } from '../firebase';
+import { auth } from '../firebase';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
-import '../styles/subscription.css';
+import '../styles/subscription.css'; // Verify this path matches your project structure
 
 function Subscription() {
   const [formData, setFormData] = useState({
@@ -48,16 +47,18 @@ function Subscription() {
       const txRef = `tx-${userId}-${Date.now()}`;
       const phoneNumber = `256${formData.phone}`;
 
-      console.log('Sending payment request:', { phoneNumber, mobileProvider: formData.mobileProvider, amount: subscriptionPlan.priceUGX, email, txRef });
-
-      const response = await axios.post('http://localhost:5000/initiate-payment', {
+      const payload = {
         phoneNumber,
         mobileProvider: formData.mobileProvider,
         amount: subscriptionPlan.priceUGX,
         email,
         txRef,
-      }, {
-        timeout: 10000 // Add timeout to prevent hanging
+      };
+
+      console.log('Initiating payment with payload:', payload);
+
+      const response = await axios.post('http://localhost:5000/initiate-payment', payload, {
+        timeout: 10000,
       });
 
       const paymentResponse = response.data;
@@ -66,7 +67,7 @@ function Subscription() {
       if (paymentResponse.status === 'success' && paymentResponse.meta?.authorization?.mode === 'redirect') {
         window.location.href = paymentResponse.meta.authorization.redirect;
       } else {
-        throw new Error('Payment initiation failed: Invalid response from server');
+        throw new Error('Payment initiation failed: Invalid response');
       }
     } catch (err) {
       if (err.code === 'ECONNREFUSED' || err.message === 'Network Error') {
@@ -103,8 +104,9 @@ function Subscription() {
             <input name="paymentMethod" type="hidden" value="mobileMoney" />
 
             <div className="input-field">
-              <label>Select your operator</label>
+              <label htmlFor="mobileProvider">Select your operator</label>
               <select
+                id="mobileProvider"
                 name="mobileProvider"
                 className="mtn validate unselect"
                 value={formData.mobileProvider}
@@ -133,7 +135,7 @@ function Subscription() {
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                placeholder="insert mobile number without 0"
+                placeholder="Insert mobile number without 0"
                 required
                 disabled={isLoading}
               />
@@ -143,7 +145,9 @@ function Subscription() {
               {isLoading ? 'Processing...' : `Pay Now: UGX ${subscriptionPlan.priceUGX.toLocaleString()}`}
             </button>
             <p className="terms-notice">
-              By clicking "Pay Now", I accept Libraula’s <a href="#">Terms & Conditions</a> and <a href="#">Privacy and Cookie Notice</a>
+              By clicking "Pay Now", I accept Libraula’s{' '}
+              <a href="#">Terms & Conditions</a> and{' '}
+              <a href="#">Privacy and Cookie Notice</a>
             </p>
           </form>
         </div>

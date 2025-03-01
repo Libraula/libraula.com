@@ -7,10 +7,9 @@ function PaymentConfirmation() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Simulate waiting for webhook (in production, verify via tx_ref or poll Firestore)
     const timer = setTimeout(() => {
       localStorage.removeItem('selectedPlan');
-      navigate('/home');
+      navigate('/user-details'); // Redirect to UserDetails after payment
     }, 3000); // Redirect after 3 seconds
 
     return () => clearTimeout(timer);
@@ -21,7 +20,7 @@ function PaymentConfirmation() {
       <Navbar />
       <section className="confirmation-section">
         <h1>Payment Processing</h1>
-        <p>Your payment is being processed. You’ll be redirected to your dashboard shortly.</p>
+        <p>Your payment is being processed. You’ll be redirected to enter your details shortly.</p>
         <div className="spinner"></div>
       </section>
       <footer className="confirmation-footer">
