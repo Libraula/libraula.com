@@ -104,6 +104,7 @@ function Home() {
     }
   };
 
+  // Enhanced FeaturedBook component for better responsiveness
   const FeaturedBook = ({ book }) => (
     <motion.section 
       className="modern-hero-section"
@@ -141,7 +142,9 @@ function Home() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.45 }}
         >
-          <span>{book.author || 'Unknown Author'}</span> | <span>{book.pages || 'N/A'} pages</span> | <span>{book.format || 'N/A'}</span>
+          {book.author && <span>{book.author}</span>}
+          {book.pages && <span>{book.pages} pages</span>}
+          {book.format && <span>{book.format}</span>}
         </motion.div>
         <motion.div 
           className="hero-actions"
@@ -149,7 +152,11 @@ function Home() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <button className="secondary-button" onClick={() => handleBookClick(book)}>
+          <button 
+            className="secondary-button" 
+            onClick={() => handleBookClick(book)}
+            aria-label="View book details"
+          >
             <BiBookOpen /> View Details
           </button>
           <motion.button 
@@ -157,6 +164,7 @@ function Home() {
             onClick={() => handleAddToQueue(book)}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
+            aria-label="Add book to queue"
           >
             <FiPlus />
           </motion.button>

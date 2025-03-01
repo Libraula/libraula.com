@@ -32,14 +32,16 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Modern Hero Section - Sleek and Contemporary */
+/* Improved Modern Hero Section - Fully Responsive */
 .modern-hero-section {
   position: relative;
-  height: clamp(450px, 60vh, 600px);
+  min-height: clamp(450px, 60vh, 600px);
   overflow: hidden;
   margin-bottom: 60px;
   background: #1a1a1a;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
 }
 
 .hero-background {
@@ -70,11 +72,14 @@
 .modern-hero-content {
   position: relative;
   z-index: 3;
+  width: 100%;
   max-width: 900px;
   margin: 0 auto;
-  padding: clamp(80px, 15vh, 120px) 24px;
+  padding: clamp(40px, 10vh, 80px) clamp(20px, 5vw, 40px);
   color: #fff;
   text-align: left;
+  display: flex;
+  flex-direction: column;
 }
 
 .hero-badge {
@@ -85,48 +90,73 @@
   backdrop-filter: blur(12px);
   padding: 6px 14px;
   border-radius: 20px;
-  font-size: 14px;
+  font-size: clamp(12px, 1.5vw, 14px);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: 20px;
+  margin-bottom: clamp(16px, 3vh, 24px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  width: fit-content;
 }
 
 .modern-hero-content h1 {
-  font-size: clamp(36px, 5vw, 56px);
+  font-size: clamp(28px, 5vw, 56px);
   font-weight: 900;
-  margin-bottom: 16px;
-  line-height: 1.1;
-  letter-spacing: -1px;
+  margin-bottom: clamp(12px, 2vh, 20px);
+  line-height: 1.2;
+  letter-spacing: -0.5px;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  word-wrap: break-word;
 }
 
 .hero-synopsis {
-  font-size: clamp(16px, 2.5vw, 20px);
+  font-size: clamp(14px, 2.5vw, 20px);
   line-height: 1.5;
-  margin-bottom: 32px;
+  margin-bottom: clamp(20px, 4vh, 32px);
   opacity: 0.85;
-  max-width: 600px;
+  max-width: 100%;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hero-meta {
+  font-size: clamp(12px, 2vw, 16px);
+  color: #fff;
+  opacity: 0.9;
+  margin-bottom: clamp(16px, 3vh, 24px);
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.hero-meta span { 
+  margin-right: 0.5rem;
+  white-space: nowrap;
 }
 
 .hero-actions {
   display: flex;
-  gap: 20px;
+  gap: clamp(12px, 3vw, 20px);
   align-items: center;
-  justify-content: center;
-  width: 100%;
+  margin-top: auto;
+  flex-wrap: wrap;
 }
 
 .secondary-button {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 24px;
+  padding: clamp(10px, 2vw, 12px) clamp(16px, 3vw, 24px);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.2);
   color: white;
   font-weight: 700;
+  font-size: clamp(12px, 1.8vw, 16px);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   transition: all 0.3s ease;
@@ -134,6 +164,7 @@
   cursor: pointer;
   backdrop-filter: blur(10px);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
 }
 
 .secondary-button:hover {
@@ -143,8 +174,8 @@
 }
 
 .plus-button {
-  width: 48px;
-  height: 48px;
+  min-width: clamp(40px, 6vw, 48px);
+  min-height: clamp(40px, 6vw, 48px);
   background: #4CAF50;
   color: white;
   border: none;
@@ -152,10 +183,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  font-size: clamp(18px, 2.5vw, 22px);
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .plus-button:hover {
@@ -355,11 +387,11 @@
 .modern-footer {
   background: #1a1a1a;
   color: #fff;
-  padding: clamp(20px, 5vw, 40px) clamp(16px, 3vw, 24px); /* Responsive padding */
+  padding: clamp(20px, 5vw, 40px) clamp(16px, 3vw, 24px);
   margin-top: auto;
-  width: 100%; /* Ensure it fits within parent */
-  max-width: 100%; /* Prevent exceeding viewport */
-  box-sizing: border-box; /* Include padding in width */
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .footer-content {
@@ -495,14 +527,14 @@
   box-shadow: 0 6px 14px rgba(76, 175, 80, 0.3);
 }
 
-/* Responsive Design */
+/* Additional Media Queries for Better Responsiveness */
 @media (max-width: 768px) {
   .modern-hero-section {
-    height: 500px;
+    min-height: 500px;
   }
   
   .modern-hero-content {
-    padding: 80px 24px;
+    padding: 80px 24px clamp(40px, 10vw, 60px) 24px;
   }
   
   .modern-hero-content h1 {
@@ -511,6 +543,7 @@
   
   .hero-synopsis {
     font-size: 16px;
+    -webkit-line-clamp: 3;
   }
   
   .catalog-controls h2 {
@@ -550,7 +583,7 @@
   }
   
   .modern-footer {
-    padding: clamp(20px, 4vw, 40px) clamp(12px, 2vw, 24px); /* Adjusted */
+    padding: clamp(20px, 4vw, 40px) clamp(12px, 2vw, 24px);
   }
   
   .footer-links {
@@ -563,8 +596,9 @@
     flex-wrap: nowrap;
     gap: 16px;
     align-items: center;
-    justify-content: center;
+    justify-content: center; /* Changed to center for symmetry */
     width: 100%;
+    padding-bottom: 20px;
   }
 
   .hero-actions .secondary-button {
@@ -610,25 +644,37 @@
 
 @media (max-width: 480px) {
   .modern-hero-section {
-    height: clamp(550px, 80vh, 650px);
+    min-height: 550px;
   }
   
   .modern-hero-content {
-    padding: clamp(60px, 10vh, 80px) 16px;
-  }
-  
-  .modern-hero-content h1 {
-    font-size: 30px;
-  }
-  
-  .hero-synopsis {
-    font-size: clamp(14px, 3vw, 16px);
-    max-width: 100%;
+    padding: clamp(30px, 8vh, 60px) 16px clamp(50px, 12vw, 80px) 16px;
   }
   
   .hero-badge {
-    margin-top: -20px;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+  }
+  
+  .modern-hero-content h1 {
+    font-size: 26px;
+    margin-bottom: 12px;
+  }
+  
+  .hero-synopsis {
+    font-size: 14px;
+    -webkit-line-clamp: 4;
+    margin-bottom: 16px;
+  }
+  
+  .hero-meta {
+    font-size: 12px;
+    margin-bottom: 16px;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .hero-meta span {
+    margin-right: 0;
   }
   
   .modern-popup {
@@ -664,10 +710,11 @@
     display: flex !important;
     flex-direction: row !important;
     flex-wrap: nowrap !important;
-    gap: 10px !important;
+    gap: 12px !important;
     align-items: center !important;
-    justify-content: center !important;
+    justify-content: center !important; /* Changed to center for symmetry */
     width: 100% !important;
+    padding-bottom: 30px;
   }
 
   .modern-hero-section .hero-actions .secondary-button {
@@ -712,32 +759,5 @@
     height: 36px;
     font-size: 16px;
     border-radius: 12px;
-  }
-}
-
-/* Hero Meta */
-.hero-meta {
-  font-size: clamp(14px, 2vw, 16px);
-  color: #fff;
-  opacity: 0.9;
-  margin-bottom: 1.5rem;
-}
-
-.hero-meta span { 
-  margin-right: 0.5rem;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .modern-book-grid {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 20px;
-  }
-}
-
-@media (max-width: 480px) {
-  .modern-book-grid {
-    grid-template-columns: 1fr;
-    gap: 24px;
   }
 }
