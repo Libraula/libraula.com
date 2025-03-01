@@ -47,7 +47,7 @@ function Pricing() {
       <Navbar />
       <section className="pricing-form">
         <h1>Choose Your Plan</h1>
-        <p>Select a plan to start your 30-day timerial.</p>
+        <p>Select a plan to start your 30-day Trial.</p>
         <form onSubmit={handleSubmit}>
           <div className="plan-container">
             {plans.map((plan) => (
