@@ -164,7 +164,7 @@ function Subscription() {
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                placeholder="Insert mobile number without 0"
+                placeholder="i.e 7550542..."
                 required
                 disabled={isLoading}
               />
