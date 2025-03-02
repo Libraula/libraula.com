@@ -67,7 +67,7 @@ const Subscription = () => {
   }, [navigate]);
 
   const config = {
-    public_key: 'FLWPUBK_TEST-472e4bd67d6ccbf1c7561970bb3d0ba6-X',
+    public_key: 'FLWPUBK-95625711d2a488c26ac6fdd2bf291d04-X',
     tx_ref: Date.now().toString(),
     amount: subscriptionPlan?.priceUGX || 0,
     currency: 'UGX',
