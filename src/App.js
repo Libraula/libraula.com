@@ -31,7 +31,7 @@ function App() {
     },
     {
       question: "How much does Libraula cost?",
-      answer: "Plans start at UGX 7,900 per month. Choose your book limit and enjoy flexible, affordable access to thousands of titles."
+      answer: "Plans start at UGX 50,000 per month. Choose your book limit and enjoy flexible, affordable access to thousands of titles."
     },
     {
       question: "Where can I read?",
@@ -63,7 +63,7 @@ function App() {
         <div className="hero-overlay"></div>
         <div className="modern-hero-content">
           <h1>Unlimited books, from novels to manga, and more</h1>
-          <p className="hero-subtitle">Starts at UGX 7,900. Cancel anytime.</p>
+          <p className="hero-subtitle">Starts at UGX 50,000. Cancel anytime.</p>
           <p className="hero-text">Ready to read? Enter your email to create or restart your membership.</p>
           <div className="hero-actions">
             <input type="email" placeholder="Email address" className="email-input" />

@@ -179,7 +179,7 @@ function Home() {
         <Navbar />
         <div className="loading-container">
           <div className="loading-spinner"></div>
-          <p>Loading your book collection...</p>
+          <p>Loading book collection...</p>
         </div>
       </div>
     );
